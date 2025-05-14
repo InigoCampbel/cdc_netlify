@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEED Training Portal - Trainer Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --hover-color: #1e40af;
+            --background-color: #f8fafc;
+            --text-color: #1f2937;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .login-container {
+            background-color: white;
+            border-radius: 22px;
+            box-shadow: var(--card-shadow);
+            max-width: 450px;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .decorative-element {
+            position: absolute;
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .circle-element {
+            width: 125px;
+            height: 125px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 50%;
+            top: -60px;
+            right: -60px;
+        }
+        
+        .diagonal-element {
+            width: 100px;
+            height: 2px;
+            background: var(--accent-color);
+            transform: rotate(45deg);
+            bottom: 20px;
+            left: -20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 3rem 0.4rem 0.5rem 0.4rem;
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+        
+        .header h1::after {
+            content: "";
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+        }
+        
+        .header p {
+            color: #4b5563;
+            font-size: 1.3rem;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dcdfe6;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        
+        .status-container {
+            min-height: 60px;
+            margin: 1rem 0rem 0rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        #errorMessage {
+            color: #e74c3c;
+            font-size: 1rem;
+            padding: 12px;
+            background-color: rgba(231, 76, 60, 0.1);
+            border-radius: 10px;
+            display: none;
+        }
+        
+        #errorMessage.show {
+            display: block;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        #clearBtn {
+            background-color: #f1f5f9;
+            color: #64748b;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        #clearBtn:hover {
+            background-color: #e2e8f0;
+        }
+        
+        #clearBtn:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+        
+        #loginBtn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 3;
+            box-shadow: 0 4px 8px rgba(30, 58, 138, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #loginBtn:hover {
+            background-color: var(--hover-color);
+            box-shadow: 0 6px 12px rgba(30, 58, 138, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        #loginBtn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        
+        #loginBtn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+            z-index: 1;
+        }
+        
+        #loginBtn:hover::before {
+            left: 100%;
+        }
+        
+        .login-status {
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            height: 6px;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-container.show {
+            display: block;
+        }
+        
+        .announcements {
+            margin: 25px;
+            padding: 15px;
+            background: rgba(240, 245, 255, 0.7);
+            border-radius: 14px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .announcements h3 {
+            color: var(--primary-color);
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .announcements p {
+            color: #4b5563;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+        
+        .footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            width: 90%;
+            max-width: 450px;
+        }
+        
+        .mobile-only {
+            display: block;
+        }
+        
+        .desktop-only {
+            display: none;
+        }
+        
+        .right-column {
+            padding: 1rem 1rem;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            z-index: 2;
+            position: relative;
+        }
+        
+        /* Loading overlay for smooth transitions */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        #loadingOverlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(30, 58, 138, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Page transitions */
+        #pageContainer {
+            width: 100%;
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        #pageContainer.page-exit {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        
+        .page-enter {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (min-width: 768px) {
+            .login-container {
+                max-width: 1200px;
+                display: flex;
+                padding: 0;
+                margin: 70px auto 1rem;
+                flex-direction: column;
+                width: 90%;
+            }
+            
+            .two-column-container {
+                display: flex;
+                width: 100%;
+            }
+            
+            .left-column {
+                flex: 1;
+                padding: 3rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                border-radius: 22px 0 0 22px;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .right-column {
+                flex: 1;
+                padding: 3rem;
+                margin: 20px;
+                border-radius: 18px;
+                transform: translateX(-10px);
+                box-shadow: var(--card-shadow);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            
+            .right-column:hover {
+                box-shadow: var(--card-hover-shadow);
+                transform: translateX(-10px) translateY(-5px);
+            }
+            
+            .announcements-wrapper {
+                padding: 0 2rem 2rem;
+                width: 100%;
+            }
+            
+            .header {
+                text-align: left;
+                margin-bottom: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2.8rem;
+                letter-spacing: -1px;
+            }
+            
+            .header h1::after {
+                left: 0;
+                transform: none;
+                width: 80px;
+                height: 5px;
+            }
+            
+            .header p {
+                font-size: 1.6rem;
+                margin-top: 25px;
+            }
+            
+            .circle-element {
+                width: 175px;
+                height: 200px;
+                bottom: -100px;
+                right: -100px;
+                top: auto;
+            }
+            
+            .diagonal-element {
+                width: 150px;
+                left: -30px;
+                top: 50px;
+                bottom: auto;
+            }
+            
+            .mobile-only {
+                display: none;
+            }
+            
+            .desktop-only {
+                display: block;
+            }
+            
+            .footer {
+                text-align: center;
+                font-size: 1rem;
+                padding: 0;
+                margin-top: 2rem;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div id="loaderText">Authenticating...</div>
+    </div>
+    
+    <!-- Page Container -->
+    <div id="pageContainer">
+        <div class="login-container">
+            <div class="decorative-element circle-element"></div>
+            <div class="decorative-element diagonal-element"></div>
+            
+            <div class="header mobile-only">
+                <h1>SEED Training Portal</h1>
+                <p>Trainer Login</p>
+            </div>
+            
+            <div class="two-column-container">
+                <div class="left-column">
+                    <div class="header desktop-only">
+                        <h1>SEED Training Portal</h1>
+                        <p>Trainer Login</p>
+                    </div>
+                </div>
+                
+                <div class="right-column">
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="userId">Trainer ID</label>
+                            <input type="text" id="userId" placeholder="Enter your trainer ID " autocomplete="off" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dob">Date of Birth</label>
+                            <input type="date" id="dob" required>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="button" id="clearBtn">Clear</button>
+                            <button type="submit" id="loginBtn">Login</button>
+                        </div>
+                        
+                        <div class="status-container">
+                            <div class="login-status" id="loginStatus"></div>
+                            <div class="progress-container" id="progressContainer">
+                                <div class="progress-bar" id="progressBar"></div>
+                            </div>
+                            <div id="errorMessage"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="announcements-wrapper">
+                <div class="announcements">
+                    <h3><i class="fas fa-bell"></i> Announcements</h3>
+                    <p>• SEED Training Session: 19th May 2025 to 23rd May 2025</p>
+                    <p>• Trainer Briefing: 18th May 2025, 2:00 PM</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            For assistance please contact Learning & Development team,<br>
+            PSG College of Arts & Science
+        </div>
+    </div>
+    
+    <script src="trainer-login.js"></script>
+</body>
+</html>

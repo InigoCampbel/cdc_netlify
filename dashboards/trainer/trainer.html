@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SEED Training - Trainer Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    window.onload = function() {
+      // This will be replaced by the proper loading logic in script.js
+      document.getElementById('loadingOverlay').style.display = 'flex';
+      document.getElementById('loaderText').textContent = 'Loading trainer dashboard...';
+    }
+  </script>
+  
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1 class="main-title">SEED Training - Trainer Dashboard</h1>
+      <div class="sub-title">19 May 2025 to 23 May 2025</div>
+    </div>
+    <div class="welcome-banner">
+      <div class="trainer-info">
+        <div class="trainer-name" id="trainerName">Loading...</div>
+        <div class="trainer-details">
+          <div class="trainer-detail-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" width="18.5" height="18.5" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor">
+  		<path d="M3 4m0 3a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v10a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3z"></path>
+  		<path d="M9 10m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+  		<path d="M15 8l2 0"></path>
+  		<path d="M15 12l2 0"></path>
+  		<path d="M7 16l10 0"></path>
+	</svg>
+            Trainer Code: <span id="trainerCode">Loading...</span>
+          </div>
+          <div class="trainer-detail-item">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" stroke-width="2"> <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path> <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path> <path d="M16 3.13a4 4 0 0 1 0 7.75"></path> <path d="M21 21v-2a4 4 0 0 0 -3 -3.85"></path> </svg> 
+            Vendor: <span id="vendorName">Loading...</span>
+          </div>
+        </div>
+      </div>
+      <button id="logoutBtn" class="logout-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        Logout
+      </button>
+    </div>
+    
+    <!-- Information Board (Replacement for stats-grid) -->
+    <div class="information-board">
+      <div class="information-board-header">
+        <h2>Information Board</h2>
+        <button id="toggleInstructions" class="toggle-instructions" aria-label="Toggle Instructions">
+          Hide
+        </button>
+      </div>
+      <div class="information-content" id="instructionsContainer">
+        <ul id="instructionsList" class="instructions-list">
+          <li class="instruction-item">Loading instructions...</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="date-filter-container">
+      <div class="filter-title">Filter Sessions by Date</div>
+      <div class="filter-row">
+        <select id="dateFilter">
+          <option value="">All Dates</option>
+        </select>
+        <div class="filter-buttons">
+          <button id="applyFilter">Apply Filter</button>
+          <button id="resetFilter">Show All</button>
+        </div>
+      </div>
+    </div>
+    <main class="main-content">
+      <div class="date-sidebar" id="dateSidebar"></div>
+      <div class="sessions-container" id="sessionsContainer"></div>
+    </main>
+  </div>
+  <div id="loadingOverlay" class="overlay">
+    <div class="loader-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" id="loaderText">Loading trainer information...</div>
+    </div>
+  </div>
+  <div class="toast-container" id="toastContainer"></div>
+  <div class="footer">
+    For any assistance, please contact Learning & Development, PSG College of Arts & Science
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

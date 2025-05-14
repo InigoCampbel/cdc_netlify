@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEED Training Portal - Student Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --hover-color: #1e40af;
+            --background-color: #f8fafc;
+            --text-color: #1f2937;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .login-container {
+            background-color: white;
+            border-radius: 22px;
+            box-shadow: var(--card-shadow);
+            width: 90%;
+            max-width: 450px;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .decorative-element {
+            position: absolute;
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .circle-element {
+            width: 125px;
+            height: 125px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 50%;
+            top: -60px;
+            right: -60px;
+        }
+        
+        .diagonal-element {
+            width: 100px;
+            height: 2px;
+            background: var(--accent-color);
+            transform: rotate(45deg);
+            bottom: 20px;
+            left: -20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 3rem 0.4rem 0.5rem 0.4rem;
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+        
+        .header h1::after {
+            content: "";
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+        }
+        
+        .header p {
+            color: #4b5563;
+            font-size: 1.3rem;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dcdfe6;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        
+        .status-container {
+            min-height: 60px;
+            margin: 1rem 0rem 0rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        #errorMessage {
+            color: #e74c3c;
+            font-size: 1rem;
+            padding: 12px;
+            background-color: rgba(231, 76, 60, 0.1);
+            border-radius: 10px;
+            display: none;
+        }
+        
+        #errorMessage.show {
+            display: block;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        #clearBtn {
+            background-color: #f1f5f9;
+            color: #64748b;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        #clearBtn:hover {
+            background-color: #e2e8f0;
+        }
+        
+        #clearBtn:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+        
+        #loginBtn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 3;
+            box-shadow: 0 4px 8px rgba(30, 58, 138, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #loginBtn:hover {
+            background-color: var(--hover-color);
+            box-shadow: 0 6px 12px rgba(30, 58, 138, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        #loginBtn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        
+        #loginBtn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+            z-index: 1;
+        }
+        
+        #loginBtn:hover::before {
+            left: 100%;
+        }
+        
+        .login-status {
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            height: 6px;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-container.show {
+            display: block;
+        }
+        
+        .announcements {
+            margin: 0 25px 25px;
+            padding: 15px;
+            background: rgba(240, 245, 255, 0.7);
+            border-radius: 14px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .announcements h3 {
+            color: var(--primary-color);
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .announcements p {
+            color: #4b5563;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+        
+        .footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            width: 90%;
+            max-width: 450px;
+        }
+        
+        .mobile-only {
+            display: block;
+        }
+        
+        .desktop-only {
+            display: none;
+        }
+        
+        .right-column {
+            padding: 1rem 1rem;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            z-index: 2;
+            position: relative;
+        }
+        
+        @media (min-width: 768px) {
+            .login-container {
+                max-width: 1200px;
+                display: flex;
+                padding: 0;
+                margin: 70px auto 1rem;
+                flex-direction: column;
+            }
+            
+            .two-column-container {
+                display: flex;
+                width: 100%;
+            }
+            
+            .left-column {
+                flex: 1;
+                padding: 3rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                border-radius: 22px 0 0 22px;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .right-column {
+                flex: 1;
+                padding: 3rem;
+                margin: 20px;
+                border-radius: 18px;
+                transform: translateX(-10px);
+                box-shadow: var(--card-shadow);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            
+            .right-column:hover {
+                box-shadow: var(--card-hover-shadow);
+                transform: translateX(-10px) translateY(-5px);
+            }
+            
+            .announcements-wrapper {
+                padding: 0 2rem 2rem;
+                width: 100%;
+            }
+            
+            .header {
+                text-align: left;
+                margin-bottom: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2.8rem;
+                letter-spacing: -1px;
+            }
+            
+            .header h1::after {
+                left: 0;
+                transform: none;
+                width: 80px;
+                height: 5px;
+            }
+            
+            .header p {
+                font-size: 1.6rem;
+                margin-top: 25px;
+            }
+            
+            .circle-element {
+                width: 175px;
+                height: 200px;
+                bottom: -100px;
+                right: -100px;
+                top: auto;
+            }
+            
+            .diagonal-element {
+                width: 150px;
+                left: -30px;
+                top: 50px;
+                bottom: auto;
+            }
+            
+            .mobile-only {
+                display: none;
+            }
+            
+            .desktop-only {
+                display: block;
+            }
+            
+            .footer {
+                text-align: center;
+                font-size: 1rem;
+                padding: 0;
+                margin-top: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="decorative-element circle-element"></div>
+        <div class="decorative-element diagonal-element"></div>
+        
+        <div class="header mobile-only">
+            <h1>SEED Training Portal</h1>
+            <p>Student Login</p>
+        </div>
+        
+        <div class="two-column-container">
+            <div class="left-column">
+                <div class="header desktop-only">
+                    <h1>SEED Training Portal</h1>
+                    <p>Student Login</p>
+                </div>
+            </div>
+            
+            <div class="right-column">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="userId">Roll Number</label>
+                        <input type="text" id="userId" placeholder="Enter your roll number" autocomplete="off" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dob">Date of Birth</label>
+                        <input type="date" id="dob" required>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="button" id="clearBtn">Clear</button>
+                        <button type="submit" id="loginBtn">Login</button>
+                    </div>
+                    
+                    <div class="status-container">
+                        <div class="login-status" id="loginStatus"></div>
+                        <div class="progress-container" id="progressContainer">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                        <div id="errorMessage"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="announcements-wrapper">
+            <div class="announcements">
+                <h3><i class="fas fa-bell"></i> Announcements</h3>
+                <p>• SEED Training Dates: 19th May 2025 to 23rd May 2025</p>
+                <p>• Timing: 9:00 AM to 04:30 PM</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        For assistance please contact Learning & Development team,<br>
+        PSG College of Arts & Science
+    </div>
+    
+    <script>
+        // Utility functions
+        const DateUtils = {
+            formatDateForInput: date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
+            formatDateForAPI: dateString => {
+                const date = new Date(dateString);
+                return [
+                    String(date.getDate()).padStart(2, '0'),
+                    String(date.getMonth() + 1).padStart(2, '0'),
+                    date.getFullYear()
+                ].join('-');
+            }
+        };
+
+        const SessionUtils = {
+            createSession: (key, data, hours = 2) => {
+                sessionStorage.setItem(key, JSON.stringify({
+                    ...data,
+                    expires: Date.now() + (hours * 60 * 60 * 1000)
+                }));
+            },
+            clearAllSessions: () => sessionStorage.clear()
+        };
+
+        const ApiUtils = {
+            API_ENDPOINTS: [
+                "https://script.google.com/macros/s/AKfycbzzQY05es0RKeUkvh4OkGRmMxEuq5bLbrkHQJL-HbLcPG20ObcsKe6cA7rLFm8CHw/exec",
+                "https://script.google.com/macros/s/AKfycbwQv_srMHr5F_3bk9vCkhp_9DMP0bqjOVSGwGDbjnzyn4yTxz3OCpQyzg7JE5AdyCqp/exec",
+                "https://script.google.com/macros/s/AKfycbwiwCzRj3XT-Oel9ZC0dFcLzKEby9nznQaP0zegfw9jlZxGrq_odxs2y2RfRF3Y8rOU/exec",
+                "https://script.google.com/macros/s/AKfycbyYYYyrvSi3exn0b2Z6McIDUUBZxpK5HLinQnigoBj-q9rlkELN8Wm5LxXM1xbo5NoerQ/exec"
+            ],
+            
+            async fetchWithFallback(queryParams, options = {}, timeout = 15000) {
+                let lastError = null;
+                const fullUrls = this.API_ENDPOINTS.map(url => url + queryParams);
+                
+                for (let url of fullUrls) {
+                    try {
+                        const response = await this.fetchWithTimeout(url, options, timeout);
+                        return response;
+                    } catch (error) {
+                        lastError = error;
+                    }
+                }
+                
+                throw lastError || new Error("All API endpoints failed");
+            },
+            
+            async fetchWithTimeout(url, options = {}, timeout = 15000) {
+                const cacheBuster = Date.now();
+                const urlWithCache = url + (url.includes('?') ? '&' : '?') + `cb=${cacheBuster}`;
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeout);
+                
+                try {
+                    const response = await fetch(urlWithCache, {
+                        ...options,
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    return response;
+                } catch (error) {
+                    clearTimeout(timeoutId);
+                    throw error;
+                }
+            },
+            
+            async processJsonResponse(response) {
+                if (!response.ok) throw new Error(`Invalid credentials`);
+                
+                const text = await response.text();
+                
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    if (text.includes("Error") || text.trim() === "") {
+                        throw new Error("Invalid response from server");
+                    }
+                    
+                    try {
+                        return JSON.parse(text.replace(/[\n\r]/g, ''));
+                    } catch (e2) {
+                        throw new Error("Unable to process data from server");
+                    }
+                }
+            }
+        };
+
+        const ValidationUtils = {
+            STUDENT_PATTERN: /^(21MSS0(0[1-9]|[1-6][0-9])|(23B(A(M)|B(A|C|I|O|P|T)|C(A|B|C|D|E|F|H|M|O|R|S|T)|D(A)|E(C|L|N)|F(S|T)|H(M)|I(S|T)|L(G)|M(A|B|C|U)|N(D)|P(A|H|S)|R(M)|S(O|T)|T(A)|V(C)|Z(O))[0156](0[1-9]|[1-6][0-9])|24M(B(C|O|T)|C(A|C|D|H|M|N|O|P|S)|E(C|L|M|N|S)|F(M)|H(A)|I(B)|M(A|B|C)|N(D)|P(H|S)|S(T|W)|T(A)|Z(O))[01](0[1-9]|[1-6][0-9]))|23V(BI|FP|HM|NM)0(0[1-9]|[1-4][0-9])|22BSO045)$/,
+            
+            validateRollNumber(rollNumber) {
+                if (!rollNumber || typeof rollNumber !== 'string') {
+                    return { valid: false, message: "Please enter a valid roll number" };
+                }
+                
+                rollNumber = rollNumber.trim().toUpperCase();
+                
+                if (rollNumber.length !== 8) {
+                    return { valid: false, message: "Please enter a valid roll number" };
+                }
+                
+                if (!this.STUDENT_PATTERN.test(rollNumber)) {
+                    return { valid: false, message: "Please enter a valid roll number" };
+                }
+                
+                return { valid: true, value: rollNumber };
+            }
+        };
+
+        const StudentAuth = {
+            SESSION_KEY: 'studentPortalSession',
+            
+            async authenticate(rollNumber, dob) {
+                try {
+                    const validationResult = ValidationUtils.validateRollNumber(rollNumber);
+                    if (!validationResult.valid) {
+                        return { success: false, error: validationResult.message };
+                    }
+                    
+                    document.getElementById('loginStatus').textContent = 'Authenticating...';
+                    document.getElementById('loginBtn').disabled = true;
+                    document.getElementById('clearBtn').disabled = true;
+                    document.getElementById('errorMessage').classList.remove('show');
+                    
+                    const progressContainer = document.getElementById('progressContainer');
+                    const progressBar = document.getElementById('progressBar');
+                    progressContainer.classList.add('show');
+                    
+                    let progress = 0;
+                    const progressInterval = setInterval(() => {
+                        progress += 5;
+                        if (progress > 90) clearInterval(progressInterval);
+                        progressBar.style.width = progress + '%';
+                    }, 150);
+                    
+                    let apiSuccess = false;
+                    let apiResult = null;
+                    let apiError = null;
+                    
+                    try {
+                        const queryParams = `?rollNumber=${encodeURIComponent(rollNumber)}&dob=${encodeURIComponent(dob)}`;
+                        const response = await ApiUtils.fetchWithFallback(queryParams);
+                        apiResult = await ApiUtils.processJsonResponse(response);
+                        
+                        if (!apiResult || apiResult.error) {
+                            throw new Error(apiResult?.error || "Invalid credentials");
+                        }
+                        
+                        apiSuccess = true;
+                    } catch (error) {
+                        apiError = error;
+                    }
+                    
+                    clearInterval(progressInterval);
+                    progressBar.style.width = '100%';
+                    
+                    setTimeout(() => {
+                        progressContainer.classList.remove('show');
+                        progressBar.style.width = '0%';
+                        document.getElementById('loginStatus').textContent = '';
+                        
+                        if (!apiSuccess) {
+                            document.getElementById('errorMessage').textContent = apiError?.message || "Failed to connect to authentication service";
+                            document.getElementById('errorMessage').classList.add('show');
+                        } else {
+                            document.getElementById('loginStatus').textContent = 'Login successful!';
+                            
+                            SessionUtils.createSession(this.SESSION_KEY, {
+                                userId: rollNumber,
+                                role: 'student',
+                                studentData: apiResult
+                            });
+                            
+                            setTimeout(() => {
+                                window.location.href = 'dashboards/student/student.html';
+                            }, 500);
+                        }
+                        
+                        document.getElementById('loginBtn').disabled = false;
+                        document.getElementById('clearBtn').disabled = false;
+                    }, 500);
+                    
+                    return {
+                        success: apiSuccess,
+                        redirect: apiSuccess ? 'dashboards/student/student.html' : null,
+                        error: apiSuccess ? null : (apiError?.message || "Authentication failed")
+                    };
+                    
+                } catch (error) {
+                    return { success: false, error: error.message || "Authentication failed" };
+                } finally {
+                    document.getElementById('loginBtn').disabled = false;
+                    document.getElementById('clearBtn').disabled = false;
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            function handleResponsiveLayout() {
+                const isMobile = window.innerWidth < 768;
+                const mobileElements = document.querySelectorAll('.mobile-only');
+                const desktopElements = document.querySelectorAll('.desktop-only');
+                
+                if (isMobile) {
+                    mobileElements.forEach(el => el.style.display = 'block');
+                    desktopElements.forEach(el => el.style.display = 'none');
+                    document.querySelector('.left-column').style.display = 'none';
+                    document.querySelector('.right-column').style.boxShadow = 'none';
+                    document.querySelector('.right-column').style.margin = '1rem';
+                    document.querySelector('.right-column').style.transform = 'none';
+                } else {
+                    mobileElements.forEach(el => el.style.display = 'none');
+                    desktopElements.forEach(el => el.style.display = 'block');
+                    document.querySelector('.left-column').style.display = 'flex';
+                    document.querySelector('.right-column').style.boxShadow = 'var(--card-shadow)';
+                    document.querySelector('.right-column').style.margin = '20px';
+                    document.querySelector('.right-column').style.transform = 'translateX(-10px)';
+                }
+                
+                const loginContainerWidth = document.querySelector('.login-container').offsetWidth;
+                document.querySelector('.footer').style.maxWidth = `${loginContainerWidth}px`;
+            }
+            
+            handleResponsiveLayout();
+            window.addEventListener('resize', handleResponsiveLayout);
+            
+            const userIdInput = document.getElementById('userId');
+            const dobInput = document.getElementById('dob');
+            const loginForm = document.getElementById('loginForm');
+            const clearBtn = document.getElementById('clearBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const loginStatus = document.getElementById('loginStatus');
+            const progressContainer = document.getElementById('progressContainer');
+            
+            function showError(message) {
+                progressContainer.classList.remove('show');
+                loginStatus.textContent = '';
+                errorMessage.textContent = message;
+                errorMessage.classList.add('show');
+            }
+            
+            function hideError() {
+                errorMessage.textContent = '';
+                errorMessage.classList.remove('show');
+            }
+            
+            function updateStatus(message) {
+                loginStatus.textContent = message;
+            }
+            
+            SessionUtils.clearAllSessions();
+            
+            const defaultDate = new Date(2000, 0, 1);
+            const today = new Date();
+            const minDate = new Date(1960, 0, 1);
+            
+            dobInput.min = DateUtils.formatDateForInput(minDate);
+            dobInput.max = DateUtils.formatDateForInput(today);
+            dobInput.value = DateUtils.formatDateForInput(defaultDate);
+            
+            clearBtn.addEventListener('click', function() {
+                userIdInput.value = '';
+                dobInput.value = DateUtils.formatDateForInput(defaultDate);
+                hideError();
+                updateStatus('');
+                progressContainer.classList.remove('show');
+            });
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                try {
+                    hideError();
+                    
+                    const rollNumber = userIdInput.value.trim().toUpperCase();
+                    const dobValue = dobInput.value;
+                    
+                    if (!rollNumber || !dobValue) {
+                        showError('Please enter both Roll Number and Date of Birth');
+                        return;
+                    }
+                    
+                    const validationResult = ValidationUtils.validateRollNumber(rollNumber);
+                    if (!validationResult.valid) {
+                        showError(validationResult.message);
+                        return;
+                    }
+                    
+                    const dob = DateUtils.formatDateForAPI(dobValue);
+                    authenticateUser(rollNumber, dob);
+                } catch (error) {
+                    document.getElementById('loginBtn').disabled = false;
+                    document.getElementById('clearBtn').disabled = false;
+                    updateStatus('');
+                    progressContainer.classList.remove('show');
+                    showError('Login error: ' + (error.message || 'Please try again'));
+                }
+            });
+            
+            async function authenticateUser(rollNumber, dob) {
+                try {
+                    const result = await StudentAuth.authenticate(rollNumber, dob);
+                } catch (error) {
+                    showError('Authentication failed: ' + (error.message || 'Please try again'));
+                    document.getElementById('loginBtn').disabled = false;
+                    document.getElementById('clearBtn').disabled = false;
+                    updateStatus('');
+                    progressContainer.classList.remove('show');
+                }
+            }
+
+            userIdInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+                if (errorMessage.classList.contains('show')) hideError();
+            });
+
+            [userIdInput, dobInput].forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+
+            function checkExistingSession() {
+                try {
+                    const sessionData = sessionStorage.getItem(StudentAuth.SESSION_KEY);
+                    if (sessionData) {
+                        const session = JSON.parse(sessionData);
+                        if (session && session.userId && Date.now() < session.expires) {
+                            window.location.href = 'dashboards/student/student.html';
+                            return true;
+                        } else {
+                            SessionUtils.clearAllSessions();
+                        }
+                    }
+                } catch (e) {
+                    SessionUtils.clearAllSessions();
+                }
+                return false;
+            }
+
+            if (checkExistingSession()) {
+                updateStatus('Session found, redirecting...');
+            }
+        });
+    </script>
+</body>
+</html>

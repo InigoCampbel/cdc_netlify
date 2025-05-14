@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Under Construction</title>
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --background-color: #f8fafc;
+            --text-color: #1f2937;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 22px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+        }
+        
+        p {
+            color: #4b5563;
+            font-size: 1.2rem;
+            margin: 1.5rem 0;
+            line-height: 1.6;
+        }
+        
+        .countdown {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin: 1.5rem 0;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            height: 8px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 5s linear;
+        }
+        
+        .construction-icon {
+            font-size: 3rem;
+            margin: 1rem 0;
+            color: var(--primary-color);
+        }
+        
+        .decorative-element {
+            position: absolute;
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .circle-element {
+            width: 125px;
+            height: 125px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 50%;
+            top: -60px;
+            right: -60px;
+        }
+        
+        .diagonal-element {
+            width: 100px;
+            height: 2px;
+            background: var(--accent-color);
+            transform: rotate(45deg);
+            bottom: 20px;
+            left: -20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="decorative-element circle-element"></div>
+        <div class="decorative-element diagonal-element"></div>
+        
+        <div class="construction-icon">🚧</div>
+        <h1>Page Under Construction</h1>
+        <p>We're working on making this page better for you. You'll be redirected to the login page in <span id="countdown">5</span> seconds.</p>
+        
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set redirect target - change this to your actual login page
+            const loginPage = "../index.html";
+            
+            // Start countdown
+            let secondsLeft = 5;
+            const countdownElement = document.getElementById('countdown');
+            
+            // Start progress bar animation
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = '100%';
+            
+            // Update countdown every second
+            const countdownInterval = setInterval(function() {
+                secondsLeft--;
+                countdownElement.textContent = secondsLeft;
+                
+                if (secondsLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = loginPage;
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
