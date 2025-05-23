@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date();
     
     // Set minimum date to January 1, 1960
-    const minDate = new Date(1960, 0, 1);
+    const minDate = new Date(1950, 0, 1);
     
     dobInput.min = DateUtils.formatDateForInput(minDate);
     dobInput.max = DateUtils.formatDateForInput(today);
