@@ -664,17 +664,13 @@ function updateLoadingProgress(message, progress) {
 
 // Function to simulate a gradually increasing progress over 5 seconds
 function simulateLoading() {
-    const totalDuration = 5000; // 5 seconds in milliseconds
+    const totalDuration = 500; // 1 seconds in milliseconds
     const startTime = Date.now();
     let progress = 0;
     
     // Define loading messages at different stages
     const loadingMessages = [
-        { threshold: 0, message: "Initializing dashboard..." },
-        { threshold: 20, message: "Loading student data..." },
-        { threshold: 40, message: "Processing attendance records..." },
-        { threshold: 60, message: "Preparing your dashboard..." },
-        { threshold: 80, message: "Almost ready..." }
+        { threshold: 0, message: "Ready!" },
     ];
     
     // Update function that will be called repeatedly
