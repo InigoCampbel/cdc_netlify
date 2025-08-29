@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEED Training Coordinator Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Add Supabase client -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="additional-styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="main-title">SEED Training</h1>
+      <p class="sub-title">01 Sep 2025 to 04 Sep 2025</p>
+      <h2 class="portal-title">Coordinator Portal</h2>
+      <div class="coordinator-info" id="coordinatorInfo" style="display: none;">
+        <span id="coordinatorName"></span> (<span id="coordinatorType"></span>)
+      </div>
+      <button id="logoutBtn" class="logout-btn" style="display: none;">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </header>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container" id="dashboardContainer">
+      <!-- Login Form -->
+      <div class="login-container" id="loginContainer">
+        <h2 class="login-title">Coordinator Login</h2>
+        <div class="login-form">
+          <div class="login-field">
+            <label for="coordinatorId" class="login-label">Coordinator ID</label>
+            <input type="text" id="coordinatorId" placeholder="Enter your coordinator ID" autocomplete="off">
+          </div>
+          
+          <div class="buttons-container">
+            <button id="loginBtn">Login</button>
+            <button id="clearBtn">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="errorMessage" class="error-message"></div>
+
+      <div class="loading-container" id="loadingContainer" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+      </div>
+
+      <div class="information-board" style="display: none;">
+        <div class="information-board-header">
+          <h2>Important Instructions</h2>
+          <button class="toggle-instructions" id="toggleInstructions">Hide <i class="fas fa-chevron-up"></i></button>
+        </div>
+        <div class="information-content" id="instructionsContent">
+        <ul class="instructions-list">
+            <li>Please apply filters first before viewing data</li>
+            <li>Use the toggle switches to mark trainers as "Reached"</li>
+            <li>Click "Show Details" to view complete session information</li>
+            <li>Data updates in real-time</li>
+        </ul>
+        </div>
+      </div>
+
+      <!-- Enhanced Filter Section -->
+      <div class="filter-section" style="display: none;">
+        <h3>Filters (Required)</h3>
+        <div class="filter-form">
+          <!-- Training Partner Filter (only for LND users) -->
+          <div class="filter-row" id="trainingPartnerRow" style="display: none;">
+            <div class="filter-group">
+              <label for="trainingPartnerFilter">Training Partner: <span style="color: red;">*</span></label>
+              <div class="multiselect-container">
+                <div class="multiselect-header">
+                  <input type="checkbox" id="selectAllPartners" class="select-all-checkbox">
+                  <label for="selectAllPartners">Select All</label>
+                </div>
+                <div class="multiselect-options" id="partnerOptions">
+                  <!-- Options will be populated dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Date Filter -->
+          <div class="filter-row">
+            <div class="filter-group">
+              <label for="dateFilter">Date: <span style="color: red;">*</span></label>
+              <div class="multiselect-container">
+                <div class="multiselect-header">
+                  <input type="checkbox" id="selectAllDates" class="select-all-checkbox">
+                  <label for="selectAllDates">Select All</label>
+                </div>
+                <div class="multiselect-options" id="dateOptions">
+                  <!-- Options will be populated dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session Filter -->
+          <div class="filter-row">
+            <div class="filter-group">
+              <label for="sessionFilter">Session: <span style="color: red;">*</span></label>
+              <div class="multiselect-container">
+                <div class="multiselect-header">
+                  <input type="checkbox" id="selectAllSessions" class="select-all-checkbox">
+                  <label for="selectAllSessions">Select All</label>
+                </div>
+                <div class="multiselect-options" id="sessionOptions">
+                  <div class="multiselect-option">
+                    <input type="checkbox" id="session1" class="session-checkbox" value="Session 1">
+                    <label for="session1">Session 1</label>
+                  </div>
+                  <div class="multiselect-option">
+                    <input type="checkbox" id="session2" class="session-checkbox" value="Session 2">
+                    <label for="session2">Session 2</label>
+                  </div>
+                  <div class="multiselect-option">
+                    <input type="checkbox" id="session3" class="session-checkbox" value="Session 3">
+                    <label for="session3">Session 3</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Block Filter -->
+          <div class="filter-row">
+            <div class="filter-group">
+              <label for="blockFilter">Block:</label>
+              <div class="multiselect-container">
+                <div class="multiselect-header">
+                  <input type="checkbox" id="selectAllBlocks" class="select-all-checkbox">
+                  <label for="selectAllBlocks">Select All</label>
+                </div>
+                <div class="multiselect-options" id="blockOptions">
+                  <!-- Options will be populated dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="filter-buttons">
+            <button id="applyFilter" class="btn btn-primary">Apply Filters & Load Data</button>
+            <button id="clearFilter" class="btn btn-secondary">Clear All</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Secondary Filters (shown after primary filters are applied) -->
+      <div class="secondary-filter-section" id="secondaryFilters" style="display: none;">
+        <h3>Additional Filters</h3>
+        <div class="filter-form">
+          <div class="filter-row">
+            <div class="filter-group">
+              <label for="venueFilter">Venue:</label>
+              <div class="multiselect-container">
+                <div class="multiselect-header">
+                  <input type="checkbox" id="selectAllVenues" class="select-all-checkbox">
+                  <label for="selectAllVenues">Select All</label>
+                </div>
+                <div class="multiselect-options" id="venueOptions">
+                  <!-- Options will be populated dynamically -->
+                </div>
+              </div>
+            </div>
+            
+            <div class="filter-group">
+              <label for="trainerFilter">Trainer Name:</label>
+              <div class="multiselect-container">
+                <div class="multiselect-header">
+                  <input type="checkbox" id="selectAllTrainers" class="select-all-checkbox">
+                  <label for="selectAllTrainers">Select All</label>
+                </div>
+                <div class="multiselect-options" id="trainerOptions">
+                  <!-- Options will be populated dynamically -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+          <label for="reachedFilter">Reached Status:</label>
+          <div class="multiselect-container">
+            <div class="multiselect-header">
+              <input type="checkbox" id="selectAllReached" class="select-all-checkbox">
+              <label for="selectAllReached">Select All</label>
+            </div>
+            <div class="multiselect-options" id="reachedOptions">
+              <div class="multiselect-option">
+                <input type="checkbox" id="reached-yes" class="reached-checkbox" value="Yes" checked>
+                <label for="reached-yes">Yes</label>
+              </div>
+              <div class="multiselect-option">
+                <input type="checkbox" id="reached-no" class="reached-checkbox" value="No" checked>
+                <label for="reached-no">No</label>
+              </div>
+            </div>
+          </div>
+        </div>
+          
+          <div class="filter-buttons">
+            <button id="applySecondaryFilter" class="btn btn-primary">Apply Additional Filters</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="session-table-container" style="display: none;">
+        <!-- Replace the existing table in session-table-container -->
+        <table class="session-table" id="sessionTable">
+        <thead>
+            <tr>
+            <th>Trainer Name</th>
+            <th id="partnerColumn" style="display: none;">Training Partner</th>
+            <th>Venue</th>
+            <th>Phone</th>
+            <th>Reached</th>
+            <th>Details</th>
+            </tr>
+        </thead>
+        <tbody id="sessionTableBody">
+            <!-- Table rows will be populated dynamically -->
+        </tbody>
+        </table>
+      </div>
+
+      <div class="stats-grid" style="display: none;">
+        <div class="stat-card">
+          <div class="stat-value" id="totalTrainers">0</div>
+          <div class="stat-label">No. of Trainers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="trainersReached">0</div>
+          <div class="stat-label">Reached Count</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="trainersYetToReach">0</div>
+          <div class="stat-label">Yet to Reach</div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>For any assistance, please contact Learning & Development, PSG College of Arts & Science</p>
+    </footer>
+  </div>
+
+  <!-- Session Details Modal -->
+  <div id="sessionDetailsModal" class="modal hidden">
+    <div class="modal-content">
+      <button class="modal-close-btn" id="closeModal">&times;</button>
+      <h3>Session Details</h3>
+      <div id="sessionDetailsContent"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

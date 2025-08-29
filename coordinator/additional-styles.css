@@ -1,0 +1,188 @@
+/* Updated CSS for flipping phone icon and fixing other UI issues */
+
+/* Phone call icon with flip */
+.phone-call-icon {
+  color: var(--primary);
+  margin-left: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.phone-call-icon:hover {
+  color: var(--accent);
+  transform: scale(1.2);
+}
+
+.flip-y {
+  transform: scaleX(-1);
+}
+
+/* Fix layout for mobile number and phone icon */
+.mobile-number {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Enhanced Modal Content */
+.modal-content {
+  background-color: var(--bg-white);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  background-color: var(--primary);
+  color: white;
+  margin: -24px -24px 20px -24px;
+  padding: 16px 24px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  position: relative;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgb(62, 6, 173) ;
+  border-radius: 10px;
+  border: none;
+  padding: 2px;
+  font-size: 32px;
+  cursor: pointer;
+  color: rgb(242, 245, 246);
+  transition: var(--transition);
+}
+
+
+.detail-row {
+  display: flex;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  font-weight: 600;
+  width: 140px;
+  color: var(--text-dark);
+}
+
+.detail-value {
+  flex: 1;
+  color: var(--text-dark);
+}
+
+/* Loading Animation - kept unchanged */
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(248, 250, 252, 0.9);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transition: opacity 0.5s, visibility 0.5s;
+}
+.loading-bulb {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+  position: relative;
+}
+.bulb {
+  width: 100%;
+  height: 100%;
+  background-color: #f3f4f6;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.bulb:before {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  background-color: #e2e8f0;
+  border-radius: 5px;
+}
+.filament {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 218, 123, 0.5);
+  transition: box-shadow 0.3s, background-color 0.3s;
+}
+.loading-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--primary);
+  margin-top: 10px;
+}
+/* Flicker animation */
+@keyframes flicker {
+  0%, 100% {
+    background-color: rgba(255, 218, 123, 0.3);
+    box-shadow: 0 0 5px rgba(255, 218, 123, 0.3);
+  }
+  20% {
+    background-color: rgba(255, 218, 123, 0.8);
+    box-shadow: 0 0 20px rgba(255, 218, 123, 0.8), 0 0 40px rgba(255, 218, 123, 0.4);
+  }
+  25% {
+    background-color: rgba(255, 218, 123, 0.4);
+    box-shadow: 0 0 10px rgba(255, 218, 123, 0.4);
+  }
+  30% {
+    background-color: rgba(255, 218, 123, 0.6);
+    box-shadow: 0 0 15px rgba(255, 218, 123, 0.6);
+  }
+  70% {
+    background-color: rgba(255, 218, 123, 0.7);
+    box-shadow: 0 0 25px rgba(255, 218, 123, 0.7);
+  }
+  90% {
+    background-color: rgba(255, 218, 123, 0.5);
+    box-shadow: 0 0 15px rgba(255, 218, 123, 0.5);
+  }
+}
+/* Fully lit animation */
+@keyframes fullLight {
+  from {
+    background-color: rgba(255, 218, 123, 0.7);
+    box-shadow: 0 0 20px rgba(255, 218, 123, 0.7);
+  }
+  to {
+    background-color: rgba(255, 218, 123, 1);
+    box-shadow: 0 0 30px rgba(255, 218, 123, 1), 0 0 60px rgba(255, 218, 123, 0.6);
+  }
+}
+.flicker {
+  animation: flicker 2s infinite;
+}
+.fully-lit {
+  animation: none;
+  background-color: rgba(255, 218, 123, 1);
+  box-shadow: 0 0 30px rgba(255, 218, 123, 1), 0 0 60px rgba(255, 218, 123, 0.6);
+}
