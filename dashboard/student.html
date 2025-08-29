@@ -823,19 +823,25 @@
             }
             document.getElementById('venue').textContent = data.venue || "-";
             
-            // Handle attendance percentage
+            // Handle attendance percentage - Updated logic
             let attendancePercentage = data.attendance_percentage;
-            
-            if (attendancePercentage === "-") {
+
+            // Check for all possible empty/null/undefined cases
+            if (attendancePercentage === null || 
+                attendancePercentage === undefined || 
+                attendancePercentage === "" || 
+                attendancePercentage === "-" ||
+                isNaN(attendancePercentage)) {
                 document.getElementById('attendancePercentage').textContent = "-";
             } else {
-                attendancePercentage = attendancePercentage !== undefined ? parseFloat(attendancePercentage) : null;
+                // Convert to number and calculate percentage
+                const numericPercentage = parseFloat(attendancePercentage);
                 
-                if (attendancePercentage !== null) {
-                    const percentDisplay = (attendancePercentage * 100).toFixed(2) + "%";
-                    document.getElementById('attendancePercentage').textContent = percentDisplay;
+                if (isNaN(numericPercentage)) {
+                    document.getElementById('attendancePercentage').textContent = "-";
                 } else {
-                    document.getElementById('attendancePercentage').textContent = "N/A";
+                    const percentDisplay = (numericPercentage * 100).toFixed(2) + "%";
+                    document.getElementById('attendancePercentage').textContent = percentDisplay;
                 }
             }
             
@@ -906,4 +912,5 @@
         });
     </script>
 </body>
+
 </html>
