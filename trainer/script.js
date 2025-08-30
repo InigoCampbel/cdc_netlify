@@ -85,7 +85,7 @@ const DOM = {
   }
   
   function redirectToLogin() {
-      window.location.href = '../trainer.html';
+      window.location.href = '../trainer-login.html';
   }
   
   function logout() {
@@ -574,3 +574,4 @@ const DOM = {
           }
       }, 300);
   }
+
