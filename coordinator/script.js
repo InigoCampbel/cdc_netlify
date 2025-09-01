@@ -88,15 +88,187 @@ function formatDateToDDMMMYYYY(dateString) {
     return `${day} ${month} ${year}`;
 }
 
+// Enhanced session persistence with mobile browser handling
+function saveUserSession(user, userTypeValue) {
+    const sessionData = {
+        user: user,
+        userType: userTypeValue,
+        timestamp: Date.now(),
+        // Set expiration to 8 hours
+        expiresAt: Date.now() + (8 * 60 * 60 * 1000)
+    };
+    
+    // Use both sessionStorage and localStorage for redundancy
+    sessionStorage.setItem('currentUser', JSON.stringify(user));
+    localStorage.setItem('userSession', JSON.stringify(sessionData));
+    
+    // Also save to a cookie as fallback for extreme cases
+    const expires = new Date(Date.now() + (8 * 60 * 60 * 1000)).toUTCString();
+    document.cookie = `userSession=${encodeURIComponent(JSON.stringify(sessionData))}; expires=${expires}; path=/; SameSite=Strict`;
+}
+
+function getUserSession() {
+    // Try sessionStorage first (fastest)
+    let savedUser = sessionStorage.getItem('currentUser');
+    if (savedUser) {
+        return JSON.parse(savedUser);
+    }
+    
+    // Try localStorage
+    const sessionData = localStorage.getItem('userSession');
+    if (sessionData) {
+        const parsed = JSON.parse(sessionData);
+        
+        // Check if session is still valid
+        if (Date.now() < parsed.expiresAt) {
+            // Restore to sessionStorage for faster access
+            sessionStorage.setItem('currentUser', JSON.stringify(parsed.user));
+            return parsed.user;
+        } else {
+            // Clean up expired session
+            localStorage.removeItem('userSession');
+        }
+    }
+    
+    // Try cookie as last resort
+    const cookies = document.cookie.split(';');
+    const sessionCookie = cookies.find(cookie => cookie.trim().startsWith('userSession='));
+    if (sessionCookie) {
+        try {
+            const sessionData = JSON.parse(decodeURIComponent(sessionCookie.split('=')[1]));
+            if (Date.now() < sessionData.expiresAt) {
+                // Restore to both storages
+                sessionStorage.setItem('currentUser', JSON.stringify(sessionData.user));
+                localStorage.setItem('userSession', JSON.stringify(sessionData));
+                return sessionData.user;
+            } else {
+                // Clean up expired cookie
+                document.cookie = 'userSession=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            }
+        } catch (e) {
+            console.error('Error parsing session cookie:', e);
+        }
+    }
+    
+    return null;
+}
+
+function clearUserSession() {
+    // Clear all session data
+    sessionStorage.removeItem('currentUser');
+    localStorage.removeItem('userSession');
+    document.cookie = 'userSession=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    
+    // Also clear saved filters
+    sessionStorage.removeItem('savedFilters');
+    localStorage.removeItem('savedFilters');
+}
+
+// Enhanced page visibility handling for mobile browsers
+function handlePageVisibility() {
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            // Page is being hidden - save current state
+            if (currentUser) {
+                saveUserSession(currentUser, userType);
+                
+                // Save current filters to localStorage as well
+                const filterData = sessionStorage.getItem('savedFilters');
+                if (filterData) {
+                    localStorage.setItem('savedFilters', filterData);
+                }
+            }
+        } else {
+            // Page is visible again - restore state if needed
+            if (!currentUser) {
+                const savedUser = getUserSession();
+                if (savedUser) {
+                    currentUser = savedUser;
+                    userType = getUserType(currentUser.id);
+                    coordinatorName.textContent = currentUser.name;
+                    coordinatorType.textContent = userType;
+                    showMainContent();
+                    setupUserInterface();
+                }
+            }
+        }
+    });
+}
+
+// Enhanced beforeunload handler for mobile
+function handleBeforeUnload() {
+    window.addEventListener('beforeunload', function() {
+        if (currentUser) {
+            saveUserSession(currentUser, userType);
+            
+            // Save current filters
+            const filterData = sessionStorage.getItem('savedFilters');
+            if (filterData) {
+                localStorage.setItem('savedFilters', filterData);
+            }
+        }
+    });
+    
+    // Also handle pagehide event which is more reliable on mobile
+    window.addEventListener('pagehide', function() {
+        if (currentUser) {
+            saveUserSession(currentUser, userType);
+            
+            const filterData = sessionStorage.getItem('savedFilters');
+            if (filterData) {
+                localStorage.setItem('savedFilters', filterData);
+            }
+        }
+    });
+}
+
+// Enhanced filter saving with localStorage backup
+function saveCurrentFiltersEnhanced() {
+    const filterData = {
+        selectedPartners,
+        selectedDates,
+        selectedSessions,
+        selectedBlocks,
+        selectedVenues,
+        selectedTrainers,
+        selectedReached,
+        expiresAt: Date.now() + (2 * 60 * 60 * 1000)
+    };
+    
+    // Save to both storages
+    sessionStorage.setItem('savedFilters', JSON.stringify(filterData));
+    localStorage.setItem('savedFilters', JSON.stringify(filterData));
+}
+
+// Enhanced filter restoration
+function restoreFiltersFromStorage() {
+    let savedFilters = sessionStorage.getItem('savedFilters');
+    
+    // If not in sessionStorage, try localStorage
+    if (!savedFilters) {
+        savedFilters = localStorage.getItem('savedFilters');
+        if (savedFilters) {
+            // Restore to sessionStorage for faster access
+            sessionStorage.setItem('savedFilters', savedFilters);
+        }
+    }
+    
+    return savedFilters;
+}
+
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     initializeEventListeners();
     hideMainContent();
     
-    // Check if user is already logged in
-    const savedUser = sessionStorage.getItem('currentUser');
+    // Set up page visibility and unload handlers
+    handlePageVisibility();
+    handleBeforeUnload();
+    
+    // Check for existing session with enhanced method
+    const savedUser = getUserSession();
     if (savedUser) {
-        currentUser = JSON.parse(savedUser);
+        currentUser = savedUser;
         userType = getUserType(currentUser.id);
         coordinatorName.textContent = currentUser.name;
         coordinatorType.textContent = userType;
@@ -175,7 +347,8 @@ async function loginCoordinator() {
         
         userType = getUserType(currentUser.id);
         
-        sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+        // Enhanced session saving
+        saveUserSession(currentUser, userType);
         
         coordinatorName.textContent = currentUser.name;
         coordinatorType.textContent = userType;
@@ -191,10 +364,10 @@ async function loginCoordinator() {
 }
 
 function logout() {
-    // Clear all stored data
-    ['savedFilters', 'currentUser', 'instructionsHidden', 'filtersHidden'].forEach(key => {
-        sessionStorage.removeItem(key);
-    });
+    // Clear all stored data from all storage types
+    clearUserSession();
+    sessionStorage.removeItem('instructionsHidden');
+    sessionStorage.removeItem('filtersHidden');
     
     // Reset state
     currentUser = null;
@@ -343,7 +516,7 @@ function applyStoredUIStates() {
     const secondaryFilterSection = document.querySelector('.secondary-filter-section');
     
     // Check if saved filters exist to determine if secondary filters should be shown
-    const hasSavedFilters = sessionStorage.getItem('savedFilters');
+    const hasSavedFilters = restoreFiltersFromStorage();
     
     if (filtersHidden === 'true' && toggleButton) {
         filterSection.style.display = 'none';
@@ -356,9 +529,9 @@ function applyStoredUIStates() {
     }
 }
 
-// FIXED: Simplified handleSavedFilters function
+// Enhanced handleSavedFilters function
 function handleSavedFilters() {
-    const savedFilters = sessionStorage.getItem('savedFilters');
+    const savedFilters = restoreFiltersFromStorage();
     if (!savedFilters) return;
     
     const filterData = JSON.parse(savedFilters);
@@ -366,6 +539,7 @@ function handleSavedFilters() {
     // Check expiry
     if (Date.now() >= filterData.expiresAt) {
         sessionStorage.removeItem('savedFilters');
+        localStorage.removeItem('savedFilters');
         return;
     }
     
@@ -563,22 +737,7 @@ function applySecondaryFiltersWithUpdate() {
     applySecondaryFilters();
     populateVenueFilter();
     populateTrainerFilter();
-    saveCurrentFilters();
-}
-
-// FIXED: Simplified saveCurrentFilters
-function saveCurrentFilters() {
-    const filterData = {
-        selectedPartners,
-        selectedDates,
-        selectedSessions,
-        selectedBlocks,
-        selectedVenues,
-        selectedTrainers,
-        selectedReached,
-        expiresAt: Date.now() + (2 * 60 * 60 * 1000)
-    };
-    sessionStorage.setItem('savedFilters', JSON.stringify(filterData));
+    saveCurrentFiltersEnhanced();
 }
 
 // Filter event listeners
@@ -629,7 +788,7 @@ document.addEventListener('change', function(e) {
             selectAllVenues.checked = selectedVenues.length === document.querySelectorAll('.venue-checkbox').length;
             setTimeout(() => {
                 populateTrainerFilter();
-                saveCurrentFilters();
+                saveCurrentFiltersEnhanced();
             }, 100);
         },
         'trainer-checkbox': () => {
@@ -637,7 +796,7 @@ document.addEventListener('change', function(e) {
             selectAllTrainers.checked = selectedTrainers.length === document.querySelectorAll('.trainer-checkbox').length;
             setTimeout(() => {
                 populateVenueFilter();
-                saveCurrentFilters();
+                saveCurrentFiltersEnhanced();
             }, 100);
         },
         'reached-checkbox': () => {
@@ -651,7 +810,7 @@ document.addEventListener('change', function(e) {
     if (handler) {
         handlers[handler]();
         if (!handler.includes('venue') && !handler.includes('trainer')) {
-            saveCurrentFilters();
+            saveCurrentFiltersEnhanced();
         }
     }
 });
@@ -729,17 +888,8 @@ async function applyPrimaryFilters() {
         }
         applySecondaryFilters();
 
-        const filterData = {
-            selectedPartners,
-            selectedDates, 
-            selectedSessions,
-            selectedBlocks,
-            selectedVenues,
-            selectedTrainers,
-            selectedReached,
-            expiresAt: Date.now() + (2 * 60 * 60 * 1000)
-        };
-        sessionStorage.setItem('savedFilters', JSON.stringify(filterData));
+        // Save filters with enhanced method
+        saveCurrentFiltersEnhanced();
 
         setupRealtimeSubscription();
         hideLoading();
@@ -775,6 +925,7 @@ function applySecondaryFilters() {
 
 function clearAllFilters() {
     sessionStorage.removeItem('savedFilters');
+    localStorage.removeItem('savedFilters');
 
     selectedPartners = userType === 'LND' ? ['FACE', 'Six Phrase'] : [getTrainingPartnerForUser(userType)];
     selectedDates = [];
