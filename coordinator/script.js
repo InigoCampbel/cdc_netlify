@@ -871,15 +871,13 @@ async function applyPrimaryFilters() {
         availableVenues = [...new Set(allSessionData.map(item => item.venue).filter(Boolean))].sort();
         availableTrainers = [...new Set(allSessionData.map(item => item.name).filter(Boolean))].sort();
         
-        if (selectedVenues.length === 0) {
-            selectedVenues = [...availableVenues];
-        }
-        if (selectedTrainers.length === 0) {
-            selectedTrainers = [...availableTrainers];
-        }
+        selectedVenues = [...availableVenues];
+        selectedTrainers = [...availableTrainers];
+        selectedReached = ['Yes', 'No'];
         
         populateVenueFilter();
         populateTrainerFilter();
+        updateSecondaryFilterUI();
         
         // Only show secondary filters if filters aren't supposed to be hidden
         const filtersHidden = sessionStorage.getItem('filtersHidden');
@@ -1237,4 +1235,24 @@ function showBriefNotification(message) {
     setTimeout(() => {
         notification.remove();
     }, 3000);
+}
+
+function updateSecondaryFilterUI() {
+    // Update venue filter UI
+    selectAllVenues.checked = true;
+    document.querySelectorAll('.venue-checkbox').forEach(cb => {
+        cb.checked = true;
+    });
+    
+    // Update trainer filter UI  
+    selectAllTrainers.checked = true;
+    document.querySelectorAll('.trainer-checkbox').forEach(cb => {
+        cb.checked = true;
+    });
+    
+    // Update reached filter UI
+    selectAllReached.checked = true;
+    document.querySelectorAll('.reached-checkbox').forEach(cb => {
+        cb.checked = true;
+    });
 }
