@@ -232,10 +232,6 @@ function saveCurrentFiltersEnhanced() {
         selectedVenues,
         selectedTrainers,
         selectedReached,
-        // Add flags to track if secondary filters have been modified
-        hasSecondaryFilters: (selectedVenues.length !== availableVenues.length) ||
-                           (selectedTrainers.length !== availableTrainers.length) ||
-                           (selectedReached.length !== availableReached.length),
         expiresAt: Date.now() + (2 * 60 * 60 * 1000)
     };
     
@@ -444,74 +440,35 @@ function showMainContent() {
 function createToggleButton() {
     const filterSection = document.querySelector('.filter-section');
     const secondaryFilterSection = document.querySelector('.secondary-filter-section');
-    const sessionTableContainer = document.querySelector('.session-table-container');
 
-    // Remove existing button if it exists
-    const existingButton = document.getElementById('toggleFilters');
-    if (existingButton) {
-        existingButton.remove();
-    }
-
-    const toggleButton = document.createElement('button');
-    toggleButton.id = 'toggleFilters';
-    toggleButton.className = 'toggle-filters-btn';
-    toggleButton.innerHTML = '<i class="fas fa-filter"></i> Hide Filters';
-    toggleButton.style.display = 'none'; // Initially hidden
-    
-    // Try multiple positioning strategies
-    if (secondaryFilterSection && sessionTableContainer) {
-        // Strategy 1: Insert between secondary filters and table
-        secondaryFilterSection.parentNode.insertBefore(toggleButton, sessionTableContainer);
-    } else if (secondaryFilterSection) {
-        // Strategy 2: Insert after secondary filters
-        secondaryFilterSection.insertAdjacentElement('afterend', toggleButton);
-    } else {
-        // Strategy 3: Fallback - append to dashboard container
-        const dashboardContainer = document.getElementById('dashboardContainer');
-        dashboardContainer.appendChild(toggleButton);
-    }
-    
-    // Check for pending button state and apply it
-    const pendingState = sessionStorage.getItem('pendingToggleButtonState');
-    if (pendingState) {
-        if (pendingState === 'Show Filters') {
-            toggleButton.innerHTML = '<i class="fas fa-filter"></i> Show Filters';
-            // Filters should already be hidden by applyStoredUIStates()
-        } else if (pendingState === 'Hide Filters') {
-            toggleButton.innerHTML = '<i class="fas fa-filter"></i> Hide Filters';
-            // Filters should already be shown by applyStoredUIStates()
-        }
-        // Clear the pending state
-        sessionStorage.removeItem('pendingToggleButtonState');
-    }
-    
-    toggleButton.addEventListener('click', function() {
-        const isHidden = filterSection.style.display === 'none';
+    if (!document.getElementById('toggleFilters')) {
+        const toggleButton = document.createElement('button');
+        toggleButton.id = 'toggleFilters';
+        toggleButton.className = 'toggle-filters-btn';
+        toggleButton.innerHTML = '<i class="fas fa-filter"></i> Hide Filters';
         
-        if (isHidden) {
-            filterSection.style.display = 'block';
+        filterSection.parentNode.insertBefore(toggleButton, filterSection);
+        
+        toggleButton.addEventListener('click', function() {
+            const isHidden = filterSection.style.display === 'none';
             
-            const hasLoadedData = allSessionData && allSessionData.length > 0;
-            if (hasLoadedData) {
-                secondaryFilterSection.style.display = 'block';
+            if (isHidden) {
+                filterSection.style.display = 'block';
+                
+                const hasLoadedData = allSessionData && allSessionData.length > 0;
+                if (hasLoadedData) {
+                    secondaryFilterSection.style.display = 'block';
+                }
+                
+                this.innerHTML = '<i class="fas fa-filter"></i> Hide Filters';
+                sessionStorage.setItem('filtersHidden', 'false');
+            } else {
+                filterSection.style.display = 'none';
+                secondaryFilterSection.style.display = 'none';
+                this.innerHTML = '<i class="fas fa-filter"></i> Show Filters';
+                sessionStorage.setItem('filtersHidden', 'true');
             }
-            
-            this.innerHTML = '<i class="fas fa-filter"></i> Hide Filters';
-            sessionStorage.setItem('filtersHidden', 'false');
-        } else {
-            filterSection.style.display = 'none';
-            secondaryFilterSection.style.display = 'none';
-            this.innerHTML = '<i class="fas fa-filter"></i> Show Filters';
-            sessionStorage.setItem('filtersHidden', 'true');
-        }
-    });
-}
-
-
-function showToggleButton() {
-    const toggleButton = document.getElementById('toggleFilters');
-    if (toggleButton) {
-        toggleButton.style.display = 'inline-block';
+        });
     }
 }
 
@@ -528,11 +485,13 @@ function setupUserInterface() {
         selectedPartners = [...availablePartners];
     }
 
-    // DON'T create toggle button here - wait until after data is loaded
-    // createToggleButton(); // REMOVED
+    // Create toggle button
+    createToggleButton();
     
+    // FIXED: Apply UI states IMMEDIATELY before any async operations
     applyStoredUIStates();
 
+    // Load initial options and handle saved filters
     loadInitialFilterOptions().then(() => {
         handleSavedFilters();
     });
@@ -550,28 +509,23 @@ function applyStoredUIStates() {
         toggleInstructionsBtn.innerHTML = 'Hide <i class="fas fa-chevron-up"></i>';
     }
     
-    // Filter visibility state - handle without requiring toggle button to exist
+    // Filter visibility state
     const filtersHidden = sessionStorage.getItem('filtersHidden');
+    const toggleButton = document.getElementById('toggleFilters');
     const filterSection = document.querySelector('.filter-section');
     const secondaryFilterSection = document.querySelector('.secondary-filter-section');
     
     // Check if saved filters exist to determine if secondary filters should be shown
     const hasSavedFilters = restoreFiltersFromStorage();
     
-    if (filtersHidden === 'true') {
-        // Hide filters immediately
+    if (filtersHidden === 'true' && toggleButton) {
         filterSection.style.display = 'none';
         secondaryFilterSection.style.display = 'none';
-        
-        // Store the button state to apply later when button is created
-        sessionStorage.setItem('pendingToggleButtonState', 'Show Filters');
-    } else if (filtersHidden === 'false' && hasSavedFilters) {
-        // Show primary filters
+        toggleButton.innerHTML = '<i class="fas fa-filter"></i> Show Filters';
+    } else if (filtersHidden === 'false' && toggleButton && hasSavedFilters) {
         filterSection.style.display = 'block';
         // Don't show secondary filters yet - let the data loading process handle it
-        
-        // Store the button state to apply later when button is created
-        sessionStorage.setItem('pendingToggleButtonState', 'Hide Filters');
+        toggleButton.innerHTML = '<i class="fas fa-filter"></i> Hide Filters';
     }
 }
 
@@ -590,10 +544,10 @@ function handleSavedFilters() {
     }
     
     // Restore filter selections
-    selectedPartners = filterData.selectedPartners || selectedPartners;
-    selectedDates = filterData.selectedDates || selectedDates;
-    selectedSessions = filterData.selectedSessions || selectedSessions;
-    selectedBlocks = filterData.selectedBlocks || selectedBlocks;
+    selectedPartners = filterData.selectedPartners;
+    selectedDates = filterData.selectedDates;
+    selectedSessions = filterData.selectedSessions;
+    selectedBlocks = filterData.selectedBlocks;
     selectedVenues = filterData.selectedVenues || [];
     selectedTrainers = filterData.selectedTrainers || [];
     selectedReached = filterData.selectedReached || ['Yes', 'No'];
@@ -601,20 +555,12 @@ function handleSavedFilters() {
     // Restore UI and apply filters
     restorePrimaryFilterUI();
     
-    // Apply primary filters and THEN handle secondary filters
+    // Apply filters with a small delay to ensure UI is ready
     setTimeout(() => {
         applyPrimaryFilters().then(() => {
-            // FIXED: Only restore secondary filters if they were actually saved with selections
-            const hasSecondaryFilters = (selectedVenues.length > 0 && selectedVenues.length < availableVenues.length) ||
-                                      (selectedTrainers.length > 0 && selectedTrainers.length < availableTrainers.length) ||
-                                      selectedReached.length < 2;
-            
-            if (hasSecondaryFilters) {
-                // Wait a bit more for secondary filter options to be populated
-                setTimeout(() => {
-                    restoreSecondaryFilterUI();
-                    applySecondaryFilters();
-                }, 200);
+            if (selectedVenues.length > 0 || selectedTrainers.length > 0 || selectedReached.length < 2) {
+                restoreSecondaryFilterUI();
+                applySecondaryFilters();
             }
         });
     }, 100);
@@ -716,8 +662,18 @@ function populateBlockFilter() {
 function populateVenueFilter() {
     venueOptions.innerHTML = '';
     
-    // REMOVE cross-filtering logic - always show all available venues
-    availableVenues.forEach(venue => {
+    let filteredVenues = availableVenues;
+    if (selectedTrainers.length > 0 && selectedTrainers.length < availableTrainers.length) {
+        const venuesFromSelectedTrainers = [...new Set(
+            allSessionData
+                .filter(session => selectedTrainers.includes(session.name))
+                .map(session => session.venue)
+                .filter(Boolean)
+        )];
+        filteredVenues = availableVenues.filter(venue => venuesFromSelectedTrainers.includes(venue));
+    }
+    
+    filteredVenues.forEach(venue => {
         const isChecked = selectedVenues.includes(venue);
         const option = document.createElement('div');
         option.className = 'multiselect-option';
@@ -729,17 +685,24 @@ function populateVenueFilter() {
         venueOptions.appendChild(option);
     });
     
-    const allVenueCheckboxes = document.querySelectorAll('.venue-checkbox');
-    const checkedVenueCount = Array.from(allVenueCheckboxes).filter(cb => cb.checked).length;
-    selectAllVenues.checked = checkedVenueCount === allVenueCheckboxes.length && allVenueCheckboxes.length > 0;
+    selectAllVenues.checked = selectedVenues.length === filteredVenues.length && filteredVenues.length > 0;
 }
-
 
 function populateTrainerFilter() {
     trainerOptions.innerHTML = '';
     
-    // REMOVE cross-filtering logic - always show all available trainers
-    availableTrainers.forEach(trainer => {
+    let filteredTrainers = availableTrainers;
+    if (selectedVenues.length > 0 && selectedVenues.length < availableVenues.length) {
+        const trainersFromSelectedVenues = [...new Set(
+            allSessionData
+                .filter(session => selectedVenues.includes(session.venue))
+                .map(session => session.name)
+                .filter(Boolean)
+        )];
+        filteredTrainers = availableTrainers.filter(trainer => trainersFromSelectedVenues.includes(trainer));
+    }
+    
+    filteredTrainers.forEach(trainer => {
         const isChecked = selectedTrainers.includes(trainer);
         const option = document.createElement('div');
         option.className = 'multiselect-option';
@@ -751,9 +714,7 @@ function populateTrainerFilter() {
         trainerOptions.appendChild(option);
     });
     
-    const allTrainerCheckboxes = document.querySelectorAll('.trainer-checkbox');
-    const checkedTrainerCount = Array.from(allTrainerCheckboxes).filter(cb => cb.checked).length;
-    selectAllTrainers.checked = checkedTrainerCount === allTrainerCheckboxes.length && allTrainerCheckboxes.length > 0;
+    selectAllTrainers.checked = selectedTrainers.length === filteredTrainers.length && filteredTrainers.length > 0;
 }
 
 function restoreSecondaryFilterUI() {
@@ -773,15 +734,10 @@ function restorePrimaryFilterUI() {
 }
 
 function applySecondaryFiltersWithUpdate() {
-    // Apply the filters first
     applySecondaryFilters();
-    
-    // Then update the UI to reflect any cross-filtering effects
-    setTimeout(() => {
-        populateVenueFilter();
-        populateTrainerFilter();
-        saveCurrentFiltersEnhanced();
-    }, 50);
+    populateVenueFilter();
+    populateTrainerFilter();
+    saveCurrentFiltersEnhanced();
 }
 
 // Filter event listeners
@@ -829,23 +785,19 @@ document.addEventListener('change', function(e) {
         },
         'venue-checkbox': () => {
             updateSelectedArray(selectedVenues, e.target.value, e.target.checked);
-            
-            const visibleVenueCheckboxes = document.querySelectorAll('.venue-checkbox');
-            const checkedVenueCount = Array.from(visibleVenueCheckboxes).filter(cb => cb.checked).length;
-            selectAllVenues.checked = checkedVenueCount === visibleVenueCheckboxes.length && visibleVenueCheckboxes.length > 0;
-            
-            // REMOVE the automatic cross-filtering - just save the selection
-            saveCurrentFiltersEnhanced();
+            selectAllVenues.checked = selectedVenues.length === document.querySelectorAll('.venue-checkbox').length;
+            setTimeout(() => {
+                populateTrainerFilter();
+                saveCurrentFiltersEnhanced();
+            }, 100);
         },
         'trainer-checkbox': () => {
             updateSelectedArray(selectedTrainers, e.target.value, e.target.checked);
-            
-            const visibleTrainerCheckboxes = document.querySelectorAll('.trainer-checkbox');
-            const checkedTrainerCount = Array.from(visibleTrainerCheckboxes).filter(cb => cb.checked).length;
-            selectAllTrainers.checked = checkedTrainerCount === visibleTrainerCheckboxes.length && visibleTrainerCheckboxes.length > 0;
-            
-            // REMOVE the automatic cross-filtering - just save the selection
-            saveCurrentFiltersEnhanced();
+            selectAllTrainers.checked = selectedTrainers.length === document.querySelectorAll('.trainer-checkbox').length;
+            setTimeout(() => {
+                populateVenueFilter();
+                saveCurrentFiltersEnhanced();
+            }, 100);
         },
         'reached-checkbox': () => {
             updateSelectedArray(selectedReached, e.target.value, e.target.checked);
@@ -862,7 +814,6 @@ document.addEventListener('change', function(e) {
         }
     }
 });
-
 
 function updateSelectedArray(array, value, isChecked) {
     if (isChecked && !array.includes(value)) {
@@ -914,67 +865,30 @@ async function applyPrimaryFilters() {
         const { data, error } = await query;
         
         if (error) throw error;
+        
         allSessionData = data || [];
         
-        // Populate available options for secondary filters
         availableVenues = [...new Set(allSessionData.map(item => item.venue).filter(Boolean))].sort();
         availableTrainers = [...new Set(allSessionData.map(item => item.name).filter(Boolean))].sort();
         
-        // ALWAYS initialize secondary filters as "all selected" when loading new primary data
-        const savedFilters = restoreFiltersFromStorage();
-        let shouldRestoreSecondaryFilters = false;
+        selectedVenues = [...availableVenues];
+        selectedTrainers = [...availableTrainers];
+        selectedReached = ['Yes', 'No'];
         
-        if (savedFilters) {
-            const filterData = JSON.parse(savedFilters);
-            // Only restore if we're applying the exact same primary filters
-            const primaryFiltersMatch = 
-                JSON.stringify(selectedPartners.sort()) === JSON.stringify((filterData.selectedPartners || []).sort()) &&
-                JSON.stringify(selectedDates.sort()) === JSON.stringify((filterData.selectedDates || []).sort()) &&
-                JSON.stringify(selectedSessions.sort()) === JSON.stringify((filterData.selectedSessions || []).sort()) &&
-                JSON.stringify(selectedBlocks.sort()) === JSON.stringify((filterData.selectedBlocks || []).sort());
-            
-            if (primaryFiltersMatch) {
-                // Restore secondary filters only if they match current available options
-                if (filterData.selectedVenues && filterData.selectedVenues.length > 0) {
-                    selectedVenues = filterData.selectedVenues.filter(venue => availableVenues.includes(venue));
-                    shouldRestoreSecondaryFilters = true;
-                }
-                if (filterData.selectedTrainers && filterData.selectedTrainers.length > 0) {
-                    selectedTrainers = filterData.selectedTrainers.filter(trainer => availableTrainers.includes(trainer));
-                    shouldRestoreSecondaryFilters = true;
-                }
-                if (filterData.selectedReached) {
-                    selectedReached = filterData.selectedReached;
-                    shouldRestoreSecondaryFilters = true;
-                }
-            }
-        }
-        
-        // If no matching saved filters, initialize as "all selected"
-        if (!shouldRestoreSecondaryFilters) {
-            selectedVenues = [...availableVenues];
-            selectedTrainers = [...availableTrainers];
-            selectedReached = ['Yes', 'No'];
-        }
-        
-        
-        // FIXED: Use the corrected updateSecondaryFilterUI
+        populateVenueFilter();
+        populateTrainerFilter();
         updateSecondaryFilterUI();
         
-        // Show secondary filters first
+        // Only show secondary filters if filters aren't supposed to be hidden
         const filtersHidden = sessionStorage.getItem('filtersHidden');
         if (filtersHidden !== 'true') {
             secondaryFilters.style.display = 'block';
         }
-        
-        // Wait for DOM to update, then create/show toggle button
-        setTimeout(() => {
-            createToggleButton();
-            showToggleButton();
-        }, 100);
-        
         applySecondaryFilters();
+
+        // Save filters with enhanced method
         saveCurrentFiltersEnhanced();
+
         setupRealtimeSubscription();
         hideLoading();
         return Promise.resolve();
@@ -1042,15 +956,13 @@ function clearAllFilters() {
     selectAllVenues.checked = false;
     selectAllTrainers.checked = false;
     
-    // Hide the toggle button when clearing filters
+    // Show filters and update toggle button
     const toggleButton = document.getElementById('toggleFilters');
     if (toggleButton) {
-        toggleButton.style.display = 'none';
+        toggleButton.innerHTML = '<i class="fas fa-filter"></i> Hide Filters';
+        document.querySelector('.filter-section').style.display = 'block';
+        sessionStorage.setItem('filtersHidden', 'false');
     }
-    
-    // Show filters
-    document.querySelector('.filter-section').style.display = 'block';
-    sessionStorage.setItem('filtersHidden', 'false');
     
     // Hide secondary filters and table
     secondaryFilters.style.display = 'none';
@@ -1326,42 +1238,21 @@ function showBriefNotification(message) {
 }
 
 function updateSecondaryFilterUI() {
-    // DON'T automatically check all - use actual selected arrays
-    populateVenueFilter();
-    populateTrainerFilter();
-    
-    // Update reached filter UI based on actual selection
-    document.querySelectorAll('.reached-checkbox').forEach(cb => {
-        cb.checked = selectedReached.includes(cb.value);
-    });
-    selectAllReached.checked = selectedReached.length === availableReached.length;
-}
-
-
-function restoreSecondaryFilterUI() {
-    // Restore venue checkboxes
+    // Update venue filter UI
+    selectAllVenues.checked = true;
     document.querySelectorAll('.venue-checkbox').forEach(cb => {
-        cb.checked = selectedVenues.includes(cb.value);
+        cb.checked = true;
     });
     
-    // Update venue select all checkbox
-    const visibleVenueCheckboxes = document.querySelectorAll('.venue-checkbox');
-    const checkedVenueCount = document.querySelectorAll('.venue-checkbox:checked').length;
-    selectAllVenues.checked = checkedVenueCount === visibleVenueCheckboxes.length && visibleVenueCheckboxes.length > 0;
-    
-    // Restore trainer checkboxes
+    // Update trainer filter UI  
+    selectAllTrainers.checked = true;
     document.querySelectorAll('.trainer-checkbox').forEach(cb => {
-        cb.checked = selectedTrainers.includes(cb.value);
+        cb.checked = true;
     });
     
-    // Update trainer select all checkbox
-    const visibleTrainerCheckboxes = document.querySelectorAll('.trainer-checkbox');
-    const checkedTrainerCount = document.querySelectorAll('.trainer-checkbox:checked').length;
-    selectAllTrainers.checked = checkedTrainerCount === visibleTrainerCheckboxes.length && visibleTrainerCheckboxes.length > 0;
-    
-    // Restore reached checkboxes
+    // Update reached filter UI
+    selectAllReached.checked = true;
     document.querySelectorAll('.reached-checkbox').forEach(cb => {
-        cb.checked = selectedReached.includes(cb.value);
+        cb.checked = true;
     });
-    selectAllReached.checked = selectedReached.length === availableReached.length;
 }
