@@ -232,6 +232,10 @@ function saveCurrentFiltersEnhanced() {
         selectedVenues,
         selectedTrainers,
         selectedReached,
+        // Add flags to track if secondary filters have been modified
+        hasSecondaryFilters: (selectedVenues.length !== availableVenues.length) ||
+                           (selectedTrainers.length !== availableTrainers.length) ||
+                           (selectedReached.length !== availableReached.length),
         expiresAt: Date.now() + (2 * 60 * 60 * 1000)
     };
     
@@ -586,10 +590,10 @@ function handleSavedFilters() {
     }
     
     // Restore filter selections
-    selectedPartners = filterData.selectedPartners;
-    selectedDates = filterData.selectedDates;
-    selectedSessions = filterData.selectedSessions;
-    selectedBlocks = filterData.selectedBlocks;
+    selectedPartners = filterData.selectedPartners || selectedPartners;
+    selectedDates = filterData.selectedDates || selectedDates;
+    selectedSessions = filterData.selectedSessions || selectedSessions;
+    selectedBlocks = filterData.selectedBlocks || selectedBlocks;
     selectedVenues = filterData.selectedVenues || [];
     selectedTrainers = filterData.selectedTrainers || [];
     selectedReached = filterData.selectedReached || ['Yes', 'No'];
@@ -597,12 +601,20 @@ function handleSavedFilters() {
     // Restore UI and apply filters
     restorePrimaryFilterUI();
     
-    // Apply filters with a small delay to ensure UI is ready
+    // Apply primary filters and THEN handle secondary filters
     setTimeout(() => {
         applyPrimaryFilters().then(() => {
-            if (selectedVenues.length > 0 || selectedTrainers.length > 0 || selectedReached.length < 2) {
-                restoreSecondaryFilterUI();
-                applySecondaryFilters();
+            // FIXED: Only restore secondary filters if they were actually saved with selections
+            const hasSecondaryFilters = (selectedVenues.length > 0 && selectedVenues.length < availableVenues.length) ||
+                                      (selectedTrainers.length > 0 && selectedTrainers.length < availableTrainers.length) ||
+                                      selectedReached.length < 2;
+            
+            if (hasSecondaryFilters) {
+                // Wait a bit more for secondary filter options to be populated
+                setTimeout(() => {
+                    restoreSecondaryFilterUI();
+                    applySecondaryFilters();
+                }, 200);
             }
         });
     }, 100);
@@ -779,7 +791,10 @@ function applySecondaryFiltersWithUpdate() {
     applySecondaryFilters();
     populateVenueFilter();
     populateTrainerFilter();
-    saveCurrentFiltersEnhanced();
+    // Make sure to save after applying filters
+    setTimeout(() => {
+        saveCurrentFiltersEnhanced();
+    }, 100);
 }
 
 // Filter event listeners
@@ -910,13 +925,29 @@ async function applyPrimaryFilters() {
         
         allSessionData = data || [];
         
+        // Populate available options for secondary filters
         availableVenues = [...new Set(allSessionData.map(item => item.venue).filter(Boolean))].sort();
         availableTrainers = [...new Set(allSessionData.map(item => item.name).filter(Boolean))].sort();
         
-        selectedVenues = [...availableVenues];
-        selectedTrainers = [...availableTrainers];
-        selectedReached = ['Yes', 'No'];
+        // FIXED: Only reset secondary filters if they weren't restored from storage
+        const savedFilters = restoreFiltersFromStorage();
+        let hasRestoredSecondaryFilters = false;
         
+        if (savedFilters) {
+            const filterData = JSON.parse(savedFilters);
+            if (filterData.selectedVenues || filterData.selectedTrainers || filterData.selectedReached) {
+                hasRestoredSecondaryFilters = true;
+            }
+        }
+        
+        // Only reset to defaults if no saved filters exist
+        if (!hasRestoredSecondaryFilters) {
+            selectedVenues = [...availableVenues];
+            selectedTrainers = [...availableTrainers];
+            selectedReached = ['Yes', 'No'];
+        }
+        
+        // Populate secondary filter UI
         populateVenueFilter();
         populateTrainerFilter();
         updateSecondaryFilterUI();
@@ -927,9 +958,9 @@ async function applyPrimaryFilters() {
             secondaryFilters.style.display = 'block';
         }
         
-        // IMPORTANT: Wait for DOM to update, then create/show toggle button
+        // Wait for DOM to update, then create/show toggle button
         setTimeout(() => {
-            createToggleButton(); // Recreate button after secondary filters are shown
+            createToggleButton();
             showToggleButton();
         }, 100);
         
@@ -1303,4 +1334,33 @@ function updateSecondaryFilterUI() {
     document.querySelectorAll('.reached-checkbox').forEach(cb => {
         cb.checked = true;
     });
+}
+
+
+function restoreSecondaryFilterUI() {
+    // Restore venue checkboxes
+    document.querySelectorAll('.venue-checkbox').forEach(cb => {
+        cb.checked = selectedVenues.includes(cb.value);
+    });
+    
+    // Update venue select all checkbox
+    const visibleVenueCheckboxes = document.querySelectorAll('.venue-checkbox');
+    const checkedVenueCount = document.querySelectorAll('.venue-checkbox:checked').length;
+    selectAllVenues.checked = checkedVenueCount === visibleVenueCheckboxes.length && visibleVenueCheckboxes.length > 0;
+    
+    // Restore trainer checkboxes
+    document.querySelectorAll('.trainer-checkbox').forEach(cb => {
+        cb.checked = selectedTrainers.includes(cb.value);
+    });
+    
+    // Update trainer select all checkbox
+    const visibleTrainerCheckboxes = document.querySelectorAll('.trainer-checkbox');
+    const checkedTrainerCount = document.querySelectorAll('.trainer-checkbox:checked').length;
+    selectAllTrainers.checked = checkedTrainerCount === visibleTrainerCheckboxes.length && visibleTrainerCheckboxes.length > 0;
+    
+    // Restore reached checkboxes
+    document.querySelectorAll('.reached-checkbox').forEach(cb => {
+        cb.checked = selectedReached.includes(cb.value);
+    });
+    selectAllReached.checked = selectedReached.length === availableReached.length;
 }
