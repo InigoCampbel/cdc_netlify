@@ -705,14 +705,14 @@ input:checked + .toggle-slider:before {
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
   gap: 8px;
   transition: var(--transition);
   box-shadow: var(--shadow);
-  margin: 15px auto 20px;
-  width: auto;
+  margin: 15px auto 20px !important;
+  width: auto !important;
   min-width: 150px;
 }
 
@@ -760,6 +760,4 @@ input:checked + .toggle-slider:before {
     font-size: 22px;
   }
 }
-
-
 
