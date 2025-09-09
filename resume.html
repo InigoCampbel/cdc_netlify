@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Prep List</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #1e3a8a;
+      --secondary-color: #3b82f6;
+      --accent-color: #60a5fa;
+      --hover-color: #1e40af;
+      --background-color: #f8fafc;
+      --text-color: #1f2937;
+      --text-light: #64748b;
+      --bg-white: #ffffff;
+      --border-color: #e2e8f0;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      --radius: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, var(--background-color) 0%, #e0f2fe 100%);
+      color: var(--text-color);
+      line-height: 1.6;
+      font-size: 16px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 20px 16px;
+      position: relative;
+    }
+    
+    /* Header Section */
+    .header {
+      text-align: center;
+      margin-bottom: 18px;
+      padding: 12px 0;
+      position: relative;
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+    }
+    
+    .header-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .main-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+    
+    .sub-title {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-light);
+      letter-spacing: 0.5px;
+    }
+    
+    
+    /* Checklist Section */
+    .checklist-section {
+      background: var(--bg-white);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 56px;
+      box-shadow: var(--card-shadow);
+      transition: var(--transition);
+    }
+    
+    .checklist-section:hover {
+      box-shadow: var(--card-hover-shadow);
+      transform: translateY(-2px);
+    }
+    
+    .section-header {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border-color);
+    }
+    
+    .section-header-icon {
+      margin-right: 12px;
+      width: 24px;
+      height: 24px;
+    }
+    
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 6px;
+      padding: 8px;
+      border-radius: 12px;
+      transition: var(--transition);
+      position: relative;
+    }
+    
+    .checklist-item:hover {
+      background: rgba(30, 58, 138, 0.05);
+    }
+    
+    .checklist-item.completed {
+      background: rgba(16, 185, 129, 0.1);
+      border-left: 3px solid var(--success-color);
+    }
+    
+    .custom-checkbox {
+      position: relative;
+      width: 24px;
+      height: 24px;
+      margin-right: 16px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+    
+    .custom-checkbox input {
+      opacity: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    
+    .checkbox-display {
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-white);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .custom-checkbox input:checked + .checkbox-display {
+      background: var(--success-color);
+      border-color: var(--success-color);
+      transform: scale(1.1);
+    }
+    
+    .checkmark {
+      opacity: 0;
+      transition: var(--transition);
+      transform: scale(0.5);
+    }
+    
+    .custom-checkbox input:checked + .checkbox-display .checkmark {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
+    .checklist-text {
+      flex: 1;
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--text-color);
+      font-weight: 400;
+      word-break: break-word;
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 16px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      box-shadow: 0 8px 20px rgba(30, 58, 138, 0.3);
+    }
+    
+    .btn-primary:hover {
+      box-shadow: 0 12px 30px rgba(30, 58, 138, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background: var(--bg-white);
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      box-shadow: var(--card-shadow);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--primary-color);
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .btn-icon {
+      margin-right: 8px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    .btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.6s ease;
+    }
+    
+    .btn:hover::before {
+      left: 100%;
+    }
+    
+    /* Detailed Section */
+    .detailed-section {
+      display: none;
+      animation: fadeInUp 0.5s ease-out;
+    }
+    
+    .detailed-section.active {
+      display: block;
+    }
+    
+    .detailed-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 24px;
+      border-radius: var(--radius) var(--radius) 0 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .detailed-header::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+    
+    .detailed-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .detailed-subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .category-section {
+      background: var(--bg-white);
+      margin-bottom: 36px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+    }
+    
+    .category-header {
+      background: rgba(30, 58, 138, 0.05);
+      padding: 16px 20px;
+      border-left: 4px solid var(--secondary-color);
+    }
+    
+    .category-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+    }
+    
+    .category-icon {
+      margin-right: 8px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    .category-content {
+      padding: 20px;
+    }
+    
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+      }
+      
+      .container {
+        box-shadow: none;
+        border-radius: 0;
+        max-width: none;
+      }
+      
+      .action-buttons {
+        display: none;
+      }
+      
+
+      .custom-checkbox input:checked + .checkbox-display::before {
+        content: "✓";
+        font-weight: bold;
+        font-size: 16px;
+        color: black;
+      }
+      
+      .checkbox-display {
+        border: 2px solid #000 !important;
+        background: white !important;
+        position: relative;
+      }
+      
+      .checkmark {
+        display: none; /* Hide SVG checkmarks in print */
+      }
+
+      .header-icon img {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .detailed-header {
+        background: #1e3a8a !important; /* Force primary color */
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      
+      .detailed-title {
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      
+      .detailed-subtitle {
+        color: white !important;
+        opacity: 0.9 !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+    }
+    
+    /* Tablet and Desktop */
+    @media (min-width: 768px) {
+      .container {
+        max-width: 600px;
+        padding: 32px 24px;
+      }
+      
+      .action-buttons {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      
+      .btn {
+        width: auto;
+        min-width: 180px;
+      }
+      
+      .main-title {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-icon">
+        <img src="CDC Logo with Text.png" alt="CDC Logo" width="84" height="84">
+      </div>
+      <h1 class="main-title">Resume Prep List</h1>
+      <p class="sub-title">Use this checklist to fine-tune your resume before interviews</p>
+    </div>
+
+
+    <!-- Quick Checklist -->
+    <div class="checklist-section">
+      <div class="section-header">
+        <svg class="section-header-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M11,16.5L18,9.5L16.59,8.09L11,13.67L7.91,10.59L6.5,12L11,16.5Z"/>
+        </svg>
+        Tick to check
+      </div>
+
+      <ul class="checklist">
+        <li class="checklist-item">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="c1">
+            <div class="checkbox-display">
+              <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+            </div>
+          </div>
+          <label for="c1" class="checklist-text">Full Name, professional email ID, active mobile number, city & state.</label>
+        </li>
+
+        <li class="checklist-item">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="c2">
+            <div class="checkbox-display">
+              <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+            </div>
+          </div>
+          <label for="c2" class="checklist-text">LinkedIn short link included (recommended).</label>
+        </li>
+
+        <li class="checklist-item">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="c3">
+            <div class="checkbox-display">
+              <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+            </div>
+          </div>
+          <label for="c3" class="checklist-text">Resume is 1–2 pages, clean and simple.</label>
+        </li>
+
+        <li class="checklist-item">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="c4">
+            <div class="checkbox-display">
+              <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+            </div>
+          </div>
+          <label for="c4" class="checklist-text">Professional fonts (Calibri / Verdana / Arial; 11 text, 12–14 headings).</label>
+        </li>
+
+        <li class="checklist-item">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="c5">
+            <div class="checkbox-display">
+              <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+            </div>
+          </div>
+          <label for="c5" class="checklist-text">File name: Firstname_Lastname_Resume.pdf.</label>
+        </li>
+
+        <li class="checklist-item">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="c6">
+            <div class="checkbox-display">
+              <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+            </div>
+          </div>
+          <label for="c6" class="checklist-text">Education listed in reverse order (latest first, with CGPA/percentage).</label>
+        </li>
+
+        <li class="checklist-item">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="c7">
+            <div class="checkbox-display">
+              <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+            </div>
+          </div>
+          <label for="c7" class="checklist-text">Internships / Work Experience clearly described (role, company, duration, outcomes).</label>
+        </li>
+
+        <li class="checklist-item">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="c8">
+            <div class="checkbox-display">
+              <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+            </div>
+          </div>
+          <label for="c8" class="checklist-text">Projects included with title, tools/technologies, and results.</label>
+        </li>
+
+        <li class="checklist-item">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="c9">
+            <div class="checkbox-display">
+              <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+            </div>
+          </div>
+          <label for="c9" class="checklist-text">Technical Skills + Certifications grouped and relevant.</label>
+        </li>
+
+        <li class="checklist-item">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="c10">
+            <div class="checkbox-display">
+              <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+            </div>
+          </div>
+          <label for="c10" class="checklist-text">Languages, Achievements, Hobbies — only genuine, recent, and specific.</label>
+        </li>
+
+        <li class="checklist-item">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="c11">
+            <div class="checkbox-display">
+              <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+            </div>
+          </div>
+          <label for="c11" class="checklist-text">No spelling/grammar mistakes; use action verbs + numbers/metrics.</label>
+        </li>
+
+        <li class="checklist-item">
+          <div class="custom-checkbox">
+            <input type="checkbox" id="c12">
+            <div class="checkbox-display">
+              <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+            </div>
+          </div>
+          <label for="c12" class="checklist-text">Don'ts: No career objective, no personal details (gender, marital status, religion), no photos, no fake info, no >2 pages.</label>
+        </li>
+      </ul>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="window.print()">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+          </svg>
+          Download PDF
+        </button>
+        <button class="btn btn-secondary" onclick="toggleDetails()">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"/>
+          </svg>  
+          View Detailed Guide
+        </button>
+      </div>
+    </div>
+
+    <!-- Detailed Checklist -->
+    <div class="detailed-section" id="detailedSection">
+      <div class="detailed-header">
+        <h2 class="detailed-title">Complete Resume Guide</h2>
+        <p class="detailed-subtitle">Comprehensive checklist for creating the perfect resume</p>
+      </div>
+
+      <!-- Basic Information -->
+      <div class="category-section">
+        <div class="category-header">
+          <div class="category-title">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+            </svg>
+            1. Basic Information
+          </div>
+        </div>
+        <div class="category-content">
+          <ul class="checklist">
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d1">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d1" class="checklist-text">Full Name (proper capitalization, no nicknames).</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d2">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d2" class="checklist-text">Professional email ID (avoid casual or funny ones).</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d3">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d3" class="checklist-text">Mobile number (active, reachable, working).</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d4">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d4" class="checklist-text">Address (only city and state, no full postal address).</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d5">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d5" class="checklist-text">LinkedIn profile short link (optional but highly recommended).</label>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Formatting & Style -->
+      <div class="category-section">
+        <div class="category-header">
+          <div class="category-title">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"/>
+            </svg>
+            2. Formatting & Style
+          </div>
+        </div>
+        <div class="category-content">
+          <ul class="checklist">
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d6">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d6" class="checklist-text">Resume length: 1–2 pages maximum.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d7">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d7" class="checklist-text">Simple, clean format (avoid fancy templates or heavy designs).</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d8">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d8" class="checklist-text">Professional fonts only (Calibri, Verdana, Arial; font size 11 for text, 12–14 for headings).</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d9">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d9" class="checklist-text">Consistent alignment, spacing, and bullet points.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d10">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d10" class="checklist-text">No photos, graphics, or tables (ATS may not read them).</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d11">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d11" class="checklist-text">File name professional: Firstname_Lastname_Resume.pdf.</label>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Resume Sections -->
+      <div class="category-section">
+        <div class="category-header">
+          <div class="category-title">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M14,17H7V15H14M17,13H7V11H17M17,9H7V7H17M19,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.9 20.1,3 19,3Z"/>
+            </svg>
+            3. Resume Sections
+          </div>
+        </div>
+        <div class="category-content">
+          <ul class="checklist">
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d12">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d12" class="checklist-text">Career Objective – DO NOT write any career objectives.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d13">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d13" class="checklist-text">Education – reverse order (latest first), with Course, institution, university, year, CGPA/percentage.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d14">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d14" class="checklist-text">Work Experience / Internships – role, organization, duration, and 2–3 bullet points on responsibilities/achievements.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d15">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d15" class="checklist-text">Projects – title, objective, tools/technologies used, and outcomes.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d16">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d16" class="checklist-text">Technical Skills – grouped (programming, tools, applications, etc.).</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d17">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d17" class="checklist-text">Certifications & Courses – only valid and relevant ones.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d18">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d18" class="checklist-text">Academic/Professional Achievements – recent and relevant, avoid school-level unless exceptional.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d19">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d19" class="checklist-text">Co-curricular & Extracurricular Activities – max. 2–3 that show leadership, teamwork, or initiative.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d20">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d20" class="checklist-text">Languages Known – list only those you can read/write/speak comfortably.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d21">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d21" class="checklist-text">Hobbies & Interests – specific and genuine (e.g., Reading Fictional Novels, Blogging).</label>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Content Quality -->
+      <div class="category-section">
+        <div class="category-header">
+          <div class="category-title">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9M10,16V19.08L13.08,16H20V4H4V16H10M6,7H18V9H6V7M6,11H15V13H6V11Z"/>
+            </svg>
+            4. Content Quality
+          </div>
+        </div>
+        <div class="category-content">
+          <ul class="checklist">
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d22">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d22" class="checklist-text">No spelling or grammar errors.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d23">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d23" class="checklist-text">Use action verbs (e.g., Led, Designed, Analyzed, Achieved).</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d24">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d24" class="checklist-text">Avoid clichés like "hard-working," "team player," "self-starter."</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d25">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d25" class="checklist-text">Numbers/metrics wherever possible (e.g., "Improved efficiency by 20%").</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d26">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d26" class="checklist-text">All information is true and verifiable.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d27">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d27" class="checklist-text">Resume customized for the specific job description.</label>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Don'ts -->
+      <div class="category-section">
+        <div class="category-header">
+          <div class="category-title">
+            <svg class="category-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12,2C17.53,2 22,6.47 22,12C22,17.53 17.53,22 12,22C6.47,22 2,17.53 2,12C2,6.47 6.47,2 12,2M15.59,7L12,10.59L8.41,7L7,8.41L10.59,12L7,15.59L8.41,17L12,13.41L15.59,17L17,15.59L13.41,12L17,8.41L15.59,7Z"/>
+            </svg>
+            5. Don'ts
+          </div>
+        </div>
+        <div class="category-content">
+          <ul class="checklist">
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d28">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d28" class="checklist-text">No signature or declaration at the end.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d29">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d29" class="checklist-text">Do not include marital status, gender, religion, or other personal details.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d30">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d30" class="checklist-text">Do not use first person pronouns (I, me, my).</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d31">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d31" class="checklist-text">Do not exceed 2 pages.</label>
+            </li>
+            <li class="checklist-item">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="d32">
+                <div class="checkbox-display">
+                  <svg class="checkmark" viewBox="0 0 24 24" fill="white" width="14" height="14">
+                    <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                  </svg>
+                </div>
+              </div>
+              <label for="d32" class="checklist-text">Do not include irrelevant hobbies or fake information.</label>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Action Buttons for Detailed Section -->
+      <div class="action-buttons">
+        <button class="btn btn-primary" onclick="window.print()">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18,3H6V7H18M19,12A1,1 0 0,1 18,11A1,1 0 0,1 19,10A1,1 0 0,1 20,11A1,1 0 0,1 19,12M16,19H8V14H16M19,8H5A3,3 0 0,0 2,11V17H6V21H18V17H22V11A3,3 0 0,0 19,8Z"/>
+          </svg>
+          Download PDF
+        </button>
+        <button class="btn btn-secondary" onclick="toggleDetails()">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+          </svg>
+          Hide Detailed Guide
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+    // Add event listeners to all checkboxes
+    document.addEventListener('DOMContentLoaded', function() {
+      const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+      
+      allCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          const listItem = this.closest('.checklist-item');
+          if (this.checked) {
+            listItem.classList.add('completed');
+          } else {
+            listItem.classList.remove('completed');
+          }
+        
+          
+        });
+        
+        // Add click handler to the checkbox display div
+        const checkboxDisplay = checkbox.nextElementSibling;
+        if (checkboxDisplay && checkboxDisplay.classList.contains('checkbox-display')) {
+          checkboxDisplay.addEventListener('click', function(e) {
+            e.preventDefault();
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event('change'));
+          });
+        }
+});
+      
+    });
+
+    // Toggle detailed section
+    function toggleDetails() {
+      const detailedSection = document.getElementById('detailedSection');
+      const isVisible = detailedSection.classList.contains('active');
+      
+      if (isVisible) {
+        detailedSection.classList.remove('active');
+        setTimeout(() => {
+          detailedSection.style.display = 'none';
+        }, 300);
+      } else {
+        detailedSection.style.display = 'block';
+        setTimeout(() => {
+          detailedSection.classList.add('active');
+        }, 10);
+        
+        // Smooth scroll to detailed section
+        setTimeout(() => {
+          detailedSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }, 350);
+      }
+    }
+
+    // Add smooth interactions
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add fade-in animation to elements
+      const elements = document.querySelectorAll('.checklist-section, .progress-container');
+      elements.forEach((el, index) => {
+        setTimeout(() => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(20px)';
+          el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+          
+          setTimeout(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+          }, 100 * index);
+        }, 100);
+      });
+    });
+  </script>
+</body>
+</html>
