@@ -318,6 +318,31 @@
             margin-bottom: 6px;
         }
         
+        /* New styles for the list within announcements */
+        .announcements ul {
+            list-style-type: none; /* Remove default bullets if you prefer */
+            padding-left: 20px;
+            margin-top: 0;
+        }
+
+        .announcements ul li {
+            color: #4b5563;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            padding-left: 10px; /* Adjust spacing */
+            position: relative;
+        }
+
+        .announcements ul li::before {
+            content: "•"; /* Custom bullet point */
+            color: #0427ec; 
+            /*font-weight: bold;*/
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        /* End of new styles for the list within announcements */
+
         .footer {
             background-color: white;
             padding: 15px;
@@ -478,8 +503,12 @@
             
             <div class="announcements">
                 <h3><i class="fas fa-bell"></i> Announcements</h3>
-                <p>• SEED Training Dates: 01st September 2025 to 04th September 2025</p>
-                <p>• Timing: 09:00 AM to 04:30 PM</p>
+                <p>• SEED Training Dates: <strong>25th November 2025 to 28th November 2025</strong></p>
+                <p>• Timing:</p>
+                <ul>
+                    <li>I UG & IV MSC SS: <strong>09:00 AM to 04:30 PM</strong></li>
+                    <li>I PG: <strong>08:30 AM to 04:30 PM</strong></li>
+                </ul>
             </div>
             
             <footer class="footer">
@@ -490,4 +519,3 @@
 </body>
 
 </html>
-
