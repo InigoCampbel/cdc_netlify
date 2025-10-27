@@ -799,19 +799,29 @@
                 // Detect if user is deleting (value got shorter)
                 const isDeleting = currentValue.length < lastDobValue.length;
                 
+                // Check if user just deleted a hyphen
+                const deletedHyphen = isDeleting && 
+                                    lastDobValue[currentCursor] === '-' && 
+                                    currentValue[currentCursor] !== '-';
+                
                 // Remove all non-digits
                 let cleaned = currentValue.replace(/\D/g, '');
                 
-                // Format with auto-hyphen insertion
+                // Format with conditional hyphen insertion
                 let formatted = '';
                 
                 // Add day part (max 2 digits)
                 if (cleaned.length > 0) {
                     formatted = cleaned.substring(0, 2);
                     
-                    // Auto-add hyphen after day when 2 digits are entered
+                    // Only auto-add hyphen after day if:
+                    // 1. We have at least 2 digits for day
+                    // 2. We're NOT deleting, OR we have month digits (user didn't delete the hyphen)
                     if (cleaned.length >= 2) {
-                        formatted += '-';
+                        // Add hyphen only if typing OR if there's month data
+                        if (!isDeleting || cleaned.length > 2) {
+                            formatted += '-';
+                        }
                     }
                 }
                 
@@ -819,9 +829,13 @@
                 if (cleaned.length >= 3) {
                     formatted += cleaned.substring(2, 4);
                     
-                    // Auto-add hyphen after month when 2 digits are entered
+                    // Only auto-add hyphen after month if:
+                    // 1. We have at least 4 digits total
+                    // 2. We're NOT deleting, OR we have year digits
                     if (cleaned.length >= 4) {
-                        formatted += '-';
+                        if (!isDeleting || cleaned.length > 4) {
+                            formatted += '-';
+                        }
                     }
                 }
                 
@@ -837,18 +851,11 @@
                 let newCursor = currentCursor;
                 
                 if (isDeleting) {
-                    // When deleting, keep cursor at current position
-                    // But if cursor is right after a hyphen that just appeared, move it back
-                    if (formatted[newCursor] === '-') {
-                        newCursor = Math.max(0, newCursor);
-                    }
-                    // If we deleted a hyphen, the cursor should stay where it is
-                    // This allows continuous deletion
+                    // When deleting, keep cursor where it is
+                    newCursor = currentCursor;
                 } else {
-                    // When typing, if we just added content and it's longer, move cursor to end
-                    if (formatted.length > lastDobValue.length) {
-                        newCursor = formatted.length;
-                    }
+                    // When typing, move cursor to end
+                    newCursor = formatted.length;
                 }
                 
                 // Set cursor position
