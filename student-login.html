@@ -789,59 +789,94 @@
             dobInput.placeholder = 'DD-MM-YYYY';
             
             
+            // Track the last value to detect if user is deleting
+            let lastDobValue = '';
+
             dobInput.addEventListener('input', function(e) {
-            // Store cursor position before formatting
-            let cursorPosition = this.selectionStart;
-            let oldValue = this.value;
-            
-            // Remove all non-digits
-            let cleaned = oldValue.replace(/\D/g, '');
-            
-            // Format with hyphens
-            let formatted = '';
-            for (let i = 0; i < cleaned.length && i < 8; i++) {
-                if (i === 2 || i === 4) {
-                    formatted += '-';
+                const currentCursor = this.selectionStart;
+                const currentValue = this.value;
+                
+                // Detect if user is deleting (value got shorter)
+                const isDeleting = currentValue.length < lastDobValue.length;
+                
+                // Remove all non-digits
+                let cleaned = currentValue.replace(/\D/g, '');
+                
+                // Format with auto-hyphen insertion
+                let formatted = '';
+                
+                // Add day part (max 2 digits)
+                if (cleaned.length > 0) {
+                    formatted = cleaned.substring(0, 2);
+                    
+                    // Auto-add hyphen after day when 2 digits are entered
+                    if (cleaned.length >= 2) {
+                        formatted += '-';
+                    }
                 }
-                formatted += cleaned[i];
-            }
-            
-            // If user is at a hyphen position and deleting, skip the hyphen
-            if (oldValue.length > formatted.length) {
-                // User is deleting
-                if (oldValue[cursorPosition] === '-') {
-                    cursorPosition--;
+                
+                // Add month part (max 2 digits)
+                if (cleaned.length >= 3) {
+                    formatted += cleaned.substring(2, 4);
+                    
+                    // Auto-add hyphen after month when 2 digits are entered
+                    if (cleaned.length >= 4) {
+                        formatted += '-';
+                    }
                 }
-            }
-            
-            // Update value
-            this.value = formatted;
-            
-            // Restore cursor position intelligently
-            let newCursorPosition = cursorPosition;
-            
-            // Adjust cursor if it's right after a newly added hyphen
-            if (formatted[newCursorPosition - 1] === '-' && oldValue[cursorPosition - 1] !== '-') {
-                newCursorPosition++;
-            }
-            
-            // Set cursor
-            this.setSelectionRange(newCursorPosition, newCursorPosition);
-            
-            // Visual feedback
-            dobInput.classList.remove('valid', 'invalid');
-            if (formatted.length === 10) {
-                if (validateSimpleDate(formatted)) {
-                    dobInput.classList.add('valid');
+                
+                // Add year part (max 4 digits)
+                if (cleaned.length >= 5) {
+                    formatted += cleaned.substring(4, 8);
+                }
+                
+                // Update value
+                this.value = formatted;
+                
+                // Smart cursor positioning
+                let newCursor = currentCursor;
+                
+                if (isDeleting) {
+                    // When deleting, keep cursor at current position
+                    // But if cursor is right after a hyphen that just appeared, move it back
+                    if (formatted[newCursor] === '-') {
+                        newCursor = Math.max(0, newCursor);
+                    }
+                    // If we deleted a hyphen, the cursor should stay where it is
+                    // This allows continuous deletion
                 } else {
-                    dobInput.classList.add('invalid');
+                    // When typing, if we just added content and it's longer, move cursor to end
+                    if (formatted.length > lastDobValue.length) {
+                        newCursor = formatted.length;
+                    }
                 }
-            }
-            
-            if (errorMessage.classList.contains('show')) {
-                hideError();
-            }
-        });
+                
+                // Set cursor position
+                this.setSelectionRange(newCursor, newCursor);
+                
+                // Update last value
+                lastDobValue = formatted;
+                
+                // Visual feedback
+                dobInput.classList.remove('valid', 'invalid');
+                if (formatted.length === 10) {
+                    if (validateSimpleDate(formatted)) {
+                        dobInput.classList.add('valid');
+                    } else {
+                        dobInput.classList.add('invalid');
+                    }
+                }
+                
+                if (errorMessage.classList.contains('show')) {
+                    hideError();
+                }
+            });
+
+            // Initialize last value on focus
+            dobInput.addEventListener('focus', function() {
+                lastDobValue = this.value;
+            });
+
 
             // Allow only numbers and hyphens
             dobInput.addEventListener('keydown', function(e) {
@@ -875,6 +910,7 @@
             clearBtn.addEventListener('click', function() {
                 userIdInput.value = '';
                 dobInput.value = '';
+                lastDobValue = '';  // ADD THIS LINE
                 dobInput.classList.remove('valid', 'invalid');
                 hideError();
                 updateStatus('');
@@ -974,3 +1010,4 @@
 </body>
 
 </html>
+
