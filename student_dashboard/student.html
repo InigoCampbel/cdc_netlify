@@ -615,17 +615,8 @@
                         </button>
                     </div>
 
-                    <div class="session-timings">
-                        <div class="session-title"><i class="fas fa-clock"></i> Session Timings</div>
-                        <div class="session-time">
-                            <span class="session-name">Session 1:</span> 09:00 AM - 11:00 AM
-                        </div>
-                        <div class="session-time">
-                            <span class="session-name">Session 2:</span> 11:30 AM - 01:30 PM
-                        </div>
-                        <div class="session-time">
-                            <span class="session-name">Session 3:</span> 02:30 PM - 04:30 PM
-                        </div>
+                    <div class="session-timings" id="sessionTimings">
+                        <!-- Timings will be populated dynamically by JavaScript -->
                     </div>
                     
                     <!-- Mobile logout button container -->
@@ -780,6 +771,43 @@
             mobileLogoutBtn.innerHTML = logoutSvg + 'Logout';
         }
 
+        // Function to determine and display session timings based on roll number
+        function displaySessionTimings(rollNumber) {
+            const sessionTimingsDiv = document.getElementById('sessionTimings');
+            
+            // Default timings
+            let session1 = "09:00 AM - 11:00 AM";
+            let session2 = "11:30 AM - 01:30 PM";
+            let session3 = "02:30 PM - 04:30 PM";
+            
+            // Check if roll number exists and has at least 5 characters
+            if (rollNumber && rollNumber.length >= 5) {
+                const thirdChar = rollNumber.charAt(2); // Index 2 is the 3rd character
+                const chars3to5 = rollNumber.substring(2, 5); // Characters from index 2 to 4 (3rd to 5th)
+                
+                // Check if 3rd character is "M" AND characters 3-5 are NOT "MSS"
+                if (thirdChar === "M" && chars3to5 !== "MSS") {
+                    session1 = "08:30 AM - 10:45 AM";
+                    session2 = "11:15 AM - 01:30 PM";
+                    session3 = "02:30 PM - 04:30 PM";
+                }
+            }
+            
+            // Build the HTML for session timings
+            sessionTimingsDiv.innerHTML = `
+                <div class="session-title"><i class="fas fa-clock"></i> Session Timings</div>
+                <div class="session-time">
+                    <span class="session-name">Session 1:</span> ${session1}
+                </div>
+                <div class="session-time">
+                    <span class="session-name">Session 2:</span> ${session2}
+                </div>
+                <div class="session-time">
+                    <span class="session-name">Session 3:</span> ${session3}
+                </div>
+            `;
+        }
+
         // Display student data from session storage
         function displayStudentData() {
             // Get session data
@@ -800,6 +828,8 @@
             // Display student data
             document.getElementById('name').textContent = data.name || "-";
             document.getElementById('roll').textContent = data.roll_number || sessionData.userId;
+            // Display session timings based on roll number
+            displaySessionTimings(data.roll_number || sessionData.userId);
             document.getElementById('department').textContent = data.department || "-";
             // Check if user is a rep and show/hide buttons accordingly
             const userRole = data.role || "Student";
