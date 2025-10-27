@@ -621,10 +621,10 @@
                 </label>
                 <select id="dateSelect">
                     <option value="">Choose Date...</option>
-                    <option value="2025-09-01">01 Sep 2025</option>
-                    <option value="2025-09-02">02 Sep 2025</option>
-                    <option value="2025-09-03">03 Sep 2025</option>
-                    <option value="2025-09-04">04 Sep 2025</option>
+                    <option value="2025-11-25">25 Nov 2025</option>
+                    <option value="2025-11-26">26 Nov 2025</option>
+                    <option value="2025-11-27">27 Nov 2025</option>
+                    <option value="2025-11-28">28 Nov 2025</option>
                 </select>
             </div>
             <button class="fetch-btn" onclick="fetchDateAttendance()">
@@ -878,7 +878,7 @@
                     showError('Attendance data not available for selected date');
                     return;
                 }
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/student?department=eq.${encodeURIComponent(repData.department)}&select=roll_number,name,sep_01_s1,sep_01_s2,sep_01_s3,sep_02_s1,sep_02_s2,sep_02_s3,sep_03_s1,sep_03_s2,sep_03_s3,sep_04_s1,sep_04_s2,sep_04_s3`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/student?department=eq.${encodeURIComponent(repData.department)}&select=roll_number,name,nov_25_s1,nov_25_s2,nov_25_s3,nov_26_s1,nov_26_s2,nov_26_s3,nov_27_s1,nov_27_s2,nov_27_s3,nov_28_s1,nov_28_s2,nov_28_s3`, {
                 
                     method: 'GET',
                     headers: {
@@ -902,17 +902,17 @@
                     students: students.map(student => ({
                         name: student.name,
                         rollNumber: student.roll_number,
-                        session1: student[`sep_${sessionSuffix}_s1`] || '-',
-                        session2: student[`sep_${sessionSuffix}_s2`] || '-',
-                        session3: student[`sep_${sessionSuffix}_s3`] || '-'
+                        session1: student[`nov_${sessionSuffix}_s1`] || '-',
+                        session2: student[`nov_${sessionSuffix}_s2`] || '-',
+                        session3: student[`nov_${sessionSuffix}_s3`] || '-'
                     })),
                     stats: {
-                        session1Present: students.filter(s => s[`sep_${sessionSuffix}_s1`] === 'P').length,
-                        session1Absent: students.filter(s => s[`sep_${sessionSuffix}_s1`] === 'A').length,
-                        session2Present: students.filter(s => s[`sep_${sessionSuffix}_s2`] === 'P').length,
-                        session2Absent: students.filter(s => s[`sep_${sessionSuffix}_s2`] === 'A').length,
-                        session3Present: students.filter(s => s[`sep_${sessionSuffix}_s3`] === 'P').length,
-                        session3Absent: students.filter(s => s[`sep_${sessionSuffix}_s3`] === 'A').length
+                        session1Present: students.filter(s => s[`nov_${sessionSuffix}_s1`] === 'P').length,
+                        session1Absent: students.filter(s => s[`nov_${sessionSuffix}_s1`] === 'A').length,
+                        session2Present: students.filter(s => s[`nov_${sessionSuffix}_s2`] === 'P').length,
+                        session2Absent: students.filter(s => s[`nov_${sessionSuffix}_s2`] === 'A').length,
+                        session3Present: students.filter(s => s[`nov_${sessionSuffix}_s3`] === 'P').length,
+                        session3Absent: students.filter(s => s[`nov_${sessionSuffix}_s3`] === 'A').length
                     }
                 };
                 // Sort students by roll number
@@ -945,7 +945,7 @@
             document.getElementById('error').classList.add('hidden');
             
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/student?roll_number=eq.${rollNumber}&department=eq.${encodeURIComponent(repData.department)}&select=roll_number,name,attendance_percentage,sep_01_s1,sep_01_s2,sep_01_s3,sep_02_s1,sep_02_s2,sep_02_s3,sep_03_s1,sep_03_s2,sep_03_s3,sep_04_s1,sep_04_s2,sep_04_s3`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/student?roll_number=eq.${rollNumber}&department=eq.${encodeURIComponent(repData.department)}&select=roll_number,name,attendance_percentage,nov_25_s1,nov_25_s2,nov_25_s3,nov_26_s1,nov_26_s2,nov_26_s3,nov_27_s1,nov_27_s2,nov_27_s3,nov_28_s1,nov_28_s2,nov_28_s3`, {
                     method: 'GET',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
@@ -977,18 +977,18 @@
                         attendancePercentage: student.attendance_percentage
                     },
                     attendance: {
-                        sep01_s1: student.sep_01_s1,
-                        sep01_s2: student.sep_01_s2,
-                        sep01_s3: student.sep_01_s3,
-                        sep02_s1: student.sep_02_s1,
-                        sep02_s2: student.sep_02_s2,
-                        sep02_s3: student.sep_02_s3,
-                        sep03_s1: student.sep_03_s1,
-                        sep03_s2: student.sep_03_s2,
-                        sep03_s3: student.sep_03_s3,
-                        sep04_s1: student.sep_04_s1,
-                        sep04_s2: student.sep_04_s2,
-                        sep04_s3: student.sep_04_s3
+                        nov25_s1: student.nov_25_s1,
+                        nov25_s2: student.nov_25_s2,
+                        nov25_s3: student.nov_25_s3,
+                        nov26_s1: student.nov_26_s1,
+                        nov26_s2: student.nov_26_s2,
+                        nov26_s3: student.nov_26_s3,
+                        nov27_s1: student.nov_27_s1,
+                        nov27_s2: student.nov_27_s2,
+                        nov27_s3: student.nov_27_s3,
+                        nov28_s1: student.nov_28_s1,
+                        nov28_s2: student.nov_28_s2,
+                        nov28_s3: student.nov_28_s3
                     }
                 };
                 
@@ -1107,10 +1107,10 @@
             tableBody.innerHTML = '';
             
             const dates = [
-                { date: '01 Sep 2025', key: 'sep01' },
-                { date: '02 Sep 2025', key: 'sep02' },
-                { date: '03 Sep 2025', key: 'sep03' },
-                { date: '04 Sep 2025', key: 'sep04' }
+                { date: '25 Nov 2025', key: 'nov25' },
+                { date: '26 Nov 2025', key: 'nov26' },
+                { date: '27 Nov 2025', key: 'nov27' },
+                { date: '28 Nov 2025', key: 'nov28' }
             ];
             
             dates.forEach(dateObj => {
@@ -1166,3 +1166,4 @@
     </script>
 </body>
 </html>
+
