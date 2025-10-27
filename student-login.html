@@ -602,7 +602,7 @@
                 }
                 localStorage.setItem('lastLoginAttempt', now.toString());
 
-                const response = await fetch(`${this.SUPABASE_URL}/rest/v1/student?roll_number=eq.${rollNumber}&dob=eq.${dob}&select=roll_number,name,department,role,venue,attendance_percentage,sep_01_s1,sep_01_s2,sep_01_s3,sep_02_s1,sep_02_s2,sep_02_s3,sep_03_s1,sep_03_s2,sep_03_s3,sep_04_s1,sep_04_s2,sep_04_s3`, {
+                const response = await fetch(`${this.SUPABASE_URL}/rest/v1/student?roll_number=eq.${rollNumber}&dob=eq.${dob}&select=roll_number,name,department,role,venue,attendance_percentage,nov_25_s1,nov_25_s2,nov_25_s3,nov_26_s1,nov_26_s2,nov_26_s3,nov_27_s1,nov_27_s2,nov_27_s3,nov_28_s1,nov_28_s2,nov_28_s3`, {
                     method: 'GET',
                     headers: {
                         'apikey': this.SUPABASE_ANON_KEY,
@@ -1017,5 +1017,6 @@
 </body>
 
 </html>
+
 
 
