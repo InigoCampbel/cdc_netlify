@@ -649,7 +649,7 @@
         };
 
         const ValidationUtils = {
-            STUDENT_PATTERN: /^(?:24B(?:AM|B[ACIOPT]|C[ABCDEFGHMORST]|DA|E[CLN]|F[ST]|HM|I[ST]|LG|M[ABCU]|ND|P[AHS]|RM|S[OT]|TA|VC|ZO)[0156](?:0[1-9]|[1-6][0-9])|24V(?:BI|FP|HM|NM)0(?:0[1-9]|[1-4][0-9])|23BEN109|23BLG054|23BTA004|23BVC155|25MAM005|25MSS001)$/,
+            STUDENT_PATTERN: /^(?:25[BM](?:AM|B[ACIOPTS]|C[ABCDEFGHMNOPRST]|DA|E[CLMNS]|F[MST]|H[AMT]|I[BST]|LG|M[ABCU]|ND|NM|P[AHS]|RM|S[OTW]|TA|VC|ZO)[0156](?:0[1-9]|[1-6][0-9])|25VFP0(?:0[1-9]|[1-4][0-9])|22MSS0(?:0[1-9]|[1-9][0-9]))$/,
             
             validateRollNumber(rollNumber) {
                 if (!rollNumber || typeof rollNumber !== 'string') {
@@ -1041,6 +1041,7 @@
 </body>
 
 </html>
+
 
 
 
