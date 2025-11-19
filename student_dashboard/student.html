@@ -851,7 +851,20 @@
                     window.location.href = 'classmates.html';
                 });
             }
-            document.getElementById('venue').textContent = data.venue || "-";
+            
+            // Handle venue display - split by "|" if present
+            const venueElement = document.getElementById('venue');
+            const venueData = data.venue || "-";
+
+            if (venueData.includes("|")) {
+                // Split by "|" and create a list
+                const venues = venueData.split("|").map(v => v.trim()); // trim removes extra spaces
+                venueElement.innerHTML = venues.map(v => `• ${v}`).join('<br>');
+            } else {
+                // Display normally if no "|"
+                venueElement.textContent = venueData;
+            }
+
             
             // Handle attendance percentage - Updated logic
             let attendancePercentage = data.attendance_percentage;
@@ -944,5 +957,4 @@
 </body>
 
 </html>
-
 
