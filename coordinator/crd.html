@@ -15,7 +15,7 @@
   <div class="container">
     <header class="header">
       <h1 class="main-title">SEED Training</h1>
-      <p class="sub-title">01 Sep 2025 to 04 Sep 2025</p>
+      <p class="sub-title">25 Nov 2025 to 28 Nov 2025</p>
       <h2 class="portal-title">Coordinator Portal</h2>
       <div class="coordinator-info" id="coordinatorInfo" style="display: none;">
         <span id="coordinatorName"></span> (<span id="coordinatorType"></span>)
@@ -182,7 +182,7 @@
               </div>
             </div>
           </div>
-
+          
           <div class="filter-group">
           <label for="reachedFilter">Reached Status:</label>
           <div class="multiselect-container">
@@ -198,6 +198,27 @@
               <div class="multiselect-option">
                 <input type="checkbox" id="reached-no" class="reached-checkbox" value="No" checked>
                 <label for="reached-no">No</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enabled Filter (Only for CDC/LND users) -->
+        <div class="filter-group" id="enabledFilterRow" style="display: none;">
+          <label for="enabledFilter">Enabled Status:</label>
+          <div class="multiselect-container">
+            <div class="multiselect-header">
+              <input type="checkbox" id="selectAllEnabled" class="select-all-checkbox" checked>
+              <label for="selectAllEnabled">Select All</label>
+            </div>
+            <div class="multiselect-options" id="enabledOptions">
+              <div class="multiselect-option">
+                <input type="checkbox" id="enabled-yes" class="enabled-checkbox" value="Yes" checked>
+                <label for="enabled-yes">Yes</label>
+              </div>
+              <div class="multiselect-option">
+                <input type="checkbox" id="enabled-no" class="enabled-checkbox" value="No" checked>
+                <label for="enabled-no">No</label>
               </div>
             </div>
           </div>
@@ -218,7 +239,8 @@
             <th id="partnerColumn" style="display: none;">Training Partner</th>
             <th>Venue</th>
             <th>Phone</th>
-            <th>Reached</th>
+            <th id="enableColumn" style="display: none;">Campus</th>
+            <th>Venue</th>
             <th>Details</th>
             </tr>
         </thead>
@@ -233,13 +255,15 @@
           <div class="stat-value" id="totalTrainers">0</div>
           <div class="stat-label">No. of Trainers</div>
         </div>
+        
+        <div class="stat-card">
+          <div class="stat-value" id="venueReachedCount">0</div>
+          <div class="stat-label">Venue Reached Count</div>
+        </div>
+
         <div class="stat-card">
           <div class="stat-value" id="trainersReached">0</div>
           <div class="stat-label">Reached Count</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="trainersYetToReach">0</div>
-          <div class="stat-label">Yet to Reach</div>
         </div>
       </div>
     </div>
