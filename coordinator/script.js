@@ -20,6 +20,7 @@ let selectedBlocks = [];
 let selectedVenues = [];
 let selectedTrainers = [];
 let selectedReached = ['Yes', 'No']; 
+let selectedEnabled = ['Yes', 'No'];
 
 // Available options
 let availablePartners = [];
@@ -28,6 +29,7 @@ let availableBlocks = [];
 let availableVenues = [];
 let availableTrainers = [];
 let availableReached = ['Yes', 'No'];
+let availableEnabled = ['Yes', 'No'];
 
 // DOM elements - cache frequently used elements
 const loginContainer = document.getElementById('loginContainer');
@@ -57,6 +59,8 @@ const trainerOptions = document.getElementById('trainerOptions');
 const selectAllTrainers = document.getElementById('selectAllTrainers');
 const reachedOptions = document.getElementById('reachedOptions');
 const selectAllReached = document.getElementById('selectAllReached');
+const enabledOptions = document.getElementById('enabledOptions');
+const selectAllEnabled = document.getElementById('selectAllEnabled');
 
 const applyFilterBtn = document.getElementById('applyFilter');
 const clearFilterBtn = document.getElementById('clearFilter');
@@ -67,7 +71,7 @@ const secondaryFilters = document.getElementById('secondaryFilters');
 const sessionTableBody = document.getElementById('sessionTableBody');
 const totalTrainersEl = document.getElementById('totalTrainers');
 const trainersReachedEl = document.getElementById('trainersReached');
-const trainersYetToReachEl = document.getElementById('trainersYetToReach');
+const venueReachedCountEl = document.getElementById('venueReachedCount');
 
 // Modal elements
 const sessionDetailsModal = document.getElementById('sessionDetailsModal');
@@ -232,6 +236,9 @@ function saveCurrentFiltersEnhanced() {
         selectedVenues,
         selectedTrainers,
         selectedReached,
+        selectedEnabled, // ADD THIS LINE
+        availableVenues,
+        availableTrainers,
         expiresAt: Date.now() + (2 * 60 * 60 * 1000)
     };
     
@@ -447,7 +454,8 @@ function createToggleButton() {
         toggleButton.className = 'toggle-filters-btn';
         toggleButton.innerHTML = '<i class="fas fa-filter"></i> Hide Filters';
         
-        filterSection.parentNode.insertBefore(toggleButton, filterSection);
+        // CHANGED: Insert after secondary filter section instead of before primary filter section
+        secondaryFilterSection.parentNode.insertBefore(toggleButton, secondaryFilterSection.nextSibling);
         
         toggleButton.addEventListener('click', function() {
             const isHidden = filterSection.style.display === 'none';
@@ -551,16 +559,32 @@ function handleSavedFilters() {
     selectedVenues = filterData.selectedVenues || [];
     selectedTrainers = filterData.selectedTrainers || [];
     selectedReached = filterData.selectedReached || ['Yes', 'No'];
+    selectedEnabled = filterData.selectedEnabled || ['Yes', 'No'];
+
+    // RESTORE AVAILABLE OPTIONS
+    availableVenues = filterData.availableVenues || [];
+    availableTrainers = filterData.availableTrainers || [];
     
-    // Restore UI and apply filters
+    // Restore UI
     restorePrimaryFilterUI();
     
     // Apply filters with a small delay to ensure UI is ready
     setTimeout(() => {
-        applyPrimaryFilters().then(() => {
-            if (selectedVenues.length > 0 || selectedTrainers.length > 0 || selectedReached.length < 2) {
-                restoreSecondaryFilterUI();
-                applySecondaryFilters();
+        // LOAD DATA WITHOUT RESETTING SECONDARY FILTERS
+        loadDataForRestoredFilters().then(() => {
+            // Populate secondary filters with saved selections
+            populateVenueFilter();
+            populateTrainerFilter();
+            populateReachedFilter();
+            populateEnabledFilter(); 
+            
+            // Apply the secondary filters
+            applySecondaryFilters();
+            
+            // Show secondary filters if not hidden
+            const filtersHidden = sessionStorage.getItem('filtersHidden');
+            if (filtersHidden !== 'true') {
+                secondaryFilters.style.display = 'block';
             }
         });
     }, 100);
@@ -717,6 +741,48 @@ function populateTrainerFilter() {
     selectAllTrainers.checked = selectedTrainers.length === filteredTrainers.length && filteredTrainers.length > 0;
 }
 
+function populateReachedFilter() {
+    reachedOptions.innerHTML = '';
+    availableReached.forEach(reached => {
+        const isChecked = selectedReached.includes(reached);
+        const option = document.createElement('div');
+        option.className = 'multiselect-option';
+        option.innerHTML = `
+            <input type="checkbox" id="reached-${reached}" 
+                class="reached-checkbox" value="${reached}" ${isChecked ? 'checked' : ''}>
+            <label for="reached-${reached}">${reached}</label>
+        `;
+        reachedOptions.appendChild(option);
+    });
+    
+    selectAllReached.checked = selectedReached.length === availableReached.length;
+}
+
+function populateEnabledFilter() {
+    // Only show for LND users
+    if (userType !== 'LND') {
+        document.getElementById('enabledFilterRow').style.display = 'none';
+        return;
+    }
+    
+    document.getElementById('enabledFilterRow').style.display = 'block';
+    enabledOptions.innerHTML = '';
+    
+    availableEnabled.forEach(enabled => {
+        const isChecked = selectedEnabled.includes(enabled);
+        const option = document.createElement('div');
+        option.className = 'multiselect-option';
+        option.innerHTML = `
+            <input type="checkbox" id="enabled-${enabled}" 
+                class="enabled-checkbox" value="${enabled}" ${isChecked ? 'checked' : ''}>
+            <label for="enabled-${enabled}">${enabled}</label>
+        `;
+        enabledOptions.appendChild(option);
+    });
+    
+    selectAllEnabled.checked = selectedEnabled.length === availableEnabled.length;
+}
+
 function restoreSecondaryFilterUI() {
     document.querySelectorAll('.reached-checkbox').forEach(cb => {
         cb.checked = selectedReached.includes(cb.value);
@@ -749,7 +815,8 @@ function initializeFilterListeners() {
         { element: selectAllBlocks, array: () => availableBlocks, selected: () => selectedBlocks, selector: '.block-checkbox' },
         { element: selectAllVenues, array: () => availableVenues, selected: () => selectedVenues, selector: '.venue-checkbox' },
         { element: selectAllTrainers, array: () => availableTrainers, selected: () => selectedTrainers, selector: '.trainer-checkbox' },
-        { element: selectAllReached, array: () => ['Yes', 'No'], selected: () => selectedReached, selector: '.reached-checkbox' }
+        { element: selectAllReached, array: () => ['Yes', 'No'], selected: () => selectedReached, selector: '.reached-checkbox' },
+        { element: selectAllEnabled, array: () => ['Yes', 'No'], selected: () => selectedEnabled, selector: '.enabled-checkbox' }
     ];
 
     selectAllConfigs.forEach(config => {
@@ -802,6 +869,10 @@ document.addEventListener('change', function(e) {
         'reached-checkbox': () => {
             updateSelectedArray(selectedReached, e.target.value, e.target.checked);
             selectAllReached.checked = selectedReached.length === availableReached.length;
+        },
+        'enabled-checkbox': () => { // ADD THIS HANDLER
+            updateSelectedArray(selectedEnabled, e.target.value, e.target.checked);
+            selectAllEnabled.checked = selectedEnabled.length === availableEnabled.length;
         }
     };
 
@@ -874,9 +945,12 @@ async function applyPrimaryFilters() {
         selectedVenues = [...availableVenues];
         selectedTrainers = [...availableTrainers];
         selectedReached = ['Yes', 'No'];
+        selectedEnabled = ['Yes', 'No'];
         
         populateVenueFilter();
         populateTrainerFilter();
+        populateReachedFilter();
+        populateEnabledFilter();
         updateSecondaryFilterUI();
         
         // Only show secondary filters if filters aren't supposed to be hidden
@@ -900,12 +974,59 @@ async function applyPrimaryFilters() {
     }
 }
 
+// Load data for restored filters WITHOUT resetting secondary filter selections
+async function loadDataForRestoredFilters() {
+    try {
+        showLoading('Restoring session data...');
+        
+        let query = supabase.from('training_sessions').select('*');
+        
+        if (userType !== 'LND') {
+            query = query.eq('training_partner', getTrainingPartnerForUser(userType));
+        } else {
+            query = query.in('training_partner', selectedPartners);
+        }
+        
+        query = query.in('date', selectedDates).in('session', selectedSessions);
+        
+        if (selectedBlocks.length > 0) {
+            query = query.in('block', selectedBlocks);
+        }
+        
+        const { data, error } = await query;
+        
+        if (error) throw error;
+        
+        allSessionData = data || [];
+        
+        // DON'T reset availableVenues/Trainers - they're already restored from saved filters
+        // DON'T reset selectedVenues/Trainers/Reached - they're already restored from saved filters
+        
+        setupRealtimeSubscription();
+        hideLoading();
+        return Promise.resolve();
+        
+    } catch (error) {
+        hideLoading();
+        showError('Failed to restore data: ' + error.message);
+        return Promise.reject(error);
+    }
+}
+
 function applySecondaryFilters() {
     filteredSessionData = allSessionData.filter(session => {
         const venueMatch = selectedVenues.length === 0 || selectedVenues.includes(session.venue);
         const trainerMatch = selectedTrainers.length === 0 || selectedTrainers.includes(session.name);
         const reachedMatch = selectedReached.length === 0 || selectedReached.includes(session.reached || 'No');
-        return venueMatch && trainerMatch && reachedMatch;
+        
+        // ADD THIS BLOCK
+        let enabledMatch = true;
+        if (userType === 'LND') {
+            const enabledValue = session.enabled_for_reach ? 'Yes' : 'No';
+            enabledMatch = selectedEnabled.length === 0 || selectedEnabled.includes(enabledValue);
+        }
+        
+        return venueMatch && trainerMatch && reachedMatch && enabledMatch; // UPDATE THIS LINE
     });
 
     filteredSessionData.sort((a, b) => {
@@ -932,6 +1053,7 @@ function clearAllFilters() {
     selectedVenues = [];
     selectedTrainers = [];
     selectedReached = ['Yes', 'No'];
+    selectedEnabled = ['Yes', 'No'];
     
     // Reset UI
     document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
@@ -940,7 +1062,8 @@ function clearAllFilters() {
             'date-checkbox': selectedDates.includes(cb.value),
             'session-checkbox': selectedSessions.includes(cb.value),
             'block-checkbox': selectedBlocks.includes(cb.value),
-            'reached-checkbox': selectedReached.includes(cb.value)
+            'reached-checkbox': selectedReached.includes(cb.value),
+            'enabled-checkbox': selectedEnabled.includes(cb.value)
         };
         
         const matchingType = Object.keys(checkboxTypes).find(type => cb.classList.contains(type));
@@ -952,6 +1075,7 @@ function clearAllFilters() {
     selectAllDates.checked = selectedDates.length === availableDates.length;
     selectAllSessions.checked = selectedSessions.length === 3;
     selectAllReached.checked = selectedReached.length === availableReached.length;
+    selectAllEnabled.checked = selectedEnabled.length === availableEnabled.length; 
     selectAllBlocks.checked = selectedBlocks.length === availableBlocks.length;
     selectAllVenues.checked = false;
     selectAllTrainers.checked = false;
@@ -982,10 +1106,14 @@ function updateTable() {
     
     // Show/hide training partner column based on user type
     const partnerColumn = document.getElementById('partnerColumn');
+    const enableColumn = document.getElementById('enableColumn');
+    
     if (userType === 'LND') {
         partnerColumn.style.display = 'table-cell';
+        enableColumn.style.display = 'table-cell';
     } else {
         partnerColumn.style.display = 'none';
+        enableColumn.style.display = 'none';
     }
     
     filteredSessionData.forEach(session => {
@@ -1006,12 +1134,32 @@ function updateTable() {
                 <a href="tel:${session.mobile_number}" class="phone-call-btn" title="Call">
                     <i class="fas fa-phone"></i>
                 </a>
-            </td>
-            <td class="reach-column">
+            </td>`;
+        
+        // Add Enable column only for LND users
+        if (userType === 'LND') {
+            rowHTML += `
+            <td class="enable-column">
                 <label class="toggle-switch">
+                    <input type="checkbox" class="enable-toggle" 
+                        data-id="${session.id}"
+                        ${session.enabled_for_reach ? 'checked' : ''}>
+                    <span class="toggle-slider"></span>
+                </label>
+            </td>`;
+        }
+        
+        // Reached toggle - disabled if not enabled
+        const isDisabled = !session.enabled_for_reach ? 'disabled' : '';
+        const disabledClass = !session.enabled_for_reach ? 'toggle-disabled' : '';
+        
+        rowHTML += `
+            <td class="reach-column">
+                <label class="toggle-switch ${disabledClass}">
                     <input type="checkbox" class="reach-toggle" 
                         data-id="${session.id}"
-                        ${session.reached === 'Yes' ? 'checked' : ''}>
+                        ${session.reached === 'Yes' ? 'checked' : ''}
+                        ${isDisabled}>
                     <span class="toggle-slider"></span>
                 </label>
             </td>
@@ -1026,7 +1174,14 @@ function updateTable() {
         sessionTableBody.appendChild(row);
     });
     
-    // Add event listeners
+    // Add event listeners for enable toggles (only for LND)
+    if (userType === 'LND') {
+        document.querySelectorAll('.enable-toggle').forEach(toggle => {
+            toggle.addEventListener('change', updateEnabledStatus);
+        });
+    }
+    
+    // Add event listeners for reach toggles
     document.querySelectorAll('.reach-toggle').forEach(toggle => {
         toggle.addEventListener('change', updateReachedStatus);
     });
@@ -1036,8 +1191,69 @@ function updateTable() {
     });
 }
 
+
+async function updateEnabledStatus(e) {
+    const sessionId = e.target.dataset.id;
+    const enabled = e.target.checked;
+    
+    try {
+        showLoading('Updating enable status...');
+        
+        const istTime = new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
+        const istDate = new Date(istTime).toISOString();
+        
+        const { error } = await supabase
+            .from('training_sessions')
+            .update({ 
+                enabled_for_reach: enabled,
+                enabled_for_reach_at: istDate
+            })
+            .eq('id', sessionId);
+        
+        if (error) throw error;
+        
+        // Update local data
+        const sessionIndex = filteredSessionData.findIndex(s => s.id.toString() === sessionId);
+        if (sessionIndex !== -1) {
+            filteredSessionData[sessionIndex].enabled_for_reach = enabled;
+            filteredSessionData[sessionIndex].enabled_for_reach_at = istDate;
+            
+            // Update the reached toggle state
+            const row = e.target.closest('tr');
+            const reachToggle = row.querySelector('.reach-toggle');
+            const toggleSwitch = reachToggle.closest('.toggle-switch');
+            
+            if (!enabled) {
+                // When disabling: disable the toggle and add disabled class
+                reachToggle.disabled = true;
+                toggleSwitch.classList.add('toggle-disabled');
+            } else {
+                // When enabling: enable the toggle and remove disabled class
+                reachToggle.disabled = false;
+                toggleSwitch.classList.remove('toggle-disabled');
+            }
+        }
+        
+        hideLoading();
+        
+    } catch (error) {
+        hideLoading();
+        showError('Failed to update enable status: ' + error.message);
+        e.target.checked = !e.target.checked;
+    }
+}
+
 async function updateReachedStatus(e) {
     const sessionId = e.target.dataset.id;
+    const session = filteredSessionData.find(s => s.id.toString() === sessionId);
+    
+    // Check if enabled
+    if (!session.enabled_for_reach) {
+        showError('Please enable this trainer first before marking as reached');
+        e.target.checked = !e.target.checked;
+        return;
+    }
+    
     const reached = e.target.checked ? 'Yes' : 'No';
     
     try {
@@ -1046,17 +1262,7 @@ async function updateReachedStatus(e) {
         const istTime = new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
         const istDate = new Date(istTime).toISOString();
         
-        const { error } = await supabase
-            .from('training_sessions')
-            .update({ 
-                reached: reached,
-                time_of_updation: istDate
-            })
-            .eq('id', sessionId);
-        
-        if (error) throw error;
-        
-        // Update local data
+        // UPDATE LOCAL DATA FIRST - before the database call
         const sessionIndex = filteredSessionData.findIndex(s => s.id.toString() === sessionId);
         if (sessionIndex !== -1) {
             filteredSessionData[sessionIndex].reached = reached;
@@ -1070,15 +1276,55 @@ async function updateReachedStatus(e) {
             }
         }
         
+        // Also update the allSessionData array
+        const allSessionIndex = allSessionData.findIndex(s => s.id.toString() === sessionId);
+        if (allSessionIndex !== -1) {
+            allSessionData[allSessionIndex].reached = reached;
+            allSessionData[allSessionIndex].time_of_updation = istDate;
+        }
+        
+        // Now update the database
+        const { error } = await supabase
+            .from('training_sessions')
+            .update({ 
+                reached: reached,
+                time_of_updation: istDate
+            })
+            .eq('id', sessionId);
+        
+        if (error) throw error;
+        
         updateStats();
         hideLoading();
         
     } catch (error) {
         hideLoading();
         showError('Failed to update status: ' + error.message);
+        
+        // Revert local data on error
+        const sessionIndex = filteredSessionData.findIndex(s => s.id.toString() === sessionId);
+        if (sessionIndex !== -1) {
+            const revertedReached = reached === 'Yes' ? 'No' : 'Yes';
+            filteredSessionData[sessionIndex].reached = revertedReached;
+            
+            const row = e.target.closest('tr');
+            if (revertedReached === 'Yes') {
+                row.classList.add('reached');
+            } else {
+                row.classList.remove('reached');
+            }
+        }
+        
+        const allSessionIndex = allSessionData.findIndex(s => s.id.toString() === sessionId);
+        if (allSessionIndex !== -1) {
+            const revertedReached = reached === 'Yes' ? 'No' : 'Yes';
+            allSessionData[allSessionIndex].reached = revertedReached;
+        }
+        
         e.target.checked = !e.target.checked;
     }
 }
+
 
 function showSessionDetails(e) {
     const sessionId = e.target.closest('button').dataset.id;
@@ -1089,7 +1335,31 @@ function showSessionDetails(e) {
         const updatedTime = session.time_of_updation ? 
             new Date(session.time_of_updation).toLocaleString('en-GB') : 'Never';
         
+        // Construct Google Drive image URL from photo ID
+        const photoUrl = session.photo ? 
+            `https://drive.google.com/thumbnail?id=${session.photo}&sz=w400` : 
+            null;
+        
         sessionDetailsContent.innerHTML = `
+            ${photoUrl ? `
+                <div class="trainer-photo-container">
+                    <img src="${photoUrl}" 
+                         alt="${session.name}" 
+                         class="trainer-photo"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="photo-error" style="display: none;">
+                        <i class="fas fa-user-circle"></i>
+                        <p>Photo not available</p>
+                    </div>
+                </div>
+            ` : `
+                <div class="trainer-photo-container">
+                    <div class="photo-placeholder">
+                        <i class="fas fa-user-circle"></i>
+                        <p>No photo available</p>
+                    </div>
+                </div>
+            `}
             <div class="detail-item">
                 <span class="detail-label">Trainer Name:</span>
                 <span class="detail-value">${session.name}</span>
@@ -1140,6 +1410,7 @@ function showSessionDetails(e) {
     }
 }
 
+
 function closeModal() {
     sessionDetailsModal.classList.add('hidden');
 }
@@ -1154,11 +1425,11 @@ document.addEventListener('click', function(e) {
 function updateStats() {
     const totalSessions = filteredSessionData.length;
     const sessionsReached = filteredSessionData.filter(session => session.reached === 'Yes').length;
-    const sessionsYetToReach = totalSessions - sessionsReached;
+    const venueReached = filteredSessionData.filter(session => session.enabled_for_reach === true).length;
     
     totalTrainersEl.textContent = totalSessions;
+    venueReachedCountEl.textContent = venueReached;
     trainersReachedEl.textContent = sessionsReached;
-    trainersYetToReachEl.textContent = sessionsYetToReach;
 }
 
 function toggleInstructions() {
@@ -1198,22 +1469,49 @@ function setupRealtimeSubscription() {
 }
 
 function updateTableRow(session) {
-    const toggleElement = document.querySelector(`input[data-id="${session.id}"]`);
-    if (toggleElement) {
-        const wasChecked = toggleElement.checked;
-        toggleElement.checked = session.reached === 'Yes';
+    // Update both arrays to keep data in sync
+    const filteredIndex = filteredSessionData.findIndex(s => s.id === session.id);
+    if (filteredIndex !== -1) {
+        filteredSessionData[filteredIndex] = session;
+    }
+    
+    const allIndex = allSessionData.findIndex(s => s.id === session.id);
+    if (allIndex !== -1) {
+        allSessionData[allIndex] = session;
+    }
+    
+    // Update the toggle elements
+    const reachToggle = document.querySelector(`input.reach-toggle[data-id="${session.id}"]`);
+    const enableToggle = document.querySelector(`input.enable-toggle[data-id="${session.id}"]`);
+    
+    if (reachToggle) {
+        reachToggle.checked = session.reached === 'Yes';
         
-        const row = toggleElement.closest('tr');
+        const row = reachToggle.closest('tr');
         if (session.reached === 'Yes') {
             row.classList.add('reached');
         } else {
             row.classList.remove('reached');
         }
         
-        if (wasChecked !== toggleElement.checked) {
-            showBriefNotification(`${session.name} status updated by another user`);
+        // Update disabled state based on enabled_for_reach
+        const toggleSwitch = reachToggle.closest('.toggle-switch');
+        if (!session.enabled_for_reach) {
+            reachToggle.disabled = true;
+            toggleSwitch.classList.add('toggle-disabled');
+        } else {
+            reachToggle.disabled = false;
+            toggleSwitch.classList.remove('toggle-disabled');
         }
     }
+    
+    // Update enable toggle if it exists (LND users only)
+    if (enableToggle) {
+        enableToggle.checked = session.enabled_for_reach || false;
+    }
+    
+    // Update stats to reflect changes
+    updateStats();
 }
 
 function showBriefNotification(message) {
@@ -1253,6 +1551,13 @@ function updateSecondaryFilterUI() {
     // Update reached filter UI
     selectAllReached.checked = true;
     document.querySelectorAll('.reached-checkbox').forEach(cb => {
+        cb.checked = true;
+    });
+    
+    // ADD THIS BLOCK
+    // Update enabled filter UI
+    selectAllEnabled.checked = true;
+    document.querySelectorAll('.enabled-checkbox').forEach(cb => {
         cb.checked = true;
     });
 }
