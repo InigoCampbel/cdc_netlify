@@ -1389,7 +1389,7 @@ function showSessionDetails(e) {
                 <span class="detail-value">${session.department || 'N/A'}</span>
             </div>
             <div class="detail-item">
-                <span class="detail-label">Students:</span>
+                <span class="detail-label">Students Count:</span>
                 <span class="detail-value">${session.no_of_students || 'N/A'}</span>
             </div>
             <div class="detail-item">
@@ -1565,4 +1565,5 @@ function updateSecondaryFilterUI() {
         cb.checked = true;
     });
 }
+
 
