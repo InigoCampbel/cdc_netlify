@@ -127,11 +127,6 @@ body {
   font-size: 14px;
 }
 
-.help-text {
-  font-size: 13px;
-  color: var(--text-light);
-  margin-top: 6px;
-}
 
 #coordinatorId {
   padding: 14px;
@@ -452,21 +447,6 @@ body {
   background-color: #e2e8f0;
 }
 
-.btn-refresh {
-  background-color: var(--primary);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin: 15px auto 0;
-}
-
-.btn-refresh:hover {
-  background-color: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
 
 /* Update logout button style to match refresh button */
 .logout-btn {
@@ -640,12 +620,6 @@ input:checked + .toggle-slider:before {
   font-weight: 500;
 }
 
-/* Refresh Container */
-.refresh-container {
-  display: flex;
-  justify-content: center;
-  margin: 24px 0;
-}
 
 .modal {
   position: fixed;
@@ -761,3 +735,90 @@ input:checked + .toggle-slider:before {
   }
 }
 
+/* Disabled toggle styling */
+.toggle-switch.toggle-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.toggle-switch.toggle-disabled input:disabled {
+    cursor: not-allowed;
+}
+
+.toggle-switch.toggle-disabled .toggle-slider {
+    cursor: not-allowed;
+}
+
+.enable-column {
+    text-align: center;
+}
+
+/* Trainer Photo Styles */
+.trainer-photo-container {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #faf8f8;
+    border-radius: 8px;
+}
+
+.trainer-photo {
+    width: 150px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: block;
+    margin: 0 auto;
+}
+
+.photo-placeholder,
+.photo-error {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #e9ecef;
+    border-radius: 8px;
+    color: #6c757d;
+}
+
+.photo-placeholder i,
+.photo-error i {
+    font-size: 60px;
+    margin-bottom: 10px;
+}
+
+.photo-placeholder p,
+.photo-error p {
+    margin: 0;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* Adjust modal content for better photo display */
+.modal-content {
+    max-width: 500px;
+}
+
+@media (max-width: 768px) {
+    .trainer-photo {
+        width: 120px;
+        height: 140px;
+    }
+    
+    .photo-placeholder,
+    .photo-error {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .photo-placeholder i,
+    .photo-error i {
+        font-size: 48px;
+    }
+}
