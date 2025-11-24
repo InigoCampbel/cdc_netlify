@@ -1377,6 +1377,10 @@ function showSessionDetails(e) {
                 <span class="detail-value">${session.session}</span>
             </div>
             <div class="detail-item">
+                <span class="detail-label">Timing:</span>
+                <span class="detail-value">${session.timing}</span>
+            </div>
+            <div class="detail-item">
                 <span class="detail-label">Topic:</span>
                 <span class="detail-value">${session.topic || 'N/A'}</span>
             </div>
@@ -1561,3 +1565,4 @@ function updateSecondaryFilterUI() {
         cb.checked = true;
     });
 }
+
