@@ -525,7 +525,7 @@
                 <!--<div class="decorative-element circle-element"></div>-->
                 <div class="decorative-element diagonal-element"></div>
                 <h1 class="main-title">SEED Training</h1>
-                <div class="sub-title">25 November 2025 to 28 November 2025</div>
+                <div id="trainingDates" class="sub-title">25 November 2025 to 28 November 2025</div>
             </div>
             
             <div class="nav-bar fade-in-element" style="animation-delay: 0.2s;">
@@ -581,25 +581,25 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td class="date-column">25 Nov 2025</td>
+                                    <td id="date1" class="date-column">25 Nov 2025</td>
                                     <td id="nov25s1"></td>
                                     <td id="nov25s2"></td>
                                     <td id="nov25s3"></td>
                                 </tr>
                                 <tr>
-                                    <td class="date-column">26 Nov 2025</td>
+                                    <td id="date2" class="date-column">26 Nov 2025</td>
                                     <td id="nov26s1"></td>
                                     <td id="nov26s2"></td>
                                     <td id="nov26s3"></td>
                                 </tr>
                                 <tr>
-                                    <td class="date-column">27 Nov 2025</td>
+                                    <td id="date3" class="date-column">27 Nov 2025</td>
                                     <td id="nov27s1"></td>
                                     <td id="nov27s2"></td>
                                     <td id="nov27s3"></td>
                                 </tr>
                                 <tr>
-                                    <td class="date-column">28 Nov 2025</td>
+                                    <td id="date4" class="date-column">28 Nov 2025</td>
                                     <td id="nov28s1"></td>
                                     <td id="nov28s2"></td>
                                     <td id="nov28s3"></td>
@@ -808,6 +808,23 @@
             `;
         }
 
+
+        // Function to update dates display based on roll number
+        function updateDatesForMMC(rollNumber) {
+            // Check if roll number starts with "25MMC"
+            if (rollNumber && rollNumber.startsWith("25MMC")) {
+                // Update header subtitle
+                document.getElementById('trainingDates').textContent = "22 December 2025 to 26 December 2025";
+                
+                // Update table dates
+                document.getElementById('date1').textContent = "22 Dec 2025";
+                document.getElementById('date2').textContent = "23 Dec 2025";
+                document.getElementById('date3').textContent = "25 Dec 2025";
+                document.getElementById('date4').textContent = "26 Dec 2025";
+            }
+            // If not 25MMC, dates remain as default (25-28 Nov)
+        }
+
         // Display student data from session storage
         function displayStudentData() {
             // Get session data
@@ -828,6 +845,8 @@
             // Display student data
             document.getElementById('name').textContent = data.name || "-";
             document.getElementById('roll').textContent = data.roll_number || sessionData.userId;
+            // Update dates for MMC students
+            updateDatesForMMC(data.roll_number || sessionData.userId);
             // Display session timings based on roll number
             displaySessionTimings(data.roll_number || sessionData.userId);
             document.getElementById('department').textContent = data.department || "-";
@@ -957,4 +976,3 @@
 </body>
 
 </html>
-
