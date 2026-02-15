@@ -3,7 +3,7 @@ const SUPABASE_URL = 'https://wetnbnemedzyzudvuihb.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndldG5ibmVtZWR6eXp1ZHZ1aWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjM2ODksImV4cCI6MjA3MDQ5OTY4OX0.53iKjcKaImIz10H8hJv0MkDl08R8Pu8OprDcURqSmRQ';
 
 // Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Global state
 let allSessionData = [];
@@ -594,7 +594,7 @@ async function loadInitialFilterOptions() {
     try {
         showLoading('Loading filter options...');
         
-        let query = supabase
+        let query = supabaseClient
             .from('training_sessions')
             .select('date, block, training_partner');
         
@@ -919,7 +919,7 @@ async function applyPrimaryFilters() {
     try {
         showLoading('Loading session data...');
         
-        let query = supabase.from('training_sessions').select('*');
+        let query = supabaseClient.from('training_sessions').select('*');
         
         if (userType !== 'LND') {
             query = query.eq('training_partner', getTrainingPartnerForUser(userType));
@@ -979,7 +979,7 @@ async function loadDataForRestoredFilters() {
     try {
         showLoading('Restoring session data...');
         
-        let query = supabase.from('training_sessions').select('*');
+        let query = supabaseClient.from('training_sessions').select('*');
         
         if (userType !== 'LND') {
             query = query.eq('training_partner', getTrainingPartnerForUser(userType));
@@ -1202,7 +1202,7 @@ async function updateEnabledStatus(e) {
         const istTime = new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
         const istDate = new Date(istTime).toISOString();
         
-        const { error } = await supabase
+        const { error } = await supabaseClient
             .from('training_sessions')
             .update({ 
                 enabled_for_reach: enabled,
@@ -1284,7 +1284,7 @@ async function updateReachedStatus(e) {
         }
         
         // Now update the database
-        const { error } = await supabase
+        const { error } = await supabaseClient
             .from('training_sessions')
             .update({ 
                 reached: reached,
@@ -1453,7 +1453,7 @@ function setupRealtimeSubscription() {
         realtimeSubscription.unsubscribe();
     }
     
-    realtimeSubscription = supabase
+    realtimeSubscription = supabaseClient
         .channel('training_sessions_changes')
         .on('postgres_changes', {
             event: 'UPDATE',
