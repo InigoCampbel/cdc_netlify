@@ -522,17 +522,10 @@
         </div>
         
         <div class="announcements">
-            <h3><i class="fas fa-bell"></i> Announcements</h3>
-            <p>• SEED Training Dates: <strong>25th November 2025 to 28th November 2025</strong></p>
-            <ul>
-                <li>MA Journalism: <strong>22nd December 2025 to 26th December 2025</strong></li>
-            </ul>
-            <p>• Timing:</p>
-            <ul>
-                <li>I UG & IV MSC SS: <strong>09:00 AM to 04:30 PM</strong></li>
-                <li>I PG: <strong>08:30 AM to 04:30 PM</strong></li>
-            </ul>
-        </div>
+                <h3><i class="fas fa-bell"></i> Announcements</h3>
+                <p>• SEED Training Dates (I PG & IV MSC SS): <strong>19th February 2026 to 22nd February 2026</strong></p>
+                <p>• Timing: <strong>08:30 AM to 04:30 PM</strong></p>
+            </div>
     </div>
     
     <div class="footer">
@@ -629,7 +622,7 @@
                 }
                 localStorage.setItem('lastLoginAttempt', now.toString());
 
-                const response = await fetch(`${this.SUPABASE_URL}/rest/v1/student?roll_number=eq.${rollNumber}&dob=eq.${dob}&select=roll_number,name,department,role,venue,attendance_percentage,nov_25_s1,nov_25_s2,nov_25_s3,nov_26_s1,nov_26_s2,nov_26_s3,nov_27_s1,nov_27_s2,nov_27_s3,nov_28_s1,nov_28_s2,nov_28_s3`, {
+                const response = await fetch(`${this.SUPABASE_URL}/rest/v1/student_feb26?roll_number=eq.${rollNumber}&dob=eq.${dob}&select=roll_number,name,department,role,venue,attendance_percentage,feb_19_s1,feb_19_s2,feb_19_s3,feb_20_s1,feb_20_s2,feb_20_s3,feb_21_s1,feb_21_s2,feb_21_s3,feb_22_s1,feb_22_s2,feb_22_s3`, {
                     method: 'GET',
                     headers: {
                         'apikey': this.SUPABASE_ANON_KEY,
