@@ -525,7 +525,7 @@
                 <!--<div class="decorative-element circle-element"></div>-->
                 <div class="decorative-element diagonal-element"></div>
                 <h1 class="main-title">SEED Training</h1>
-                <div id="trainingDates" class="sub-title">25 November 2025 to 28 November 2025</div>
+                <div id="trainingDates" class="sub-title">19 February 2026 to 22 February 2026</div>
             </div>
             
             <div class="nav-bar fade-in-element" style="animation-delay: 0.2s;">
@@ -581,28 +581,28 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td id="date1" class="date-column">25 Nov 2025</td>
-                                    <td id="nov25s1"></td>
-                                    <td id="nov25s2"></td>
-                                    <td id="nov25s3"></td>
+                                    <td id="date1" class="date-column">19 Feb 2026</td>
+                                    <td id="feb19s1"></td>
+                                    <td id="feb19s2"></td>
+                                    <td id="feb19s3"></td>
                                 </tr>
                                 <tr>
-                                    <td id="date2" class="date-column">26 Nov 2025</td>
-                                    <td id="nov26s1"></td>
-                                    <td id="nov26s2"></td>
-                                    <td id="nov26s3"></td>
+                                    <td id="date2" class="date-column">20 Feb 2026</td>
+                                    <td id="feb20s1"></td>
+                                    <td id="feb20s2"></td>
+                                    <td id="feb20s3"></td>
                                 </tr>
                                 <tr>
-                                    <td id="date3" class="date-column">27 Nov 2025</td>
-                                    <td id="nov27s1"></td>
-                                    <td id="nov27s2"></td>
-                                    <td id="nov27s3"></td>
+                                    <td id="date3" class="date-column">21 Feb 2026</td>
+                                    <td id="feb21s1"></td>
+                                    <td id="feb21s2"></td>
+                                    <td id="feb21s3"></td>
                                 </tr>
                                 <tr>
-                                    <td id="date4" class="date-column">28 Nov 2025</td>
-                                    <td id="nov28s1"></td>
-                                    <td id="nov28s2"></td>
-                                    <td id="nov28s3"></td>
+                                    <td id="date4" class="date-column">22 Feb 2026</td>
+                                    <td id="feb22s1"></td>
+                                    <td id="feb22s2"></td>
+                                    <td id="feb22s3"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -775,23 +775,10 @@
         function displaySessionTimings(rollNumber) {
             const sessionTimingsDiv = document.getElementById('sessionTimings');
             
-            // Default timings
-            let session1 = "09:00 AM - 11:00 AM";
-            let session2 = "11:30 AM - 01:30 PM";
-            let session3 = "02:30 PM - 04:30 PM";
-            
-            // Check if roll number exists and has at least 5 characters
-            if (rollNumber && rollNumber.length >= 5) {
-                const thirdChar = rollNumber.charAt(2); // Index 2 is the 3rd character
-                const chars3to5 = rollNumber.substring(2, 5); // Characters from index 2 to 4 (3rd to 5th)
-                
-                // Check if 3rd character is "M" AND characters 3-5 are NOT "MSS"
-                if (thirdChar === "M" && chars3to5 !== "MSS") {
-                    session1 = "08:30 AM - 10:45 AM";
-                    session2 = "11:15 AM - 01:30 PM";
-                    session3 = "02:30 PM - 04:30 PM";
-                }
-            }
+            // Session timings for everyone
+            const session1 = "08:30 AM - 10:45 AM";
+            const session2 = "11:15 AM - 01:30 PM";
+            const session3 = "02:30 PM - 04:30 PM";
             
             // Build the HTML for session timings
             sessionTimingsDiv.innerHTML = `
@@ -808,22 +795,6 @@
             `;
         }
 
-
-        // Function to update dates display based on roll number
-        function updateDatesForMMC(rollNumber) {
-            // Check if roll number starts with "25MMC"
-            if (rollNumber && rollNumber.startsWith("25MMC")) {
-                // Update header subtitle
-                document.getElementById('trainingDates').textContent = "22 December 2025 to 26 December 2025";
-                
-                // Update table dates
-                document.getElementById('date1').textContent = "22 Dec 2025";
-                document.getElementById('date2').textContent = "23 Dec 2025";
-                document.getElementById('date3').textContent = "25 Dec 2025";
-                document.getElementById('date4').textContent = "26 Dec 2025";
-            }
-            // If not 25MMC, dates remain as default (25-28 Nov)
-        }
 
         // Display student data from session storage
         function displayStudentData() {
@@ -845,8 +816,7 @@
             // Display student data
             document.getElementById('name').textContent = data.name || "-";
             document.getElementById('roll').textContent = data.roll_number || sessionData.userId;
-            // Update dates for MMC students
-            updateDatesForMMC(data.roll_number || sessionData.userId);
+
             // Display session timings based on roll number
             displaySessionTimings(data.roll_number || sessionData.userId);
             document.getElementById('department').textContent = data.department || "-";
@@ -909,18 +879,18 @@
             
             // Update attendance table
             const sessionMappings = [
-                { id: 'nov25s1', field: 'nov_25_s1' },
-                { id: 'nov25s2', field: 'nov_25_s2' },
-                { id: 'nov25s3', field: 'nov_25_s3' },
-                { id: 'nov26s1', field: 'nov_26_s1' },
-                { id: 'nov26s2', field: 'nov_26_s2' },
-                { id: 'nov26s3', field: 'nov_26_s3' },
-                { id: 'nov27s1', field: 'nov_27_s1' },
-                { id: 'nov27s2', field: 'nov_27_s2' },
-                { id: 'nov27s3', field: 'nov_27_s3' },
-                { id: 'nov28s1', field: 'nov_28_s1' },
-                { id: 'nov28s2', field: 'nov_28_s2' },
-                { id: 'nov28s3', field: 'nov_28_s3' }
+                { id: 'feb19s1', field: 'feb_19_s1' },
+                { id: 'feb19s2', field: 'feb_19_s2' },
+                { id: 'feb19s3', field: 'feb_19_s3' },
+                { id: 'feb20s1', field: 'feb_20_s1' },
+                { id: 'feb20s2', field: 'feb_20_s2' },
+                { id: 'feb20s3', field: 'feb_20_s3' },
+                { id: 'feb21s1', field: 'feb_21_s1' },
+                { id: 'feb21s2', field: 'feb_21_s2' },
+                { id: 'feb21s3', field: 'feb_21_s3' },
+                { id: 'feb22s1', field: 'feb_22_s1' },
+                { id: 'feb22s2', field: 'feb_22_s2' },
+                { id: 'feb22s3', field: 'feb_22_s3' }
             ];
 
             sessionMappings.forEach(mapping => {
