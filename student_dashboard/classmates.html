@@ -621,10 +621,10 @@
                 </label>
                 <select id="dateSelect">
                     <option value="">Choose Date...</option>
-                    <option id="dateOption1" value="2025-11-25">25 Nov 2025</option>
-                    <option id="dateOption2" value="2025-11-26">26 Nov 2025</option>
-                    <option id="dateOption3" value="2025-11-27">27 Nov 2025</option>
-                    <option id="dateOption4" value="2025-11-28">28 Nov 2025</option>
+                    <option id="dateOption1" value="2026-02-19">19 Feb 2026</option>
+                    <option id="dateOption2" value="2026-02-20">20 Feb 2026</option>
+                    <option id="dateOption3" value="2026-02-21">21 Feb 2026</option>
+                    <option id="dateOption4" value="2026-02-22">22 Feb 2026</option>
                 </select>
             </div>
             <button class="fetch-btn" onclick="fetchDateAttendance()">
@@ -806,29 +806,7 @@
             }
         }
 
-        // Function to update dates display based on roll number
-        function updateDatesForMMC(rollNumber) {
-            // Check if roll number starts with "25MMC"
-            if (rollNumber && rollNumber.startsWith("25MMC")) {
-                // Update date select options
-                document.getElementById('dateOption1').textContent = "22 Dec 2025";
-                document.getElementById('dateOption2').textContent = "23 Dec 2025";
-                document.getElementById('dateOption3').textContent = "25 Dec 2025";
-                document.getElementById('dateOption4').textContent = "26 Dec 2025";
-                
-                // Update dates in student view table (these IDs are created dynamically)
-                // We'll update them when the table is displayed
-                window.mmcDateLabels = {
-                    'date1': '22 Dec 2025',
-                    'date2': '23 Dec 2025',
-                    'date3': '25 Dec 2025',
-                    'date4': '26 Dec 2025'
-                };
-            } else {
-                // Reset to default dates
-                window.mmcDateLabels = null;
-            }
-        }
+        
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
@@ -843,8 +821,6 @@
             repData = JSON.parse(storedRepData);
             document.getElementById('repName').textContent = `${repData.repName} - Classmates Attendance`;
             document.getElementById('department').textContent = `Department: ${repData.department}`;
-            // Update dates if rep is MMC student
-            updateDatesForMMC(repData.repRoll);
         });
 
         function goBack() {
@@ -893,10 +869,10 @@
             try {
                 // Map calendar dates to database column suffixes
                 const dateMapping = {
-                    '2025-11-25': '25',
-                    '2025-11-26': '26', 
-                    '2025-11-27': '27',
-                    '2025-11-28': '28'
+                    '2026-02-19': '19',
+                    '2026-02-20': '20', 
+                    '2026-02-21': '21',
+                    '2026-02-22': '22'
                 };
 
                 const sessionSuffix = dateMapping[selectedDate];
@@ -904,7 +880,7 @@
                     showError('Attendance data not available for selected date');
                     return;
                 }
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/student?department=eq.${encodeURIComponent(repData.department)}&select=roll_number,name,nov_25_s1,nov_25_s2,nov_25_s3,nov_26_s1,nov_26_s2,nov_26_s3,nov_27_s1,nov_27_s2,nov_27_s3,nov_28_s1,nov_28_s2,nov_28_s3`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/student_feb26?department=eq.${encodeURIComponent(repData.department)}&select=roll_number,name,feb_19_s1,feb_19_s2,feb_19_s3,feb_20_s1,feb_20_s2,feb_20_s3,feb_21_s1,feb_21_s2,feb_21_s3,feb_22_s1,feb_22_s2,feb_22_s3`, {
                 
                     method: 'GET',
                     headers: {
@@ -928,17 +904,17 @@
                     students: students.map(student => ({
                         name: student.name,
                         rollNumber: student.roll_number,
-                        session1: student[`nov_${sessionSuffix}_s1`] || '-',
-                        session2: student[`nov_${sessionSuffix}_s2`] || '-',
-                        session3: student[`nov_${sessionSuffix}_s3`] || '-'
+                        session1: student[`feb_${sessionSuffix}_s1`] || '-',
+                        session2: student[`feb_${sessionSuffix}_s2`] || '-',
+                        session3: student[`feb_${sessionSuffix}_s3`] || '-'
                     })),
                     stats: {
-                        session1Present: students.filter(s => s[`nov_${sessionSuffix}_s1`] === 'P').length,
-                        session1Absent: students.filter(s => s[`nov_${sessionSuffix}_s1`] === 'A').length,
-                        session2Present: students.filter(s => s[`nov_${sessionSuffix}_s2`] === 'P').length,
-                        session2Absent: students.filter(s => s[`nov_${sessionSuffix}_s2`] === 'A').length,
-                        session3Present: students.filter(s => s[`nov_${sessionSuffix}_s3`] === 'P').length,
-                        session3Absent: students.filter(s => s[`nov_${sessionSuffix}_s3`] === 'A').length
+                        session1Present: students.filter(s => s[`feb_${sessionSuffix}_s1`] === 'P').length,
+                        session1Absent: students.filter(s => s[`feb_${sessionSuffix}_s1`] === 'A').length,
+                        session2Present: students.filter(s => s[`feb_${sessionSuffix}_s2`] === 'P').length,
+                        session2Absent: students.filter(s => s[`feb_${sessionSuffix}_s2`] === 'A').length,
+                        session3Present: students.filter(s => s[`feb_${sessionSuffix}_s3`] === 'P').length,
+                        session3Absent: students.filter(s => s[`feb_${sessionSuffix}_s3`] === 'A').length
                     }
                 };
                 // Sort students by roll number
@@ -971,7 +947,7 @@
             document.getElementById('error').classList.add('hidden');
             
             try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/student?roll_number=eq.${rollNumber}&department=eq.${encodeURIComponent(repData.department)}&select=roll_number,name,attendance_percentage,nov_25_s1,nov_25_s2,nov_25_s3,nov_26_s1,nov_26_s2,nov_26_s3,nov_27_s1,nov_27_s2,nov_27_s3,nov_28_s1,nov_28_s2,nov_28_s3`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/student_feb26?roll_number=eq.${rollNumber}&department=eq.${encodeURIComponent(repData.department)}&select=roll_number,name,attendance_percentage,feb_19_s1,feb_19_s2,feb_19_s3,feb_20_s1,feb_20_s2,feb_20_s3,feb_21_s1,feb_21_s2,feb_21_s3,feb_22_s1,feb_22_s2,feb_22_s3`, {
                     method: 'GET',
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
@@ -1003,18 +979,18 @@
                         attendancePercentage: student.attendance_percentage
                     },
                     attendance: {
-                        nov25_s1: student.nov_25_s1,
-                        nov25_s2: student.nov_25_s2,
-                        nov25_s3: student.nov_25_s3,
-                        nov26_s1: student.nov_26_s1,
-                        nov26_s2: student.nov_26_s2,
-                        nov26_s3: student.nov_26_s3,
-                        nov27_s1: student.nov_27_s1,
-                        nov27_s2: student.nov_27_s2,
-                        nov27_s3: student.nov_27_s3,
-                        nov28_s1: student.nov_28_s1,
-                        nov28_s2: student.nov_28_s2,
-                        nov28_s3: student.nov_28_s3
+                        feb19_s1: student.feb_19_s1,
+                        feb19_s2: student.feb_19_s2,
+                        feb19_s3: student.feb_19_s3,
+                        feb20_s1: student.feb_20_s1,
+                        feb20_s2: student.feb_20_s2,
+                        feb20_s3: student.feb_20_s3,
+                        feb21_s1: student.feb_21_s1,
+                        feb21_s2: student.feb_21_s2,
+                        feb21_s3: student.feb_21_s3,
+                        feb22_s1: student.feb_22_s1,
+                        feb22_s2: student.feb_22_s2,
+                        feb22_s3: student.feb_22_s3
                     }
                 };
                 
@@ -1133,10 +1109,10 @@
             tableBody.innerHTML = '';
             
             const dates = [
-                { date: '25 Nov 2025', dateId: 'date1', key: 'nov25' },
-                { date: '26 Nov 2025', dateId: 'date2', key: 'nov26' },
-                { date: '27 Nov 2025', dateId: 'date3', key: 'nov27' },
-                { date: '28 Nov 2025', dateId: 'date4', key: 'nov28' }
+                { date: '19 Feb 2026', dateId: 'date1', key: 'feb19' },
+                { date: '20 Feb 2026', dateId: 'date2', key: 'feb20' },
+                { date: '21 Feb 2026', dateId: 'date3', key: 'feb21' },
+                { date: '22 Feb 2026', dateId: 'date4', key: 'feb22' }
             ];
             
             dates.forEach(dateObj => {
@@ -1151,12 +1127,9 @@
                 };
                 
                 const row = document.createElement('tr');
-                const displayDate = window.mmcDateLabels && window.mmcDateLabels[dateObj.dateId] 
-                    ? window.mmcDateLabels[dateObj.dateId] 
-                    : dateObj.date;
-                    
+    
                 row.innerHTML = `
-                    <td id="${dateObj.dateId}" class="date-column">${displayDate}</td>
+                    <td id="${dateObj.dateId}" class="date-column">${dateObj.date}</td>
                     <td>${getStatusBadge(session1)}</td>
                     <td>${getStatusBadge(session2)}</td>
                     <td>${getStatusBadge(session3)}</td>
