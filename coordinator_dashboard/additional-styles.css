@@ -1,0 +1,27 @@
+/* Enhanced Modal Content */
+.modal-content {
+  background-color: var(--bg-white);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+
+.modal-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgb(62, 6, 173) ;
+  border-radius: 10px;
+  border: none;
+  padding: 2px;
+  font-size: 32px;
+  cursor: pointer;
+  color: rgb(242, 245, 246);
+  transition: var(--transition);
+}

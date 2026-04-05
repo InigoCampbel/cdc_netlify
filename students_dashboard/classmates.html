@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classmates Attendance - SEED Training</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --hover-color: #1e40af;
+            --background-color: #f8fafc;
+            --text-color: #1f2937;
+            --text-light: #64748b;
+            --bg-white: #ffffff;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        /* Header Section */
+        .header {
+            background: var(--bg-white);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--hover-color));
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(30, 58, 138, 0.4);
+        }
+
+        .header-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 4px;
+            font-size: 20px;
+        }
+
+        .header-subtitle {
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* View Selector */
+        .view-selector {
+            display: flex;
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            padding: 6px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            gap: 6px;
+        }
+
+        .view-btn {
+            flex: 1;
+            background: transparent;
+            color: var(--text-light);
+            border: none;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .view-btn.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--hover-color));
+            color: white;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+        }
+
+        .view-btn:not(.active):hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+        }
+
+        /* View Panels */
+        .view-panel {
+            background: var(--bg-white);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .view-panel h3 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 16px;
+            transition: var(--transition);
+            background: var(--bg-white);
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .fetch-btn {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 16px;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .fetch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .fetch-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Stats Section */
+        .stats-container {
+            margin: 20px 0;
+        }
+
+        .stats-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .stats-title {
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats-date {
+            background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--bg-white), #f8fafc);
+            padding: 16px;
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 0 var(--radius) 0 40px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Session Stats */
+        .session-stats {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .session-pill {
+            flex: 1;
+            text-align: center;
+            padding: 12px 8px;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .session-1 {
+            background: linear-gradient(135deg, #fef3c7, #fbbf24);
+            color: #92400e;
+        }
+
+        .session-2 {
+            background: linear-gradient(135deg, #dbeafe, #3b82f6);
+            color: #1e40af;
+        }
+
+        .session-3 {
+            background: linear-gradient(135deg, #d1fae5, #10b981);
+            color: #065f46;
+        }
+
+        /* Attendance Table */
+        .attendance-table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-white);
+            min-width: 400px;
+        }
+
+        th, td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary-color), var(--hover-color));
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        tbody tr {
+            height: 56px;
+        }
+
+        tbody td {
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        .student-name {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .roll-number {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-present {
+            background: linear-gradient(135deg, #fef08a, #facc15);
+            color: #854d0e;
+        }
+
+        .badge-absent {
+            background: linear-gradient(135deg, #1e293b, #374151);
+            color: white;
+        }
+
+        /* Student Info Section */
+        .student-info {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            padding: 20px;
+            border-radius: var(--radius);
+            margin: 20px 0;
+            border-left: 4px solid var(--secondary-color);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.1);
+        }
+
+        .student-info h4 {
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .student-info p {
+            color: var(--text-color);
+            margin: 6px 0;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            background: linear-gradient(135deg, var(--danger-color), #dc2626);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            margin-top: 20px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Error Message */
+        .error {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin: 16px 0;
+            font-weight: 500;
+            border-left: 4px solid var(--danger-color);
+            box-shadow: 0 4px 8px rgba(239, 68, 68, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .error.hidden {
+            display: none !important;
+        }
+
+        /* Progress Bar for Attendance */
+        .progress-container {
+            background: var(--border-color);
+            border-radius: 10px;
+            height: 8px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4832d8, #f62222);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Change from repeat(2, 1fr) */
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .attendance-table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            margin: 20px 0;
+            max-height: 400px; /* Add this */
+            overflow-y: auto;   /* Add this */
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary-color), var(--hover-color));
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky; /* Already there */
+            top: 0;           /* Already there */
+            z-index: 10;      /* Add this */
+        }
+
+        .student-name {
+            text-align: left;
+            font-weight: 600;
+            position: sticky; /* Add this */
+            left: 0;          /* Add this */
+            background: var(--bg-white); /* Add this */
+            z-index: 5;       /* Add this */
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1); /* Add this */
+            max-width: 130px;
+            overflow-wrap: break-word;
+        }
+
+        /* For header cell of student column */
+        th.student-name {
+            background: linear-gradient(135deg, var(--primary-color), var(--hover-color)); /* Add this */
+            z-index: 15;      /* Add this */
+        }
+
+        /* Landing Screen */
+        .landing-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .landing-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .landing-card {
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            padding: 32px 20px;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .landing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-hover-shadow);
+            border-color: var(--secondary-color);
+        }
+
+        .landing-card .card-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+        }
+
+        .landing-card.info-card .card-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--hover-color));
+        }
+
+        .landing-card.attendance-card .card-icon {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+        }
+
+        .landing-card h3 {
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .landing-card p {
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        .back-to-dashboard-btn {
+            background: transparent;
+            color: var(--text-light);
+            border: 2px solid var(--border-color);
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .back-to-dashboard-btn:hover {
+            background: var(--background-color);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Active View */
+        .active-screen {
+            display: none;
+        }
+
+        /* Hamburger */
+        .hamburger-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            color: var(--primary-color);
+            font-size: 20px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .hamburger-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .hamburger-menu {
+            position: fixed;
+            top: auto;
+            right: 16px;
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            box-shadow: var(--card-hover-shadow);
+            padding: 8px;
+            min-width: 220px;
+            z-index: 9999;
+            display: none;
+            border: 1px solid var(--border-color);
+        }
+
+        .hamburger-menu.open {
+            display: block;
+        }
+
+        .hamburger-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-color);
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            transition: var(--transition);
+        }
+
+        .hamburger-menu-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+        }
+
+        .hamburger-menu-item.active-item {
+            background: linear-gradient(135deg, var(--primary-color), var(--hover-color));
+            color: white;
+        }
+
+        .hamburger-menu-item.danger {
+            color: var(--danger-color);
+        }
+
+        .hamburger-menu-item.danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 6px 0;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Classmate Info Table */
+        .info-loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .info-loading i {
+            font-size: 24px;
+            margin-bottom: 12px;
+            display: block;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Responsive adjustments */
+        @media (min-width: 480px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .session-stats {
+                gap: 12px;
+            }
+            
+            .session-pill {
+                padding: 16px 12px;
+                font-size: 13px;
+            }
+        }
+
+        /* Animation for smooth transitions */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- LANDING SCREEN -->
+        <div id="landingScreen" class="landing-screen">
+            <div class="header">
+                <p id="landingDepartment" class="header-subtitle" style="font-size: 16px; font-weight: 600; color: var(--primary-color);">Department: Loading...</p>
+            </div>
+
+            <div class="landing-cards">
+                <div class="landing-card info-card" onclick="enterView('info')">
+                    <div class="card-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>View Classmates Info</h3>
+                    <p>See names, roll numbers, career choices and venues of your classmates</p>
+                </div>
+
+                <div class="landing-card attendance-card" onclick="enterView('attendance')">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>View Classmates Attendance</h3>
+                    <p>Check attendance by date or by individual student</p>
+                </div>
+            </div>
+
+            <button class="back-to-dashboard-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+                Back to your Dashboard
+            </button>
+        </div>
+
+        <!-- ACTIVE VIEW SCREEN -->
+        <div id="activeScreen" class="active-screen">
+
+            <!-- Header with Hamburger -->
+            <div class="header" style="margin-bottom: 20px;">
+                <div class="header-top">
+                    <p id="activeDepartment" class="header-subtitle" style="font-size: 16px; font-weight: 600; color: var(--primary-color);">Department: Loading...</p>
+                    <div style="position: relative;">
+                        <button class="hamburger-btn" onclick="toggleHamburger()">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div id="hamburgerMenu" class="hamburger-menu">
+                            <button class="hamburger-menu-item" id="menuInfoBtn" onclick="switchView('info')">
+                                <i class="fas fa-users"></i>
+                                View Classmate Info
+                            </button>
+                            <button class="hamburger-menu-item" id="menuAttendanceBtn" onclick="switchView('attendance')">
+                                <i class="fas fa-chart-bar"></i>
+                                View Classmates Attendance
+                            </button>
+                            <div class="menu-divider"></div>
+                            <button class="hamburger-menu-item danger" onclick="goBack()">
+                                <i class="fas fa-arrow-left"></i>
+                                Back to your Dashboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Classmate Info View -->
+            <div id="infoView" class="hidden">
+                <div class="view-panel">
+                    <h3><i class="fas fa-users"></i> Classmate Info</h3>
+                    <div id="infoContent">
+                        <div class="info-loading">
+                            <i class="fas fa-spinner"></i>
+                            Loading classmates...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance View -->
+            <div id="attendanceView" class="hidden">
+                <!-- View Selector -->
+                <div class="view-selector">
+                    <button class="view-btn active" onclick="showView('date')">
+                        <i class="fas fa-calendar-day"></i>
+                        By Date
+                    </button>
+                    <button class="view-btn" onclick="showView('student')">
+                        <i class="fas fa-user-graduate"></i>
+                        By Student
+                    </button>
+                </div>
+
+                <!-- Date View Panel -->
+                <div id="dateView" class="view-panel">
+                    <h3>
+                        <i class="fas fa-calendar-alt"></i>
+                        View Attendance by Date
+                    </h3>
+                    <div class="form-group">
+                        <label for="dateSelect">
+                            <i class="fas fa-calendar"></i>
+                            Select Date:
+                        </label>
+                        <select id="dateSelect">
+                            <option value="">Choose Date...</option>
+                            <option value="2026-06-08">08 Jun 2026</option>
+                            <option value="2026-06-09">09 Jun 2026</option>
+                            <option value="2026-06-10">10 Jun 2026</option>
+                            <option value="2026-06-11">11 Jun 2026</option>
+                            <option value="2026-06-12">12 Jun 2026</option>
+                        </select>
+                    </div>
+                    <button class="fetch-btn" onclick="fetchDateAttendance()">
+                        <i class="fas fa-search"></i>
+                        <span id="fetchBtnText">Fetch Attendance</span>
+                    </button>
+
+                    <div id="dateResults" class="hidden">
+                        <div class="stats-container">
+                            <div class="stats-header">
+                                <h4 class="stats-title">
+                                    <i class="fas fa-chart-bar"></i>
+                                    Statistics
+                                </h4>
+                                <div id="selectedDate" class="stats-date"></div>
+                            </div>
+
+                            <div class="stats-grid" style="grid-template-columns: 1fr 1fr;">
+                                <div class="stat-card">
+                                    <div class="stat-number" id="totalStudents">0</div>
+                                    <div class="stat-label">Total Students</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="attendanceRate">0%</div>
+                                    <div class="stat-label">Attendance Rate</div>
+                                </div>
+                            </div>
+
+                            <div class="session-stats">
+                                <div class="session-pill session-1">
+                                    <div>Session 1</div>
+                                    <div id="session1Stats" style="font-size: 14px; margin-top: 4px;">0/0</div>
+                                </div>
+                                <div class="session-pill session-2">
+                                    <div>Session 2</div>
+                                    <div id="session2Stats" style="font-size: 14px; margin-top: 4px;">0/0</div>
+                                </div>
+                                <div class="session-pill session-3">
+                                    <div>Session 3</div>
+                                    <div id="session3Stats" style="font-size: 14px; margin-top: 4px;">0/0</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="attendance-table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th class="student-name">Student</th>
+                                        <th>Session 1</th>
+                                        <th>Session 2</th>
+                                        <th>Session 3</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dateTableBody"></tbody>
+                            </table>
+                        </div>
+
+                        <button class="action-btn" onclick="closeDateResults()">
+                            <i class="fas fa-times"></i>
+                            Close Results
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Student View Panel -->
+                <div id="studentView" class="view-panel hidden">
+                    <h3>
+                        <i class="fas fa-user-search"></i>
+                        View Student Attendance
+                    </h3>
+                    <div class="form-group">
+                        <label for="rollInput">
+                            <i class="fas fa-id-card"></i>
+                            Enter Roll Number:
+                        </label>
+                        <input type="text" id="rollInput" placeholder="Enter student roll number..." style="text-transform: uppercase;" autocomplete="off">
+                    </div>
+                    <button class="fetch-btn" onclick="fetchStudentAttendance()">
+                        <i class="fas fa-search"></i>
+                        <span id="studentFetchBtnText">Fetch Attendance</span>
+                    </button>
+
+                    <div id="studentResults" class="hidden">
+                        <div id="studentInfo" class="student-info"></div>
+
+                        <div class="attendance-table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Session 1</th>
+                                        <th>Session 2</th>
+                                        <th>Session 3</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="studentTableBody"></tbody>
+                            </table>
+                        </div>
+
+                        <button class="action-btn" onclick="closeStudentResults()">
+                            <i class="fas fa-times"></i>
+                            Close Results
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Error Message -->
+        <div id="error" class="error hidden">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="errorText">An error occurred</span>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://wetnbnemedzyzudvuihb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndldG5ibmVtZWR6eXp1ZHZ1aWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjM2ODksImV4cCI6MjA3MDQ5OTY4OX0.53iKjcKaImIz10H8hJv0MkDl08R8Pu8OprDcURqSmRQ';
+
+        let repData = null;
+        let currentView = null; // 'info' or 'attendance'
+        let infoFetched = false;
+
+        // ─── Init ───────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', function () {
+            const storedRepData = sessionStorage.getItem('repData');
+            if (!storedRepData) {
+                alert('No rep data found. Redirecting to dashboard.');
+                goBack();
+                return;
+            }
+            repData = JSON.parse(storedRepData);
+            document.getElementById('landingDepartment').textContent = `Department: ${repData.department}`;
+            document.getElementById('activeDepartment').textContent  = `Department: ${repData.department}`;
+        });
+
+        // ─── Navigation ─────────────────────────────────────────
+        function goBack() {
+            window.location.href = 'student.html';
+        }
+
+        function enterView(type) {
+            document.getElementById('landingScreen').style.display = 'none';
+            document.getElementById('activeScreen').style.display  = 'block';
+            switchView(type);
+        }
+
+        function switchView(type) {
+            // Close hamburger
+            document.getElementById('hamburgerMenu').classList.remove('open');
+
+            currentView = type;
+
+            // Toggle panels
+            document.getElementById('infoView').classList.toggle('hidden', type !== 'info');
+            document.getElementById('attendanceView').classList.toggle('hidden', type !== 'attendance');
+
+            // Highlight active menu item
+            document.getElementById('menuInfoBtn').classList.toggle('active-item', type === 'info');
+            document.getElementById('menuAttendanceBtn').classList.toggle('active-item', type === 'attendance');
+
+            // Auto-fetch classmate info on first load
+            if (type === 'info' && !infoFetched) {
+                fetchClassmateInfo();
+            }
+        }
+
+        // ─── Hamburger ──────────────────────────────────────────
+        function toggleHamburger() {
+            document.getElementById('hamburgerMenu').classList.toggle('open');
+        }
+
+        // Close hamburger when clicking outside
+        document.addEventListener('click', function (e) {
+            const menu = document.getElementById('hamburgerMenu');
+            const btn  = document.querySelector('.hamburger-btn');
+            if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+                menu.classList.remove('open');
+            }
+        });
+
+        // ─── Attendance View toggle (By Date / By Student) ──────
+        function showView(viewType) {
+            const dateView    = document.getElementById('dateView');
+            const studentView = document.getElementById('studentView');
+            const viewBtns    = document.querySelectorAll('.view-btn');
+
+            viewBtns.forEach(btn => btn.classList.remove('active'));
+
+            if (viewType === 'date') {
+                dateView.classList.remove('hidden');
+                studentView.classList.add('hidden');
+                viewBtns[0].classList.add('active');
+            } else {
+                dateView.classList.add('hidden');
+                studentView.classList.remove('hidden');
+                viewBtns[1].classList.add('active');
+            }
+
+            closeDateResults();
+            closeStudentResults();
+            hideError();
+        }
+
+        // ─── Fetch Classmate Info ────────────────────────────────
+        async function fetchClassmateInfo() {
+            document.getElementById('infoContent').innerHTML = `
+                <div class="info-loading">
+                    <i class="fas fa-spinner"></i>
+                    Loading classmates...
+                </div>`;
+
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/june26_std_details?department=eq.${encodeURIComponent(repData.department)}&select=roll_number,name,career_choice,venue&order=roll_number.asc`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Cache-Control': 'no-cache'
+                        }
+                    }
+                );
+
+                if (!response.ok) throw new Error('Failed to fetch');
+
+                const students = await response.json();
+                infoFetched = true;
+
+                if (students.length === 0) {
+                    document.getElementById('infoContent').innerHTML = `<p style="text-align:center; color: var(--text-light); padding: 40px;">No students found.</p>`;
+                    return;
+                }
+
+                const tableHtml = `
+                    <div class="attendance-table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="student-name">Student</th>
+                                    <th>Career Choice</th>
+                                    <th>Venue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${students.map(s => `
+                                    <tr>
+                                        <td class="student-name">
+                                            ${s.name}
+                                            <div class="roll-number">${s.roll_number}</div>
+                                        </td>
+                                        <td>${s.career_choice || '-'}</td>
+                                        <td>${s.venue || '-'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    <p style="text-align:center; color: var(--text-light); font-size: 13px; margin-top: 12px;">
+                        ${students.length} students in your department
+                    </p>
+                `;
+
+                document.getElementById('infoContent').innerHTML = tableHtml;
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('infoContent').innerHTML = `
+                    <div class="error" style="margin: 0;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Failed to load classmate info. Please try again.</span>
+                    </div>`;
+            }
+        }
+
+        // ─── Loading helpers ─────────────────────────────────────
+        function showLoading() {
+            const activeFetchBtn = document.querySelector('.view-panel:not(.hidden) .fetch-btn');
+            if (activeFetchBtn) {
+                activeFetchBtn.disabled = true;
+                activeFetchBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Loading...`;
+            }
+        }
+
+        function hideLoading() {
+            const dateFetchBtn = document.querySelector('#dateView .fetch-btn');
+            if (dateFetchBtn) {
+                dateFetchBtn.disabled = false;
+                dateFetchBtn.innerHTML = '<i class="fas fa-search"></i> <span>Fetch Attendance</span>';
+            }
+            const studentFetchBtn = document.querySelector('#studentView .fetch-btn');
+            if (studentFetchBtn) {
+                studentFetchBtn.disabled = false;
+                studentFetchBtn.innerHTML = '<i class="fas fa-search"></i> <span>Fetch Attendance</span>';
+            }
+        }
+
+        function showError(message) {
+            const errorDiv  = document.getElementById('error');
+            const errorText = document.getElementById('errorText');
+            if (errorDiv && errorText) {
+                errorText.textContent = message;
+                errorDiv.classList.remove('hidden');
+                setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+            }
+        }
+
+        function hideError() {
+            const errorDiv = document.getElementById('error');
+            if (errorDiv) errorDiv.classList.add('hidden');
+        }
+
+        // ─── Fetch Date Attendance ───────────────────────────────
+        async function fetchDateAttendance() {
+            const selectedDate = document.getElementById('dateSelect').value;
+            if (!selectedDate) { alert('Please select a date'); return; }
+
+            showLoading();
+            hideError();
+            document.getElementById('error').classList.add('hidden');
+
+            try {
+                const dateMapping = {
+                    '2026-06-08': { s1: 's1',  s2: 's2',  s3: 's3'  },
+                    '2026-06-09': { s1: 's4',  s2: 's5',  s3: 's6'  },
+                    '2026-06-10': { s1: 's7',  s2: 's8',  s3: 's9'  },
+                    '2026-06-11': { s1: 's10', s2: 's11', s3: 's12' },
+                    '2026-06-12': { s1: 's13', s2: 's14', s3: 's15' }
+                };
+
+                const sessionCols = dateMapping[selectedDate];
+                if (!sessionCols) { showError('Attendance data not available for selected date'); return; }
+
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/june26_std_details?department=eq.${encodeURIComponent(repData.department)}&select=roll_number,name,june26_std_attendance(s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15)`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Cache-Control': 'no-cache'
+                        }
+                    }
+                );
+
+                if (!response.ok) throw new Error('Failed to fetch data');
+
+                const students = await response.json();
+
+                const processedData = {
+                    totalStudents: students.length,
+                    students: students.map(student => {
+                        const att = student.june26_std_attendance || {};
+                        return {
+                            name: student.name,
+                            rollNumber: student.roll_number,
+                            session1: att[sessionCols.s1] || '-',
+                            session2: att[sessionCols.s2] || '-',
+                            session3: att[sessionCols.s3] || '-'
+                        };
+                    }),
+                    stats: {
+                        session1Present: students.filter(s => (s.june26_std_attendance || {})[sessionCols.s1] === 'P').length,
+                        session1Absent:  students.filter(s => (s.june26_std_attendance || {})[sessionCols.s1] === 'A').length,
+                        session2Present: students.filter(s => (s.june26_std_attendance || {})[sessionCols.s2] === 'P').length,
+                        session2Absent:  students.filter(s => (s.june26_std_attendance || {})[sessionCols.s2] === 'A').length,
+                        session3Present: students.filter(s => (s.june26_std_attendance || {})[sessionCols.s3] === 'P').length,
+                        session3Absent:  students.filter(s => (s.june26_std_attendance || {})[sessionCols.s3] === 'A').length,
+                    }
+                };
+
+                processedData.students.sort((a, b) => a.rollNumber.localeCompare(b.rollNumber));
+                displayDateResults(processedData, selectedDate);
+
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showError('Failed to fetch attendance data. Please check your internet connection.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ─── Fetch Student Attendance ────────────────────────────
+        async function fetchStudentAttendance() {
+            const rollNumber = document.getElementById('rollInput').value.trim().toUpperCase();
+            if (!rollNumber) { alert('Please enter a roll number'); return; }
+
+            showLoading();
+            hideError();
+            const resultsDiv = document.getElementById('studentResults');
+            if (resultsDiv) { resultsDiv.classList.add('hidden'); resultsDiv.classList.remove('fade-in'); }
+            document.getElementById('error').classList.add('hidden');
+
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/june26_std_details?roll_number=eq.${rollNumber}&department=eq.${encodeURIComponent(repData.department)}&select=roll_number,name,june26_std_attendance(attendance_percentage,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15)`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Cache-Control': 'no-cache'
+                        }
+                    }
+                );
+
+                if (!response.ok) throw new Error('Failed to fetch student data');
+
+                const students = await response.json();
+                if (students.length === 0) { showError('Student not found in this department'); return; }
+
+                const student = students[0];
+                const att = student.june26_std_attendance || {};
+
+                const processedData = {
+                    student: {
+                        name: student.name,
+                        rollNumber: student.roll_number,
+                        attendancePercentage: att.attendance_percentage || '-'
+                    },
+                    attendance: {
+                        jun08_s1: att.s1,  jun08_s2: att.s2,  jun08_s3: att.s3,
+                        jun09_s1: att.s4,  jun09_s2: att.s5,  jun09_s3: att.s6,
+                        jun10_s1: att.s7,  jun10_s2: att.s8,  jun10_s3: att.s9,
+                        jun11_s1: att.s10, jun11_s2: att.s11, jun11_s3: att.s12,
+                        jun12_s1: att.s13, jun12_s2: att.s14, jun12_s3: att.s15,
+                    }
+                };
+
+                displayStudentResults(processedData);
+
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showError('Failed to fetch student data. Please check your internet connection.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ─── Display Date Results ────────────────────────────────
+        function displayDateResults(data, selectedDate) {
+            document.getElementById('error').classList.add('hidden');
+
+            const dateFormatted = new Date(selectedDate).toLocaleDateString('en-GB', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
+
+            document.getElementById('selectedDate').textContent   = dateFormatted;
+            document.getElementById('totalStudents').textContent  = data.totalStudents;
+
+            const totalPresent = data.stats.session1Present + data.stats.session2Present + data.stats.session3Present;
+            const totalAbsent  = data.stats.session1Absent  + data.stats.session2Absent  + data.stats.session3Absent;
+            const attendanceRate = totalPresent + totalAbsent > 0 ?
+                ((totalPresent / (totalPresent + totalAbsent)) * 100).toFixed(2) : '0';
+
+            document.getElementById('attendanceRate').textContent  = attendanceRate + '%';
+            document.getElementById('session1Stats').textContent   = `${data.stats.session1Present}/${data.totalStudents}`;
+            document.getElementById('session2Stats').textContent   = `${data.stats.session2Present}/${data.totalStudents}`;
+            document.getElementById('session3Stats').textContent   = `${data.stats.session3Present}/${data.totalStudents}`;
+
+            const tableBody = document.getElementById('dateTableBody');
+            tableBody.innerHTML = '';
+
+            data.students.forEach(student => {
+                const row = document.createElement('tr');
+                const getStatus = (val) =>
+                    val === 'P' ? '<span class="status-badge badge-present">Present</span>' :
+                    val === 'A' ? '<span class="status-badge badge-absent">Absent</span>' :
+                    '<span style="color: var(--text-light);">-</span>';
+
+                row.innerHTML = `
+                    <td class="student-name">
+                        ${student.name}
+                        <div class="roll-number">${student.rollNumber}</div>
+                    </td>
+                    <td>${getStatus(student.session1)}</td>
+                    <td>${getStatus(student.session2)}</td>
+                    <td>${getStatus(student.session3)}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            const resultsDiv = document.getElementById('dateResults');
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.classList.add('fade-in');
+        }
+
+        // ─── Display Student Results ─────────────────────────────
+        function displayStudentResults(data) {
+            document.getElementById('error').classList.add('hidden');
+
+            const attendancePercentage = data.student.attendancePercentage !== '-' ?
+                (parseFloat(data.student.attendancePercentage) * 100).toFixed(2) + '%' : 'N/A';
+
+            document.getElementById('studentInfo').innerHTML = `
+                <h4><i class="fas fa-user-graduate"></i> ${data.student.name}</h4>
+                <div style="display: table;">
+                    <div style="display: table-row;">
+                        <span style="display: table-cell; width: 200px;">Roll Number</span>
+                        <span style="display: table-cell; width: 20px; text-align: center;">:</span>
+                        <span style="display: table-cell;">${data.student.rollNumber}</span>
+                    </div>
+                    <div style="display: table-row;">
+                        <span style="display: table-cell; width: 160px;">Overall Attendance</span>
+                        <span style="display: table-cell; width: 20px; text-align: center;">:</span>
+                        <span style="display: table-cell; font-weight: 700; color: var(--primary-color);">${attendancePercentage}</span>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: ${attendancePercentage === 'N/A' ? '0' : attendancePercentage}"></div>
+                </div>
+            `;
+
+            const tableBody = document.getElementById('studentTableBody');
+            tableBody.innerHTML = '';
+
+            const dates = [
+                { date: '08 Jun 2026', key: 'jun08' },
+                { date: '09 Jun 2026', key: 'jun09' },
+                { date: '10 Jun 2026', key: 'jun10' },
+                { date: '11 Jun 2026', key: 'jun11' },
+                { date: '12 Jun 2026', key: 'jun12' }
+            ];
+
+            const getStatusBadge = (status) =>
+                status === 'P' ? '<span class="status-badge badge-present">Present</span>' :
+                status === 'A' ? '<span class="status-badge badge-absent">Absent</span>' :
+                '<span style="color: var(--text-light);">-</span>';
+
+            dates.forEach(dateObj => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="date-column">${dateObj.date}</td>
+                    <td>${getStatusBadge(data.attendance[`${dateObj.key}_s1`] || '-')}</td>
+                    <td>${getStatusBadge(data.attendance[`${dateObj.key}_s2`] || '-')}</td>
+                    <td>${getStatusBadge(data.attendance[`${dateObj.key}_s3`] || '-')}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            const resultsDiv = document.getElementById('studentResults');
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.classList.add('fade-in');
+        }
+
+        // ─── Close helpers ───────────────────────────────────────
+        function closeDateResults() {
+            document.getElementById('dateResults').classList.add('hidden');
+            document.getElementById('dateResults').classList.remove('fade-in');
+            document.getElementById('dateSelect').value = '';
+            hideError();
+        }
+
+        function closeStudentResults() {
+            document.getElementById('studentResults').classList.add('hidden');
+            document.getElementById('studentResults').classList.remove('fade-in');
+            hideError();
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEED Training Portal - Student Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --hover-color: #1e40af;
+            --background-color: #f8fafc;
+            --text-color: #1f2937;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --card-hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            position: relative;
+        }
+        
+        .login-container {
+            background-color: white;
+            border-radius: 22px;
+            box-shadow: var(--card-shadow);
+            width: 90%;
+            max-width: 450px;
+            padding: 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .decorative-element {
+            position: absolute;
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .circle-element {
+            width: 125px;
+            height: 125px;
+            border: 2px solid var(--secondary-color);
+            border-radius: 50%;
+            top: -60px;
+            right: -60px;
+        }
+        
+        .diagonal-element {
+            width: 100px;
+            height: 2px;
+            background: var(--accent-color);
+            transform: rotate(45deg);
+            bottom: 20px;
+            left: -20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 3rem 0.4rem 0.5rem 0.4rem;
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+        
+        .header h1::after {
+            content: "";
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+        }
+        
+        .header p {
+            color: #4b5563;
+            font-size: 1.3rem;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dcdfe6;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Enhanced styling for date input */
+        .date-input-wrapper {
+            position: relative;
+        }
+        
+        .date-input-wrapper input {
+            padding-right: 45px;
+            font-family: 'Poppins', monospace;
+            letter-spacing: 0.5px;
+        }
+        
+        .date-input-wrapper::after {
+            content: "";
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+        
+        .date-format-hint {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        
+        .date-input-wrapper input::placeholder {
+            color: #9ca3af;
+            font-style: italic;
+        }
+        
+        .date-input-wrapper input.invalid {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+        }
+        
+        .date-input-wrapper input.valid {
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+        
+        .status-container {
+            min-height: 60px;
+            margin: 1rem 0rem 0rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        #errorMessage {
+            color: #e74c3c;
+            font-size: 1rem;
+            padding: 12px;
+            background-color: rgba(231, 76, 60, 0.1);
+            border-radius: 10px;
+            display: none;
+        }
+        
+        #errorMessage.show {
+            display: block;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        #clearBtn {
+            background-color: #f1f5f9;
+            color: #64748b;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+        
+        #clearBtn:hover {
+            background-color: #e2e8f0;
+        }
+        
+        #clearBtn:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+        
+        #loginBtn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 3;
+            box-shadow: 0 4px 8px rgba(30, 58, 138, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #loginBtn:hover {
+            background-color: var(--hover-color);
+            box-shadow: 0 6px 12px rgba(30, 58, 138, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        #loginBtn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        
+        #loginBtn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+            z-index: 1;
+        }
+        
+        #loginBtn:hover::before {
+            left: 100%;
+        }
+        
+        .login-status {
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            height: 6px;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-container.show {
+            display: block;
+        }
+        
+        .announcements {
+            margin: 0 25px 25px;
+            padding: 15px;
+            background: rgba(240, 245, 255, 0.7);
+            border-radius: 14px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .announcements h3 {
+            color: var(--primary-color);
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .announcements p {
+            color: #4b5563;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+
+        .announcements ul {
+            list-style-type: none;
+            padding-left: 20px;
+            margin-top: 0;
+        }
+        
+        .announcements ul li {
+            color: #4b5563;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            padding-left: 10px;
+            position: relative;
+        }
+        
+        .announcements ul li::before {
+            content: "•";
+            color: #0427ec;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .footer {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            width: 90%;
+            max-width: 450px;
+        }
+        
+        .mobile-only {
+            display: block;
+        }
+        
+        .desktop-only {
+            display: none;
+        }
+        
+        .right-column {
+            padding: 1rem 1rem;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            z-index: 2;
+            position: relative;
+        }
+        
+        @media (min-width: 768px) {
+            .login-container {
+                max-width: 1200px;
+                display: flex;
+                padding: 0;
+                margin: 70px auto 1rem;
+                flex-direction: column;
+            }
+            
+            .two-column-container {
+                display: flex;
+                width: 100%;
+            }
+            
+            .left-column {
+                flex: 1;
+                padding: 3rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                border-radius: 22px 0 0 22px;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .right-column {
+                flex: 1;
+                padding: 3rem;
+                margin: 20px;
+                border-radius: 18px;
+                transform: translateX(-10px);
+                box-shadow: var(--card-shadow);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            
+            .right-column:hover {
+                box-shadow: var(--card-hover-shadow);
+                transform: translateX(-10px) translateY(-5px);
+            }
+            
+            .announcements-wrapper {
+                padding: 0 2rem 2rem;
+                width: 100%;
+            }
+            
+            .header {
+                text-align: left;
+                margin-bottom: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2.8rem;
+                letter-spacing: -1px;
+            }
+            
+            .header h1::after {
+                left: 0;
+                transform: none;
+                width: 80px;
+                height: 5px;
+            }
+            
+            .header p {
+                font-size: 1.6rem;
+                margin-top: 25px;
+            }
+            
+            .circle-element {
+                width: 175px;
+                height: 200px;
+                bottom: -100px;
+                right: -100px;
+                top: auto;
+            }
+            
+            .diagonal-element {
+                width: 150px;
+                left: -30px;
+                top: 50px;
+                bottom: auto;
+            }
+            
+            .mobile-only {
+                display: none;
+            }
+            
+            .desktop-only {
+                display: block;
+            }
+            
+            .footer {
+                text-align: center;
+                font-size: 1rem;
+                padding: 0;
+                margin-top: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="decorative-element circle-element"></div>
+        <div class="decorative-element diagonal-element"></div>
+        
+        <div class="header mobile-only">
+            <h1>SEED Training Portal</h1>
+            <p>Student Login</p>
+        </div>
+        
+        <div class="two-column-container">
+            <div class="left-column">
+                <div class="header desktop-only">
+                    <h1>SEED Training Portal</h1>
+                    <p>Student Login</p>
+                </div>
+            </div>
+            
+            <div class="right-column">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="userId">Roll Number</label>
+                        <input type="text" id="userId" placeholder="Enter your roll number" autocomplete="off" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dob">Date of Birth</label>
+                        <div class="date-input-wrapper">
+                            <input type="text" id="dob" placeholder="DD-MM-YYYY" maxlength="10" autocomplete="off" required>
+                        </div>
+                        <div class="date-format-hint">Example: 13-07-1995</div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="button" id="clearBtn">Clear</button>
+                        <button type="submit" id="loginBtn">Login</button>
+                    </div>
+                    
+                    <div class="status-container">
+                        <div class="login-status" id="loginStatus"></div>
+                        <div class="progress-container" id="progressContainer">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                        <div id="errorMessage"></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="announcements">
+                <h3><i class="fas fa-bell"></i> Announcements</h3>
+                <p>• SEED Training Dates (II UG, I PG & IV MSC SS): <strong>08th June 2026 to 12th June 2026</strong></p>
+                <p>• Timing: <strong>09:00 AM to 04:30 PM</strong></p>
+            </div>
+    </div>
+    
+    <div class="footer">
+        For assistance please contact Learning & Development Team<br>
+        PSG College of Arts & Science
+    </div>
+    
+    <script>
+        // Enhanced JavaScript for SEED Training Portal with Smart Date Input (Fixed)
+
+        // Utility functions
+        const DateUtils = {
+            formatDateForInput: date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
+            
+            // Updated to handle DD-MM-YYYY format from the text input
+            formatDateForAPI: dateString => {
+                // If it's already in DD-MM-YYYY format, return as is
+                if (dateString.includes('-') && dateString.length === 10) {
+                    const parts = dateString.split('-');
+                    if (parts.length === 3 && parts[0].length === 2 && parts[1].length === 2 && parts[2].length === 4) {
+                        return dateString;
+                    }
+                }
+                
+                // Handle other formats (legacy support)
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    return dateString; // Return original if can't parse
+                }
+                
+                return [
+                    String(date.getDate()).padStart(2, '0'),
+                    String(date.getMonth() + 1).padStart(2, '0'),
+                    date.getFullYear()
+                ].join('-');
+            }
+        };
+
+        // Simple date validation function
+        function validateSimpleDate(dateString) {
+            // Check format DD-MM-YYYY
+            const regex = /^(\d{2})-(\d{2})-(\d{4})$/;
+            const match = dateString.match(regex);
+            if (!match) return false;
+            
+            const day = parseInt(match[1], 10);
+            const month = parseInt(match[2], 10);
+            const year = parseInt(match[3], 10);
+            
+            // Check year range
+            if (year < 1960 || year > 2024) return false;
+            
+            // Check month range
+            if (month < 1 || month > 12) return false;
+            
+            // Check day range
+            if (day < 1 || day > 31) return false;
+            
+            // Check valid date
+            const date = new Date(year, month - 1, day);
+            if (date.getDate() !== day || date.getMonth() !== month - 1 || date.getFullYear() !== year) {
+                return false;
+            }
+            
+            // Check not in future
+            const today = new Date();
+            today.setHours(23, 59, 59, 999);
+            if (date > today) return false;
+            
+            return true;
+        }
+
+        const SessionUtils = {
+            createSession: (key, data, hours = 1) => {
+                sessionStorage.setItem(key, JSON.stringify({
+                    ...data,
+                    expires: Date.now() + (hours * 60 * 60 * 1000)
+                }));
+            },
+            clearAllSessions: () => sessionStorage.clear()
+        };
+
+        const ApiUtils = {
+            SUPABASE_URL: 'https://wetnbnemedzyzudvuihb.supabase.co',
+            SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndldG5ibmVtZWR6eXp1ZHZ1aWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjM2ODksImV4cCI6MjA3MDQ5OTY4OX0.53iKjcKaImIz10H8hJv0MkDl08R8Pu8OprDcURqSmRQ',
+            
+            async authenticateStudent(rollNumber, dob) {
+            try {
+                // Add rate limiting check
+                const lastAttempt = localStorage.getItem('lastLoginAttempt');
+                const now = Date.now();
+                if (lastAttempt && (now - parseInt(lastAttempt)) < 3000) {
+                    throw new Error('Please wait 3 seconds between login attempts');
+                }
+                localStorage.setItem('lastLoginAttempt', now.toString());
+
+                const response = await fetch(`${this.SUPABASE_URL}/rest/v1/june26_std_details?select=roll_number,name,department,career_choice,venue,role,june26_std_attendance(attendance_percentage,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15)&roll_number=eq.${rollNumber}&dob=eq.${dob}`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': this.SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${this.SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok || data.length === 0) {
+                    throw new Error('Invalid credentials');
+                }
+                
+                return data[0];
+            } catch (error) {
+                throw new Error('Authentication failed');
+            }
+        }
+        };
+
+        const ValidationUtils = {
+            STUDENT_PATTERN: /^(?:25[BM](?:AM|B[ACIOPTS]|C[ABCDEFGHMNOPRST]|DA|E[CLMNS]|F[MST]|H[AMT]|I[BST]|LG|M[ABCU]|ND|NM|P[AHS]|RM|S[OTW]|TA|VC|ZO)[0156](?:0[1-9]|[1-6][0-9])|25VFP0(?:0[1-9]|[1-4][0-9])|22MSS0(?:0[1-9]|[1-9][0-9]))$/,
+            
+            validateRollNumber(rollNumber) {
+                if (!rollNumber || typeof rollNumber !== 'string') {
+                    return { valid: false, message: "Please enter a valid roll number" };
+                }
+                
+                rollNumber = rollNumber.trim().toUpperCase();
+                
+                if (rollNumber.length !== 8) {
+                    return { valid: false, message: "Please enter a valid roll number" };
+                }
+                
+                if (!this.STUDENT_PATTERN.test(rollNumber)) {
+                    return { valid: false, message: "Please enter a valid roll number" };
+                }
+                
+                return { valid: true, value: rollNumber };
+            }
+        };
+
+        
+
+        const StudentAuth = {
+            SESSION_KEY: 'studentPortalSession',
+            
+            async authenticate(rollNumber, dob) {
+                try {
+                    const validationResult = ValidationUtils.validateRollNumber(rollNumber);
+                    if (!validationResult.valid) {
+                        return { success: false, error: validationResult.message };
+                    }
+                    
+                    document.getElementById('loginStatus').textContent = 'Authenticating...';
+                    document.getElementById('loginBtn').disabled = true;
+                    document.getElementById('clearBtn').disabled = true;
+                    document.getElementById('errorMessage').classList.remove('show');
+                    
+                    const progressContainer = document.getElementById('progressContainer');
+                    const progressBar = document.getElementById('progressBar');
+                    progressContainer.classList.add('show');
+                    
+                    let progress = 0;
+                    const progressInterval = setInterval(() => {
+                        progress += 5;
+                        if (progress > 90) clearInterval(progressInterval);
+                        progressBar.style.width = progress + '%';
+                    }, 150);
+                    
+                    let apiSuccess = false;
+                    let apiResult = null;
+                    let apiError = null;
+                    
+                    try {
+                        apiResult = await ApiUtils.authenticateStudent(rollNumber, dob);
+                        apiSuccess = true;
+                    } catch (error) {
+                        apiError = error;
+                    }
+                    
+                    clearInterval(progressInterval);
+                    progressBar.style.width = '100%';
+                    
+                    setTimeout(() => {
+                        progressContainer.classList.remove('show');
+                        progressBar.style.width = '0%';
+                        document.getElementById('loginStatus').textContent = '';
+                        
+                        if (!apiSuccess) {
+                            document.getElementById('errorMessage').textContent = apiError?.message || "Failed to connect to authentication service";
+                            document.getElementById('errorMessage').classList.add('show');
+                        } else {
+                            document.getElementById('loginStatus').textContent = 'Login successful!';
+                            
+                            SessionUtils.createSession(this.SESSION_KEY, {
+                                userId: rollNumber,
+                                role: apiResult.role || 'Student',
+                                studentData: {
+                                    roll_number: apiResult.roll_number,
+                                    name: apiResult.name,
+                                    department: apiResult.department,
+                                    career_choice: apiResult.career_choice,
+                                    venue: apiResult.venue,
+                                    role: apiResult.role,
+                                    attendance_percentage: apiResult.june26_std_attendance?.attendance_percentage ?? '-',
+                                    s1:  apiResult.june26_std_attendance?.s1  ?? '-',
+                                    s2:  apiResult.june26_std_attendance?.s2  ?? '-',
+                                    s3:  apiResult.june26_std_attendance?.s3  ?? '-',
+                                    s4:  apiResult.june26_std_attendance?.s4  ?? '-',
+                                    s5:  apiResult.june26_std_attendance?.s5  ?? '-',
+                                    s6:  apiResult.june26_std_attendance?.s6  ?? '-',
+                                    s7:  apiResult.june26_std_attendance?.s7  ?? '-',
+                                    s8:  apiResult.june26_std_attendance?.s8  ?? '-',
+                                    s9:  apiResult.june26_std_attendance?.s9  ?? '-',
+                                    s10: apiResult.june26_std_attendance?.s10 ?? '-',
+                                    s11: apiResult.june26_std_attendance?.s11 ?? '-',
+                                    s12: apiResult.june26_std_attendance?.s12 ?? '-',
+                                    s13: apiResult.june26_std_attendance?.s13 ?? '-',
+                                    s14: apiResult.june26_std_attendance?.s14 ?? '-',
+                                    s15: apiResult.june26_std_attendance?.s15 ?? '-',
+                                }
+                            });
+                            
+                            setTimeout(() => {
+                                window.location.href = 'student.html';
+                            }, 500);
+                        }
+                        
+                        document.getElementById('loginBtn').disabled = false;
+                        document.getElementById('clearBtn').disabled = false;
+                    }, 500);
+                    
+                    return {
+                        success: apiSuccess,
+                        redirect: apiSuccess ? 'student.html' : null,
+                        error: apiSuccess ? null : (apiError?.message || "Authentication failed")
+                    };
+                    
+                } catch (error) {
+                    return { success: false, error: error.message || "Authentication failed" };
+                } finally {
+                    document.getElementById('loginBtn').disabled = false;
+                    document.getElementById('clearBtn').disabled = false;
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            function handleResponsiveLayout() {
+                const isMobile = window.innerWidth < 768;
+                const mobileElements = document.querySelectorAll('.mobile-only');
+                const desktopElements = document.querySelectorAll('.desktop-only');
+                
+                if (isMobile) {
+                    mobileElements.forEach(el => el.style.display = 'block');
+                    desktopElements.forEach(el => el.style.display = 'none');
+                    document.querySelector('.left-column').style.display = 'none';
+                    document.querySelector('.right-column').style.boxShadow = 'none';
+                    document.querySelector('.right-column').style.margin = '1rem';
+                    document.querySelector('.right-column').style.transform = 'none';
+                } else {
+                    mobileElements.forEach(el => el.style.display = 'none');
+                    desktopElements.forEach(el => el.style.display = 'block');
+                    document.querySelector('.left-column').style.display = 'flex';
+                    document.querySelector('.right-column').style.boxShadow = 'var(--card-shadow)';
+                    document.querySelector('.right-column').style.margin = '20px';
+                    document.querySelector('.right-column').style.transform = 'translateX(-10px)';
+                }
+                
+                const loginContainerWidth = document.querySelector('.login-container').offsetWidth;
+                document.querySelector('.footer').style.maxWidth = `${loginContainerWidth}px`;
+            }
+            
+            handleResponsiveLayout();
+            window.addEventListener('resize', handleResponsiveLayout);
+            
+            const userIdInput = document.getElementById('userId');
+            const dobInput = document.getElementById('dob');
+            const loginForm = document.getElementById('loginForm');
+            const clearBtn = document.getElementById('clearBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const loginStatus = document.getElementById('loginStatus');
+            const progressContainer = document.getElementById('progressContainer');
+            
+            function showError(message) {
+                progressContainer.classList.remove('show');
+                loginStatus.textContent = '';
+                errorMessage.textContent = message;
+                errorMessage.classList.add('show');
+            }
+            
+            function hideError() {
+                errorMessage.textContent = '';
+                errorMessage.classList.remove('show');
+            }
+            
+            function updateStatus(message) {
+                loginStatus.textContent = message;
+            }
+            
+            SessionUtils.clearAllSessions();
+            
+            // Initialize date input
+            dobInput.value = '';
+            dobInput.placeholder = 'DD-MM-YYYY';
+            
+            
+            // Track the last value to detect if user is deleting
+            let lastDobValue = '';
+
+            dobInput.addEventListener('input', function(e) {
+                const currentCursor = this.selectionStart;
+                const currentValue = this.value;
+                
+                // Detect if user is deleting (value got shorter)
+                const isDeleting = currentValue.length < lastDobValue.length;
+                
+                // Check if user just deleted a hyphen
+                const deletedHyphen = isDeleting && 
+                                    lastDobValue[currentCursor] === '-' && 
+                                    currentValue[currentCursor] !== '-';
+                
+                // Remove all non-digits
+                let cleaned = currentValue.replace(/\D/g, '');
+                
+                // Format with conditional hyphen insertion
+                let formatted = '';
+                
+                // Add day part (max 2 digits)
+                if (cleaned.length > 0) {
+                    formatted = cleaned.substring(0, 2);
+                    
+                    // Only auto-add hyphen after day if:
+                    // 1. We have at least 2 digits for day
+                    // 2. We're NOT deleting, OR we have month digits (user didn't delete the hyphen)
+                    if (cleaned.length >= 2) {
+                        // Add hyphen only if typing OR if there's month data
+                        if (!isDeleting || cleaned.length > 2) {
+                            formatted += '-';
+                        }
+                    }
+                }
+                
+                // Add month part (max 2 digits)
+                if (cleaned.length >= 3) {
+                    formatted += cleaned.substring(2, 4);
+                    
+                    // Only auto-add hyphen after month if:
+                    // 1. We have at least 4 digits total
+                    // 2. We're NOT deleting, OR we have year digits
+                    if (cleaned.length >= 4) {
+                        if (!isDeleting || cleaned.length > 4) {
+                            formatted += '-';
+                        }
+                    }
+                }
+                
+                // Add year part (max 4 digits)
+                if (cleaned.length >= 5) {
+                    formatted += cleaned.substring(4, 8);
+                }
+                
+                // Update value
+                this.value = formatted;
+                
+                // Smart cursor positioning
+                let newCursor = currentCursor;
+                
+                if (isDeleting) {
+                    // When deleting, keep cursor where it is
+                    newCursor = currentCursor;
+                } else {
+                    // When typing, move cursor to end
+                    newCursor = formatted.length;
+                }
+                
+                // Set cursor position
+                this.setSelectionRange(newCursor, newCursor);
+                
+                // Update last value
+                lastDobValue = formatted;
+                
+                // Visual feedback
+                dobInput.classList.remove('valid', 'invalid');
+                if (formatted.length === 10) {
+                    if (validateSimpleDate(formatted)) {
+                        dobInput.classList.add('valid');
+                    } else {
+                        dobInput.classList.add('invalid');
+                    }
+                }
+                
+                if (errorMessage.classList.contains('show')) {
+                    hideError();
+                }
+            });
+
+            // Initialize last value on focus
+            dobInput.addEventListener('focus', function() {
+                lastDobValue = this.value;
+            });
+
+
+            // Allow only numbers and hyphens
+            dobInput.addEventListener('keydown', function(e) {
+                // Allow: backspace, delete, tab, escape, enter, arrows, and Ctrl shortcuts
+                if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 ||
+                    (e.keyCode >= 35 && e.keyCode <= 40) ||
+                    (e.ctrlKey === true && [65, 67, 86, 88].indexOf(e.keyCode) !== -1)) {
+                    return;
+                }
+                
+                // Allow only numbers
+                if ((e.keyCode < 48 || e.keyCode > 57) && (e.keyCode < 96 || e.keyCode > 105)) {
+                    e.preventDefault();
+                }
+            });
+            
+            dobInput.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                const cleaned = paste.replace(/\D/g, ''); // Remove non-digits
+                
+                // Let the input event handler format it
+                this.value = cleaned;
+                
+                // Trigger input event to apply formatting
+                const inputEvent = new Event('input', { bubbles: true });
+                this.dispatchEvent(inputEvent);
+            });
+
+
+            clearBtn.addEventListener('click', function() {
+                userIdInput.value = '';
+                dobInput.value = '';
+                lastDobValue = '';  // ADD THIS LINE
+                dobInput.classList.remove('valid', 'invalid');
+                hideError();
+                updateStatus('');
+                progressContainer.classList.remove('show');
+            });
+            
+            // Form submission with enhanced date validation
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                try {
+                    hideError();
+                    
+                    const rollNumber = userIdInput.value.trim().toUpperCase();
+                    const dobValue = dobInput.value.trim();
+                    
+                    if (!rollNumber || !dobValue) {
+                        showError('Please enter both Roll Number and Date of Birth');
+                        return;
+                    }
+                    
+                    // Validate roll number
+                    const validationResult = ValidationUtils.validateRollNumber(rollNumber);
+                    if (!validationResult.valid) {
+                        showError(validationResult.message);
+                        return;
+                    }
+                    
+                    // Validate date
+                    if (!validateSimpleDate(dobValue)) {
+                        showError('Please enter a valid date in DD-MM-YYYY format');
+                        dobInput.classList.add('invalid');
+                        dobInput.classList.remove('valid');
+                        return;
+                    }
+                    
+                    // Date is already in DD-MM-YYYY format, no need to convert
+                    authenticateUser(rollNumber, dobValue);
+                } catch (error) {
+                    document.getElementById('loginBtn').disabled = false;
+                    document.getElementById('clearBtn').disabled = false;
+                    updateStatus('');
+                    progressContainer.classList.remove('show');
+                    showError('Login error: ' + (error.message || 'Please try again'));
+                }
+            });
+            
+            async function authenticateUser(rollNumber, dob) {
+                try {
+                    const result = await StudentAuth.authenticate(rollNumber, dob);
+                } catch (error) {
+                    showError('Authentication failed: ' + (error.message || 'Please try again'));
+                    document.getElementById('loginBtn').disabled = false;
+                    document.getElementById('clearBtn').disabled = false;
+                    updateStatus('');
+                    progressContainer.classList.remove('show');
+                }
+            }
+
+            userIdInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+                if (errorMessage.classList.contains('show')) hideError();
+            });
+
+            [userIdInput, dobInput].forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+
+            function checkExistingSession() {
+                try {
+                    const sessionData = sessionStorage.getItem(StudentAuth.SESSION_KEY);
+                    if (sessionData) {
+                        const session = JSON.parse(sessionData);
+                        if (session && session.userId && Date.now() < session.expires) {
+                            window.location.href = 'student.html';
+                            return true;
+                        } else {
+                            SessionUtils.clearAllSessions();
+                        }
+                    }
+                } catch (e) {
+                    SessionUtils.clearAllSessions();
+                }
+                return false;
+            }
+
+            if (checkExistingSession()) {
+                updateStatus('Session found, redirecting...');
+            }
+        });
+    </script>
+</body>
+
+</html>
+
+
+
