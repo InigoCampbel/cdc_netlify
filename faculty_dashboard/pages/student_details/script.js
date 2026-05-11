@@ -376,8 +376,11 @@ async function openViewDetails(id) {
                 <span class="detail-meta">${ir.roll_number} &nbsp;·&nbsp; ${formatDate(ir.date)} &nbsp;·&nbsp; ${ir.session}</span>
             </div>
             <div class="detail-issue-box">
-                <div class="detail-label">Issue</div>
-                <div class="detail-text">${ir.issue || '—'}</div>
+                <div style="display:flex;gap:8px;align-items:baseline;">
+                    <div class="detail-label" style="flex-shrink:0;margin-bottom:0;">Issue</div>
+                    <div class="detail-text">${ir.issue || '—'}</div>
+                </div>
+                <div class="log-entry-meta" style="margin-top:8px;">${ir.created_by || '—'} &nbsp;·&nbsp; ${formatDateTime(ir.created_at)}</div>
             </div>
             <div class="logs-title">Activity</div>
             ${logsHTML}
