@@ -2,1013 +2,738 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Record Late Comers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Discrepancies</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #1e3a8a;
             --secondary-color: #3b82f6;
-            --accent-color: #60a5fa;
             --background-color: #f8fafc;
             --text-color: #1f2937;
+            --muted: #6b7280;
+            --border: #e5e7eb;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--background-color); color: var(--text-color); min-height: 100vh; padding-bottom: 40px; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            padding-bottom: 60px;
-        }
-
-        /* ── Top Bar ── */
+        /* Top Bar */
         .topbar {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 18px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            position: relative;
-            overflow: hidden;
+            color: white; padding: 18px 24px;
+            display: flex; align-items: center; gap: 12px;
+            position: relative; overflow: hidden;
         }
-
         .topbar::after {
-            content: '';
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            border: 2px solid rgba(255,255,255,0.12);
-            border-radius: 50%;
-            top: -40px;
-            right: -30px;
+            content: ''; position: absolute;
+            width: 120px; height: 120px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 50%; top: -50px; right: -30px;
         }
-
         .btn-back {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            -webkit-tap-highlight-color: transparent;
-            transition: background 0.15s;
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            width: 36px; height: 36px; border-radius: 10px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: background 0.15s;
         }
-
-        .btn-back:active { background: rgba(255,255,255,0.35); }
-
-        .topbar-title {
-            font-size: 1rem;
-            font-weight: 600;
-            flex: 1;
-            position: relative;
-            z-index: 1;
-        }
-
+        .btn-back:hover { background: rgba(255,255,255,0.3); }
+        .topbar-title { font-size: 1rem; font-weight: 600; flex: 1; position: relative; z-index: 1; }
         .btn-logout-top {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            transition: background 0.15s;
-            position: relative;
-            z-index: 1;
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+            color: white; padding: 6px 16px; border-radius: 8px;
+            font-size: 0.75rem; font-weight: 600; font-family: 'Poppins', sans-serif;
+            cursor: pointer; transition: background 0.15s; position: relative; z-index: 1;
         }
+        .btn-logout-top:hover { background: rgba(255,255,255,0.25); }
 
-        .btn-logout-top:active { background: rgba(255,255,255,0.35); }
-
-        /* ── Pending Banner ── */
-        .pending-banner {
-            background: #fffbeb;
-            border-bottom: 1px solid #fde68a;
-            padding: 12px 16px;
-            display: none;
+        /* Filters */
+        .filters-bar {
+            background: white; border-bottom: 1px solid var(--border);
+            padding: 14px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
         }
-
-        .pending-banner.show { display: block; }
-
-        .pending-banner-title {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: #92400e;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .filter-group { display: flex; align-items: center; gap: 8px; }
+        .filter-label {
+            font-size: 0.72rem; font-weight: 600; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
         }
-
-        .pending-item {
-            background: white;
-            border: 1px solid #fde68a;
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .filter-select {
+            padding: 7px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+            font-size: 0.82rem; font-family: 'Poppins', sans-serif; color: var(--text-color);
+            background: white; outline: none; cursor: pointer; transition: border-color 0.2s; min-width: 130px;
         }
-
-        .pending-item-info {
-            flex: 1;
+        .filter-select:focus { border-color: var(--secondary-color); }
+        .search-input-wrap { position: relative; margin-left: auto; }
+        .search-input-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+        .filter-search {
+            padding: 7px 12px 7px 34px; border: 1.5px solid var(--border); border-radius: 8px;
+            font-size: 0.82rem; font-family: 'Poppins', sans-serif; color: var(--text-color);
+            background: white; outline: none; width: 260px; transition: border-color 0.2s;
         }
+        .filter-search:focus { border-color: var(--secondary-color); }
+        .filter-search::placeholder { color: #9ca3af; }
 
-        .pending-item-title {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: #1f2937;
+        /* Main */
+        .main-content { padding: 20px 24px; }
+        .results-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .results-count { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
+        .results-count span { color: var(--primary-color); font-weight: 700; }
+
+        /* Table */
+        .table-card { background: white; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); overflow: hidden; }
+        .table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .disc-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 780px; }
+        .disc-table thead tr { background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); }
+        .disc-table th {
+            padding: 13px 14px; text-align: left;
+            font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.9);
+            text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
         }
+        .disc-table th.center { text-align: center; }
+        .disc-table td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; color: var(--text-color); vertical-align: middle; }
+        .disc-table tbody tr:last-child td { border-bottom: none; }
+        .disc-table tbody tr:hover { background: #f8fafc; }
 
-        .pending-item-sub {
-            font-size: 0.7rem;
-            color: #9ca3af;
-            margin-top: 2px;
+        .td-serial {
+            font-size: 0.72rem; font-weight: 700; color: var(--secondary-color);
+            background: #eff6ff; padding: 2px 8px; border-radius: 6px; display: inline-block;
         }
+        .td-roll { font-weight: 700; color: var(--primary-color); letter-spacing: 0.02em; font-size: 0.84rem; }
+        .td-name { font-weight: 600; font-size: 0.84rem; }
+        .td-dept { font-size: 0.78rem; color: var(--muted); }
+        .td-issue { font-size: 0.8rem; color: #374151; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        .td-center { text-align: center; }
 
-        .pending-actions {
-            display: flex;
-            gap: 6px;
-            flex-shrink: 0;
-        }
+        .badge-status { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; white-space: nowrap; }
+        .badge-status.pending { background: #fef3c7; color: #d97706; }
+        .badge-status.resolved { background: #dcfce7; color: #16a34a; }
+        .badge-status.rejected { background: #fee2e2; color: #dc2626; }
+        .badge-status.clarification_requested { background: #dbeafe; color: #2563eb; }
 
-        .btn-retry {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 7px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .btn-discard {
-            background: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-            padding: 5px 10px;
-            border-radius: 7px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .btn-retry-all {
-            width: 100%;
-            padding: 9px;
+        .btn-view {
+            padding: 6px 14px;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            margin-top: 4px;
-            -webkit-tap-highlight-color: transparent;
+            color: white; border: none; border-radius: 8px;
+            font-size: 0.72rem; font-weight: 600; font-family: 'Poppins', sans-serif;
+            cursor: pointer; white-space: nowrap; transition: opacity 0.2s;
         }
+        .btn-view:hover { opacity: 0.88; }
 
-        /* ── Main Content ── */
-        .main-content {
-            padding: 16px;
-        }
-
-        /* ── Card ── */
-        .card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-            overflow: hidden;
-            margin-bottom: 14px;
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-header-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .card-header-title {
-            font-size: 0.88rem;
-            font-weight: 600;
-        }
-
-        .card-body {
-            padding: 16px 18px;
-        }
-
-        /* ── Form Elements ── */
-        .field-label {
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin-bottom: 6px;
-        }
-
-        .field-group {
-            margin-bottom: 14px;
-        }
-
-        select {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-color);
-            background: #f8fafc;
-            outline: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        select:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
-        }
-
-        /* ── Textarea ── */
-        .roll-textarea {
-            width: 100%;
-            min-height: 180px;
-            padding: 12px 14px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-color);
-            background: white;
-            outline: none;
-            resize: vertical;
-            line-height: 1.8;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            text-transform: uppercase;
-        }
-
-        .roll-textarea:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
-        }
-
-        .roll-textarea::placeholder {
-            text-transform: none;
-            color: #cbd5e1;
-        }
-
-        .roll-count {
-            font-size: 0.7rem;
-            color: #9ca3af;
-            margin-top: 6px;
-            text-align: right;
-        }
-
-        /* ── Error ── */
-        .error-msg {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #dc2626;
-            font-size: 0.82rem;
-            padding: 10px 14px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            display: none;
-        }
-
-        .error-msg.show { display: block; }
-
-        /* ── Save Button ── */
-        .btn-save {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            transition: opacity 0.2s, transform 0.1s;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .btn-save:active { transform: scale(0.98); }
-        .btn-save:disabled { opacity: 0.6; }
-
-        /* ── Modal ── */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.45);
-            z-index: 100;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s;
-        }
-
-        .modal-overlay.show {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .modal {
-            background: white;
-            border-radius: 20px 20px 0 0;
-            padding: 24px 20px 36px;
-            width: 100%;
-            max-width: 480px;
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .modal-overlay.show .modal {
-            transform: translateY(0);
-        }
-
-        .modal-handle {
-            width: 36px;
-            height: 4px;
-            background: #e2e8f0;
-            border-radius: 2px;
-            margin: 0 auto 20px;
-        }
-
-        .modal-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 4px;
-        }
-
-        .modal-sub {
-            font-size: 0.78rem;
-            color: #9ca3af;
-            margin-bottom: 16px;
-        }
-
-        .modal-summary {
-            background: #f8fafc;
-            border-radius: 10px;
-            padding: 10px 14px;
-            margin-bottom: 14px;
-            font-size: 0.78rem;
-            color: #6b7280;
-            line-height: 1.6;
-        }
-
-        .modal-summary strong {
-            color: var(--primary-color);
-        }
-
-        textarea.remarks-input {
-            width: 100%;
-            min-height: 90px;
-            padding: 12px 14px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 0.88rem;
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-color);
-            background: #f8fafc;
-            outline: none;
-            resize: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            margin-bottom: 6px;
-        }
-
-        textarea.remarks-input:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
-            background: white;
-        }
-
-        .remarks-error {
-            font-size: 0.72rem;
-            color: #dc2626;
-            margin-bottom: 12px;
-            display: none;
-        }
-
-        .remarks-error.show { display: block; }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-cancel {
-            flex: 1;
-            padding: 13px;
-            background: #f1f5f9;
-            color: #6b7280;
-            border: none;
-            border-radius: 12px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .btn-confirm {
-            flex: 2;
-            padding: 13px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 0.88rem;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            transition: opacity 0.2s;
-        }
-
-        .btn-confirm:disabled { opacity: 0.6; }
-
-        /* ── Toast ── */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: #1e293b;
-            color: white;
-            padding: 12px 22px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s;
-            white-space: nowrap;
-            z-index: 200;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .toast.success { background: #166534; }
-        .toast.error   { background: #991b1b; }
-
-        /* ── Spinner ── */
+        .state-row td { text-align: center; padding: 50px 20px; color: var(--muted); font-size: 0.85rem; }
         .spinner-inline {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border: 2px solid rgba(255,255,255,0.4);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            vertical-align: middle;
-            margin-right: 6px;
+            width: 24px; height: 24px; border: 3px solid #e5e7eb;
+            border-top-color: var(--secondary-color); border-radius: 50%;
+            animation: spin 0.7s linear infinite; display: inline-block;
+            vertical-align: middle; margin-right: 8px;
         }
 
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45); z-index: 1000;
+            align-items: flex-start; justify-content: center;
+            padding: 40px 20px; overflow-y: auto;
+        }
+        .modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+        .modal-box {
+            background: white; border-radius: 18px; width: 100%; max-width: 680px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15); overflow: hidden; flex-shrink: 0;
+        }
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white; padding: 16px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .modal-header-title { font-size: 0.92rem; font-weight: 600; }
+        .modal-close {
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            width: 30px; height: 30px; border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: background 0.15s;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.35); }
+        .modal-body { padding: 20px; }
+
+        .modal-info-strip {
+            background: #f0f7ff; border: 1px solid #bfdbfe; border-radius: 10px;
+            padding: 12px 16px; display: flex; gap: 20px; margin-bottom: 18px; flex-wrap: wrap;
+        }
+        .modal-info-item { display: flex; flex-direction: column; gap: 2px; }
+        .modal-info-label { font-size: 0.68rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .modal-info-value { font-size: 0.85rem; font-weight: 700; color: var(--primary-color); }
+
+        .issue-box { background: #fef9f0; border: 1px solid #fde68a; border-radius: 10px; padding: 12px 14px; margin-bottom: 18px; }
+        .issue-box-label { font-size: 0.68rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
+        .issue-box-text { font-size: 0.86rem; font-weight: 500; color: #1f2937; line-height: 1.55; white-space: pre-wrap; }
+        .issue-box-meta { font-size: 0.7rem; color: #9ca3af; margin-top: 6px; }
+
+        .activity-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid var(--border);
+        }
+        .activity-title { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+        .btn-add-log {
+            display: flex; align-items: center; gap: 6px; padding: 6px 14px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white; border: none; border-radius: 8px;
+            font-size: 0.72rem; font-weight: 600; font-family: 'Poppins', sans-serif;
+            cursor: pointer; transition: opacity 0.2s;
+        }
+        .btn-add-log:hover { opacity: 0.88; }
+
+        .new-log-form {
+            background: #f8fafc; border: 1.5px solid var(--border); border-radius: 12px;
+            padding: 16px; margin-bottom: 16px; flex-direction: column; gap: 14px;
+        }
+
+        .activity-list { display: flex; flex-direction: column; }
+        .log-entry { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .log-entry:last-child { border-bottom: none; }
+        .log-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--secondary-color); flex-shrink: 0; margin-top: 5px; }
+        .log-dot.pending { background: #d97706; }
+        .log-dot.resolved { background: #16a34a; }
+        .log-dot.rejected { background: #dc2626; }
+        .log-dot.clarification_requested { background: #2563eb; }
+        .log-content { flex: 1; min-width: 0; }
+        .log-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
+        .log-remark { font-size: 0.82rem; color: #374151; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+        .log-meta { font-size: 0.7rem; color: #9ca3af; margin-top: 4px; }
+        .log-edit-btn {
+            background: none; border: none; cursor: pointer; color: #9ca3af;
+            padding: 2px 4px; border-radius: 4px; display: inline-flex; align-items: center;
+            transition: color 0.15s, background 0.15s; margin-left: auto; flex-shrink: 0;
+        }
+        .log-edit-btn:hover { color: var(--secondary-color); background: #eff6ff; }
+        .no-logs { font-size: 0.82rem; color: #9ca3af; text-align: center; padding: 24px 0; }
+
+        .form-field label {
+            display: block; font-size: 0.72rem; font-weight: 600; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;
+        }
+        .form-select, .form-textarea {
+            width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 10px;
+            font-size: 0.86rem; font-family: 'Poppins', sans-serif; color: var(--text-color);
+            background: white; outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-select:focus, .form-textarea:focus { border-color: var(--secondary-color); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+        .form-textarea { resize: vertical; min-height: 90px; }
+        .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+        .btn-cancel-form {
+            padding: 10px 20px; background: #f1f5f9; color: #64748b; border: none;
+            border-radius: 10px; font-size: 0.84rem; font-weight: 600;
+            font-family: 'Poppins', sans-serif; cursor: pointer; transition: background 0.15s;
+        }
+        .btn-cancel-form:hover { background: #e2e8f0; }
+        .btn-submit-log {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white; border: none; border-radius: 10px;
+            font-size: 0.84rem; font-weight: 600; font-family: 'Poppins', sans-serif;
+            cursor: pointer; transition: opacity 0.2s;
+        }
+        .btn-submit-log:hover { opacity: 0.88; }
+        .btn-submit-log:disabled { opacity: 0.6; cursor: not-allowed; }
+        .form-error {
+            background: #fef2f2; border: 1px solid #fecaca; color: #dc2626;
+            font-size: 0.78rem; padding: 8px 12px; border-radius: 8px; display: none;
+        }
+        .form-error.show { display: block; }
+
+        .edit-log-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-top: 8px; }
+        .edit-log-box .form-field { margin-bottom: 10px; }
+
+        .toast {
+            position: fixed; bottom: 30px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1e293b; color: white; padding: 12px 22px; border-radius: 12px;
+            font-size: 0.84rem; font-weight: 500; font-family: 'Poppins', sans-serif;
+            opacity: 0; transition: opacity 0.3s, transform 0.3s;
+            z-index: 2000; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes spin { to { transform: rotate(360deg); } }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(12px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .icon-svg {
-            width: 18px;
-            height: 18px;
-            stroke: white;
-            fill: none;
-            stroke-width: 2;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
     </style>
 </head>
 <body>
 
-    <!-- Top Bar -->
     <div class="topbar">
-        <button class="btn-back" onclick="goBack()">&#8249;</button>
-        <div class="topbar-title">Record Late Comers</div>
+        <button class="btn-back" onclick="goBack()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="topbar-title">Attendance Discrepancies</div>
         <button class="btn-logout-top" onclick="handleLogout()">Logout</button>
     </div>
 
-    <!-- Pending Banner -->
-    <div class="pending-banner" id="pendingBanner">
-        <div class="pending-banner-title">⚠️ Unsynced Batches</div>
-        <div id="pendingList"></div>
-        <button class="btn-retry-all" id="retryAllBtn" onclick="retryAll()">↑ Retry All</button>
+    <div class="filters-bar">
+        <div class="filter-group">
+            <span class="filter-label">Date</span>
+            <select class="filter-select" id="filterDate" onchange="applyFilters()">
+                <option value="">All Dates</option>
+                <option value="2026-06-08">08 Jun 2026</option>
+                <option value="2026-06-09">09 Jun 2026</option>
+                <option value="2026-06-10">10 Jun 2026</option>
+                <option value="2026-06-11">11 Jun 2026</option>
+                <option value="2026-06-12">12 Jun 2026</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Session</span>
+            <select class="filter-select" id="filterSession" onchange="applyFilters()">
+                <option value="">All Sessions</option>
+                <option value="Session 1">Session 1</option>
+                <option value="Session 2">Session 2</option>
+                <option value="Session 3">Session 3</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <span class="filter-label">Status</span>
+            <select class="filter-select" id="filterStatus" onchange="applyFilters()">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="clarification_requested">Clarification Requested</option>
+                <option value="resolved">Resolved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
+        <div class="search-input-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+            </svg>
+            <input type="text" class="filter-search" id="filterSearch" placeholder="Search roll no, name, department…" oninput="applyFilters()">
+        </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-
-        <!-- Error -->
-        <div class="error-msg" id="errorMsg"></div>
-
-        <!-- Date & Session Card -->
-        <div class="card" style="animation: fadeInUp 0.3s ease;">
-            <div class="card-header">
-                <div class="card-header-icon">
-                    <svg class="icon-svg" viewBox="0 0 24 24">
-                        <rect x="3" y="4" width="18" height="18" rx="2"/>
-                        <line x1="16" y1="2" x2="16" y2="6"/>
-                        <line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                </div>
-                <div class="card-header-title">Date & Session</div>
-            </div>
-            <div class="card-body">
-                <div class="field-group">
-                    <div class="field-label">Date</div>
-                    <select id="dateSelect">
-                        <option value="">— Select Date —</option>
-                        <option value="2026-06-08">08 June 2026</option>
-                        <option value="2026-06-09">09 June 2026</option>
-                        <option value="2026-06-10">10 June 2026</option>
-                        <option value="2026-06-11">11 June 2026</option>
-                        <option value="2026-06-12">12 June 2026</option>
-                    </select>
-                </div>
-                <div class="field-group" style="margin-bottom: 0;">
-                    <div class="field-label">Session</div>
-                    <select id="sessionSelect">
-                        <option value="">— Select Session —</option>
-                        <option value="S1">S1</option>
-                        <option value="S2">S2</option>
-                        <option value="S3">S3</option>
-                    </select>
-                </div>
-            </div>
+        <div class="results-meta">
+            <div class="results-count" id="resultsCount"></div>
         </div>
-
-        <!-- Roll Numbers Card -->
-        <div class="card" style="animation: fadeInUp 0.35s ease;">
-            <div class="card-header">
-                <div class="card-header-icon">
-                    <svg class="icon-svg" viewBox="0 0 24 24">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                </div>
-                <div class="card-header-title">Roll Numbers</div>
-            </div>
-            <div class="card-body">
-                <div class="field-label">One roll number per line</div>
-                <textarea
-                    class="roll-textarea"
-                    id="rollTextarea"
-                    placeholder="25BMA001&#10;25BMA002&#10;25BMA003"
-                    spellcheck="false"
-                    autocomplete="off"
-                    autocorrect="off"
-                    autocapitalize="characters"
-                ></textarea>
-                <div class="roll-count" id="rollCount">0 roll numbers entered</div>
-            </div>
-        </div>
-
-        <!-- Save Button -->
-        <button class="btn-save" id="saveBtn" onclick="handleSave()">Save Late Comers</button>
-
-    </div>
-
-    <!-- Remarks Modal -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <div class="modal-handle"></div>
-            <div class="modal-title">Add Remarks</div>
-            <div class="modal-sub">This will be saved with all roll numbers</div>
-            <div class="modal-summary" id="modalSummary"></div>
-            <textarea class="remarks-input" id="remarksInput" placeholder="e.g. Came after 9:15 AM, traffic issue..."></textarea>
-            <div class="remarks-error" id="remarksError">⚠️ Remarks cannot be empty.</div>
-            <div class="modal-buttons">
-                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-                <button class="btn-confirm" id="confirmBtn" onclick="confirmSave()">Confirm & Save</button>
+        <div class="table-card">
+            <div class="table-scroll">
+                <table class="disc-table">
+                    <thead>
+                        <tr>
+                            <th class="center">#</th>
+                            <th>Roll No.</th>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Date</th>
+                            <th>Session</th>
+                            <th>Issue</th>
+                            <th class="center">Status</th>
+                            <th class="center">View</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr class="state-row">
+                            <td colspan="9"><span class="spinner-inline"></span> Loading records…</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- Toast -->
-    <div class="toast" id="toast"></div>
+    <!-- Modal -->
+    <div class="modal-overlay" id="mainModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-header-title">Discrepancy Details</div>
+                <button class="modal-close" onclick="closeModal()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info-strip">
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Roll No.</span>
+                        <span class="modal-info-value" id="mRoll">—</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Name</span>
+                        <span class="modal-info-value" id="mName">—</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Date</span>
+                        <span class="modal-info-value" id="mDate">—</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Session</span>
+                        <span class="modal-info-value" id="mSession">—</span>
+                    </div>
+                    <div class="modal-info-item">
+                        <span class="modal-info-label">Status</span>
+                        <span class="modal-info-value" id="mStatus">—</span>
+                    </div>
+                </div>
+
+                <div class="issue-box">
+                    <div class="issue-box-label">Issue Reported</div>
+                    <div class="issue-box-text" id="mIssue">—</div>
+                    <div class="issue-box-meta" id="mIssueMeta">—</div>
+                </div>
+
+                <div class="activity-header">
+                    <span class="activity-title">Activity Log</span>
+                    <button class="btn-add-log" onclick="toggleNewLogForm()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                        Add New Log
+                    </button>
+                </div>
+
+                <div class="new-log-form" id="newLogForm" style="display:none;">
+                    <div class="form-field">
+                        <label>New Status</label>
+                        <select class="form-select" id="newLogStatus">
+                            <option value="">— Select Status —</option>
+                            <option value="clarification_requested">Clarification Requested</option>
+                            <option value="resolved">Resolved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label>Remarks</label>
+                        <textarea class="form-textarea" id="newLogRemarks" placeholder="Add remarks or notes about this update…"></textarea>
+                    </div>
+                    <div class="form-error" id="newLogError"></div>
+                    <div class="form-actions">
+                        <button class="btn-cancel-form" onclick="toggleNewLogForm()">Cancel</button>
+                        <button class="btn-submit-log" id="newLogSubmitBtn" onclick="submitNewLog()">Save Log</button>
+                    </div>
+                </div>
+
+                <div class="activity-list" id="activityList">
+                    <div class="no-logs">Loading…</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // ── CONFIG ──
         const SUPABASE_URL = 'https://wetnbnemedzyzudvuihb.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndldG5ibmVtZWR6eXp1ZHZ1aWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjM2ODksImV4cCI6MjA3MDQ5OTY4OX0.53iKjcKaImIz10H8hJv0MkDl08R8Pu8OprDcURqSmRQ';
-        // ────────────
-
-        const SESSION_KEY     = 'faculty_session';
+        const SESSION_KEY = 'faculty_session';
         const SESSION_DURATION_MS = 2 * 60 * 60 * 1000;
-        const DRAFT_KEY       = 'late_comers_draft';
-        const PENDING_KEY     = 'late_comers_pending';
 
-        // ── Session ──
+        let allRecords = [];
+        let currentIrregularityId = null;
+
+        const apiHeaders = {
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json'
+        };
+
         function getSession() {
             try {
                 const raw = localStorage.getItem(SESSION_KEY);
                 if (!raw) return null;
                 const s = JSON.parse(raw);
-                if (Date.now() - s.login_time > SESSION_DURATION_MS) {
-                    localStorage.removeItem(SESSION_KEY);
-                    return null;
-                }
+                if (Date.now() - s.login_time > SESSION_DURATION_MS) { localStorage.removeItem(SESSION_KEY); return null; }
                 return s;
             } catch { return null; }
         }
 
-        function goBack()      { window.location.href = '../dashboard.html'; }
-        function handleLogout() {
-            localStorage.removeItem(SESSION_KEY);
-            window.location.href = '../../../index.html';
+        function goBack() { window.location.href = '../dashboard.html'; }
+        function handleLogout() { localStorage.removeItem(SESSION_KEY); window.location.href = '../../../index.html'; }
+
+        function formatDate(str) {
+            if (!str) return '\u2014';
+            const d = new Date(str + 'T00:00:00');
+            return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
         }
 
-        // ── Draft ──
-        function saveDraft() {
-            const draft = {
-                date:    document.getElementById('dateSelect').value,
-                session: document.getElementById('sessionSelect').value,
-                rolls:   document.getElementById('rollTextarea').value,
-            };
-            localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
-        }
-
-        function loadDraft() {
-            try {
-                const raw = localStorage.getItem(DRAFT_KEY);
-                if (!raw) return;
-                const draft = JSON.parse(raw);
-                if (draft.date)    document.getElementById('dateSelect').value    = draft.date;
-                if (draft.session) document.getElementById('sessionSelect').value = draft.session;
-                if (draft.rolls)   document.getElementById('rollTextarea').value  = draft.rolls;
-                updateCount();
-            } catch {}
-        }
-
-        function clearDraft() {
-            localStorage.removeItem(DRAFT_KEY);
-        }
-
-        // ── Pending ──
-        function getPending() {
-            try {
-                return JSON.parse(localStorage.getItem(PENDING_KEY)) || [];
-            } catch { return []; }
-        }
-
-        function savePending(list) {
-            localStorage.setItem(PENDING_KEY, JSON.stringify(list));
-        }
-
-        function addPending(batch) {
-            const list = getPending();
-            list.push(batch);
-            savePending(list);
-        }
-
-        function removePending(batchId) {
-            const list = getPending().filter(b => b.id !== batchId);
-            savePending(list);
-        }
-
-        // ── Render Pending Banner ──
-        function renderPendingBanner() {
-            const list = getPending();
-            const banner = document.getElementById('pendingBanner');
-            const pendingList = document.getElementById('pendingList');
-
-            if (list.length === 0) {
-                banner.classList.remove('show');
-                return;
-            }
-
-            banner.classList.add('show');
-            pendingList.innerHTML = '';
-
-            // Oldest first
-            list.forEach(batch => {
-                const dateLabel = formatDateLabel(batch.date);
-                const div = document.createElement('div');
-                div.className = 'pending-item';
-                div.innerHTML = `
-                    <div class="pending-item-info">
-                        <div class="pending-item-title">${dateLabel} · ${batch.session}</div>
-                        <div class="pending-item-sub">${batch.roll_numbers.length} student${batch.roll_numbers.length !== 1 ? 's' : ''} · Saved ${formatSavedAt(batch.saved_at)}</div>
-                    </div>
-                    <div class="pending-actions">
-                        <button class="btn-retry" onclick="retrySingle('${batch.id}')">Retry</button>
-                        <button class="btn-discard" onclick="discardBatch('${batch.id}')">Discard</button>
-                    </div>
-                `;
-                pendingList.appendChild(div);
-            });
-        }
-
-        function formatDateLabel(dateStr) {
-            const d = new Date(dateStr + 'T00:00:00');
+        function formatDateTime(str) {
+            if (!str) return '\u2014';
+            const utc = new Date(str);
+            const ist = new Date(utc.getTime() + 5.5 * 60 * 60 * 1000);
             const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            return `${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
-        }
-
-        function formatSavedAt(iso) {
-            const d = new Date(iso);
-            let h = d.getHours(), m = String(d.getMinutes()).padStart(2,'0');
+            let h = ist.getUTCHours();
+            const m = String(ist.getUTCMinutes()).padStart(2, '0');
             const ampm = h >= 12 ? 'PM' : 'AM';
             h = h % 12 || 12;
-            return `${h}:${m} ${ampm}`;
+            return String(ist.getUTCDate()).padStart(2,'0') + ' ' + months[ist.getUTCMonth()] + ' ' + ist.getUTCFullYear() + ', ' + h + ':' + m + ' ' + ampm;
         }
 
-        // ── Supabase RPC ──
-        async function uploadBatch(batch) {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/insert_late_comers`, {
-                method: 'POST',
-                headers: {
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    p_date:         batch.date,
-                    p_session:      batch.session,
-                    p_remarks:      batch.remarks,
-                    p_faculty_id:   batch.faculty_id,
-                    p_roll_numbers: batch.roll_numbers,
-                }),
-            });
-
-            if (!res.ok) {
-                const err = await res.text();
-                console.error('Supabase error:', err);
-                throw new Error(err || 'Upload failed');
-            }
-
+        function formatStatus(s) {
+            const map = { pending: 'Pending', resolved: 'Resolved', rejected: 'Rejected', clarification_requested: 'Clarification Requested' };
+            return map[s] || s;
         }
 
-        // ── Retry Single ──
-        async function retrySingle(batchId) {
-            const list = getPending();
-            const batch = list.find(b => b.id === batchId);
-            if (!batch) return;
+        function statusBadge(s) {
+            return '<span class="badge-status ' + s + '">' + formatStatus(s) + '</span>';
+        }
 
-            showToast('Retrying...', '');
+        async function fetchRecords() {
             try {
-                await uploadBatch(batch);
-                removePending(batchId);
-                renderPendingBanner();
-                showToast('Saved ✓', 'success');
-            } catch {
-                showToast('Failed. Will try again later.', 'error');
+                const res = await fetch(SUPABASE_URL + '/rest/v1/view_attendance_irregularities?select=*&order=roll_number.asc,date.asc,session.asc', { headers: apiHeaders });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                allRecords = await res.json();
+                applyFilters();
+            } catch (err) {
+                document.getElementById('tableBody').innerHTML = '<tr class="state-row"><td colspan="9" style="color:#dc2626;">Failed to load records. ' + err.message + '</td></tr>';
             }
         }
 
-        // ── Retry All ──
-        async function retryAll() {
-            const list = getPending();
-            if (list.length === 0) return;
+        function applyFilters() {
+            const date    = document.getElementById('filterDate').value;
+            const session = document.getElementById('filterSession').value;
+            const status  = document.getElementById('filterStatus').value;
+            const q       = document.getElementById('filterSearch').value.trim().toLowerCase();
 
-            document.getElementById('retryAllBtn').disabled = true;
-            document.getElementById('retryAllBtn').innerHTML = '<span class="spinner-inline"></span> Retrying...';
-
-            let successCount = 0;
-            for (const batch of list) {
-                try {
-                    await uploadBatch(batch);
-                    removePending(batch.id);
-                    successCount++;
-                } catch {}
-            }
-
-            renderPendingBanner();
-            document.getElementById('retryAllBtn').disabled = false;
-            document.getElementById('retryAllBtn').textContent = '↑ Retry All';
-
-            if (successCount === list.length) {
-                showToast('All batches saved ✓', 'success');
-            } else {
-                showToast(`${successCount}/${list.length} saved`, 'error');
-            }
+            const filtered = allRecords.filter(function(r) {
+                if (date && r.date !== date) return false;
+                if (session && r.session !== session) return false;
+                if (status && r.current_status !== status) return false;
+                if (q && !(r.roll_number + ' ' + r.name + ' ' + r.department).toLowerCase().includes(q)) return false;
+                return true;
+            });
+            renderTable(filtered);
         }
 
-        // ── Discard ──
-        function discardBatch(batchId) {
-            removePending(batchId);
-            renderPendingBanner();
+        function escAttr(str) {
+            return (str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         }
 
-        // ── Roll Count ──
-        function updateCount() {
-            const raw = document.getElementById('rollTextarea').value;
-            const rolls = parseRolls(raw);
-            const el = document.getElementById('rollCount');
-            el.textContent = `${rolls.length} roll number${rolls.length !== 1 ? 's' : ''} entered`;
-        }
-
-        function parseRolls(raw) {
-            return raw
-                .split('\n')
-                .map(r => {
-                    const stripped = r.replace(/\s/g, '').toUpperCase();
-                    if (stripped.length === 0) return null;
-
-                    if (stripped.length === 6) {
-                        if (stripped.substring(0, 3) === 'MSS') return '22' + stripped;
-                        else if (stripped.substring(0, 1) === 'M')  return '25' + stripped;
-                        else                                         return '24' + stripped;
-                    }
-
-                    return stripped;
-                })
-                .filter(r => r !== null);
-        }
-
-        // ── Handle Save ──
-        function handleSave() {
-            const errorMsg = document.getElementById('errorMsg');
-            errorMsg.classList.remove('show');
-
-            const date    = document.getElementById('dateSelect').value;
-            const session = document.getElementById('sessionSelect').value;
-            const rolls   = parseRolls(document.getElementById('rollTextarea').value);
-
-            if (!date) {
-                errorMsg.textContent = '⚠️ Please select a date.';
-                errorMsg.classList.add('show');
+        function renderTable(records) {
+            document.getElementById('resultsCount').innerHTML = '<span>' + records.length + '</span> record' + (records.length !== 1 ? 's' : '') + ' found';
+            if (records.length === 0) {
+                document.getElementById('tableBody').innerHTML = '<tr class="state-row"><td colspan="9">No matching records found.</td></tr>';
                 return;
             }
-            if (!session) {
-                errorMsg.textContent = '⚠️ Please select a session.';
-                errorMsg.classList.add('show');
-                return;
+            var html = '';
+            for (var i = 0; i < records.length; i++) {
+                var r = records[i];
+                html += '<tr>';
+                html += '<td class="td-center"><span class="td-serial">' + (i + 1) + '</span></td>';
+                html += '<td><span class="td-roll">' + escAttr(r.roll_number) + '</span></td>';
+                html += '<td><span class="td-name">' + escAttr(r.name) + '</span></td>';
+                html += '<td><span class="td-dept">' + escAttr(r.department) + '</span></td>';
+                html += '<td>' + formatDate(r.date) + '</td>';
+                html += '<td>' + escAttr(r.session) + '</td>';
+                html += '<td><span class="td-issue" title="' + escAttr(r.issue) + '">' + escAttr(r.issue) + '</span></td>';
+                html += '<td class="td-center">' + statusBadge(r.current_status) + '</td>';
+                html += '<td class="td-center"><button class="btn-view" data-id="' + r.id + '">View Details</button></td>';
+                html += '</tr>';
             }
-            if (rolls.length === 0) {
-                errorMsg.textContent = '⚠️ Please enter at least one roll number.';
-                errorMsg.classList.add('show');
-                return;
-            }
+            document.getElementById('tableBody').innerHTML = html;
 
-            // Build summary for modal
-            const dateLabel = formatDateLabel(date);
-            document.getElementById('modalSummary').innerHTML =
-                `<strong>${dateLabel} · ${session}</strong><br>${rolls.length} student${rolls.length !== 1 ? 's' : ''}: ${rolls.slice(0,5).join(', ')}${rolls.length > 5 ? ` +${rolls.length - 5} more` : ''}`;
-
-            openModal();
+            // Attach click handlers — no inline JS, no escaping issues
+            document.querySelectorAll('.btn-view').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    openModal(parseInt(btn.dataset.id));
+                });
+            });
         }
 
-        // ── Modal ──
-        function openModal() {
-            document.getElementById('remarksInput').value = '';
-            document.getElementById('remarksError').classList.remove('show');
-            document.getElementById('modalOverlay').classList.add('show');
-            setTimeout(() => document.getElementById('remarksInput').focus(), 350);
+        async function openModal(id) {
+            currentIrregularityId = id;
+            document.getElementById('mainModal').classList.add('show');
+            document.getElementById('mRoll').textContent    = '\u2014';
+            document.getElementById('mName').textContent    = '\u2014';
+            document.getElementById('mDate').textContent    = '\u2014';
+            document.getElementById('mSession').textContent = '\u2014';
+            document.getElementById('mStatus').innerHTML    = '\u2014';
+            document.getElementById('mIssue').textContent   = '\u2014';
+            document.getElementById('mIssueMeta').textContent = '\u2014';
+            document.getElementById('activityList').innerHTML = '<div class="no-logs">Loading\u2026</div>';
+            document.getElementById('newLogForm').style.display = 'none';
+            document.getElementById('newLogStatus').value = '';
+            document.getElementById('newLogRemarks').value = '';
+            document.getElementById('newLogError').classList.remove('show');
+
+            try {
+                var irRes   = await fetch(SUPABASE_URL + '/rest/v1/view_attendance_irregularities?id=eq.' + id, { headers: apiHeaders });
+                var logsRes = await fetch(SUPABASE_URL + '/rest/v1/attendance_irregularity_logs?irregularity_id=eq.' + id + '&order=created_at.desc&select=*,faculty_details(name)', { headers: apiHeaders });
+                var irData   = await irRes.json();
+                var logsData = await logsRes.json();
+                var ir = irData[0];
+                if (!ir) return;
+
+                document.getElementById('mRoll').textContent    = ir.roll_number || '\u2014';
+                document.getElementById('mName').textContent    = ir.name || '\u2014';
+                document.getElementById('mDate').textContent    = formatDate(ir.date);
+                document.getElementById('mSession').textContent = ir.session || '\u2014';
+                document.getElementById('mStatus').innerHTML    = statusBadge(ir.current_status);
+                document.getElementById('mIssue').textContent   = ir.issue || '\u2014';
+                document.getElementById('mIssueMeta').textContent = 'Reported by ' + (ir.created_by || '\u2014') + ' \u00b7 ' + formatDateTime(ir.created_at);
+
+                renderActivityLog(logsData);
+            } catch(e) {
+                document.getElementById('activityList').innerHTML = '<div class="no-logs" style="color:#dc2626;">Failed to load details.</div>';
+            }
+        }
+
+        function renderActivityLog(logs) {
+            if (!logs.length) {
+                document.getElementById('activityList').innerHTML = '<div class="no-logs">No activity logged yet.</div>';
+                return;
+            }
+            var html = '';
+            for (var i = 0; i < logs.length; i++) {
+                var log = logs[i];
+                var name = (log.faculty_details && log.faculty_details.name) ? log.faculty_details.name : '\u2014';
+                html += '<div class="log-entry" id="log-entry-' + log.id + '">';
+                html += '<div class="log-dot ' + log.status + '"></div>';
+                html += '<div class="log-content">';
+                html += '<div class="log-top">' + statusBadge(log.status);
+                html += '<button class="log-edit-btn" data-log-id="' + log.id + '" data-status="' + log.status + '" title="Edit this log">';
+                html += '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
+                html += '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>';
+                html += '<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>';
+                html += '<div class="log-remark" id="log-remark-' + log.id + '">' + (log.remarks ? escAttr(log.remarks) : '\u2014') + '</div>';
+                html += '<div class="log-meta">' + escAttr(name) + ' \u00b7 ' + formatDateTime(log.created_at) + '</div>';
+                html += '<div id="log-edit-area-' + log.id + '"></div>';
+                html += '</div></div>';
+            }
+            document.getElementById('activityList').innerHTML = html;
+
+            // Attach edit button handlers via JS — avoids all inline escaping problems
+            document.querySelectorAll('.log-edit-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var logId  = parseInt(btn.dataset.logId);
+                    var status = btn.dataset.status;
+                    var remarkEl = document.getElementById('log-remark-' + logId);
+                    // Read raw text content for edit pre-fill; replace em-dash placeholder with empty
+                    var remarks = remarkEl ? remarkEl.textContent.trim() : '';
+                    if (remarks === '\u2014') remarks = '';
+                    startEditLog(logId, status, remarks);
+                });
+            });
+        }
+
+        function startEditLog(logId, currentStatus, currentRemarks) {
+            // Close any other open edit areas
+            document.querySelectorAll('[id^="log-edit-area-"]').forEach(function(el) { el.innerHTML = ''; });
+
+            var area = document.getElementById('log-edit-area-' + logId);
+            var selOpts = ['clarification_requested','resolved','rejected'].map(function(v) {
+                return '<option value="' + v + '"' + (currentStatus === v ? ' selected' : '') + '>' + formatStatus(v) + '</option>';
+            }).join('');
+
+            area.innerHTML =
+                '<div class="edit-log-box">' +
+                '<div class="form-field"><label>Status</label>' +
+                '<select class="form-select" id="edit-status-' + logId + '">' + selOpts + '</select></div>' +
+                '<div class="form-field"><label>Remarks</label>' +
+                '<textarea class="form-textarea" id="edit-remarks-' + logId + '" style="min-height:70px;"></textarea></div>' +
+                '<div class="form-error" id="edit-error-' + logId + '"></div>' +
+                '<div class="form-actions">' +
+                '<button class="btn-cancel-form" id="edit-cancel-' + logId + '">Cancel</button>' +
+                '<button class="btn-submit-log" id="edit-save-' + logId + '">Save Changes</button>' +
+                '</div></div>';
+
+            // Set textarea value safely via JS (avoids HTML encoding issues with remarks content)
+            document.getElementById('edit-remarks-' + logId).value = currentRemarks;
+
+            document.getElementById('edit-cancel-' + logId).addEventListener('click', function() { cancelEditLog(logId); });
+            document.getElementById('edit-save-' + logId).addEventListener('click', function() { saveEditLog(logId); });
+        }
+
+        function cancelEditLog(logId) {
+            document.getElementById('log-edit-area-' + logId).innerHTML = '';
+        }
+
+        async function saveEditLog(logId) {
+            var status  = document.getElementById('edit-status-' + logId).value;
+            var remarks = document.getElementById('edit-remarks-' + logId).value.trim();
+            var errEl   = document.getElementById('edit-error-' + logId);
+            errEl.classList.remove('show');
+            if (!status || !remarks) { errEl.textContent = 'Please fill in all fields.'; errEl.classList.add('show'); return; }
+
+            var session = getSession();
+            if (!session) { window.location.href = '../login.html'; return; }
+
+            try {
+                var res = await fetch(SUPABASE_URL + '/rest/v1/attendance_irregularity_logs?id=eq.' + logId, {
+                    method: 'PATCH',
+                    headers: Object.assign({}, apiHeaders, { 'Prefer': 'return=representation' }),
+                    body: JSON.stringify({ status: status, remarks: remarks })
+                });
+                if (!res.ok) throw new Error('Update failed');
+                showToast('Log entry updated.');
+                cancelEditLog(logId);
+                await refreshModal();
+            } catch(err) {
+                errEl.textContent = err.message;
+                errEl.classList.add('show');
+            }
+        }
+
+        async function submitNewLog() {
+            var status  = document.getElementById('newLogStatus').value;
+            var remarks = document.getElementById('newLogRemarks').value.trim();
+            var errEl   = document.getElementById('newLogError');
+            var btn     = document.getElementById('newLogSubmitBtn');
+            errEl.classList.remove('show');
+            if (!status || !remarks) { errEl.textContent = 'Please select a status and add remarks.'; errEl.classList.add('show'); return; }
+
+            var session = getSession();
+            if (!session) { window.location.href = '../login.html'; return; }
+
+            btn.disabled = true;
+            btn.textContent = 'Saving\u2026';
+            try {
+                var res = await fetch(SUPABASE_URL + '/rest/v1/attendance_irregularity_logs', {
+                    method: 'POST',
+                    headers: Object.assign({}, apiHeaders, { 'Prefer': 'return=representation' }),
+                    body: JSON.stringify({ irregularity_id: currentIrregularityId, status: status, remarks: remarks, faculty_id: session.id })
+                });
+                if (!res.ok) throw new Error('Failed to save log.');
+                document.getElementById('newLogStatus').value = '';
+                document.getElementById('newLogRemarks').value = '';
+                document.getElementById('newLogForm').style.display = 'none';
+                showToast('Log added successfully.');
+                await refreshModal();
+            } catch(err) {
+                errEl.textContent = err.message;
+                errEl.classList.add('show');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save Log';
+            }
+        }
+
+        async function refreshModal() {
+            var logsRes = await fetch(SUPABASE_URL + '/rest/v1/attendance_irregularity_logs?irregularity_id=eq.' + currentIrregularityId + '&order=created_at.desc&select=*,faculty_details(name)', { headers: apiHeaders });
+            renderActivityLog(await logsRes.json());
+            var irRes = await fetch(SUPABASE_URL + '/rest/v1/view_attendance_irregularities?id=eq.' + currentIrregularityId, { headers: apiHeaders });
+            var ir = (await irRes.json())[0];
+            if (ir) document.getElementById('mStatus').innerHTML = statusBadge(ir.current_status);
+            await fetchRecords();
+        }
+
+        function toggleNewLogForm() {
+            var form = document.getElementById('newLogForm');
+            var isHidden = form.style.display === 'none';
+            form.style.display = isHidden ? 'flex' : 'none';
+            if (!isHidden) {
+                document.getElementById('newLogStatus').value = '';
+                document.getElementById('newLogRemarks').value = '';
+                document.getElementById('newLogError').classList.remove('show');
+            }
         }
 
         function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('show');
+            document.getElementById('mainModal').classList.remove('show');
+            currentIrregularityId = null;
         }
 
-        // ── Confirm Save ──
-        async function confirmSave() {
-            const remarks = document.getElementById('remarksInput').value.trim();
-            if (!remarks) {
-                document.getElementById('remarksError').classList.add('show');
-                return;
-            }
-            document.getElementById('remarksError').classList.remove('show');
+        document.getElementById('mainModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
 
-            const session_obj = getSession();
-            const date    = document.getElementById('dateSelect').value;
-            const session = document.getElementById('sessionSelect').value;
-            const rolls   = parseRolls(document.getElementById('rollTextarea').value);
-
-            const batch = {
-                id:           'batch_' + Date.now(),
-                date,
-                session,
-                remarks,
-                faculty_id:   session_obj.id,
-                roll_numbers: rolls,
-                saved_at:     new Date().toISOString(),
-            };
-
-            const confirmBtn = document.getElementById('confirmBtn');
-            confirmBtn.disabled = true;
-            confirmBtn.innerHTML = '<span class="spinner-inline"></span> Saving...';
-
-            try {
-                await uploadBatch(batch);
-                closeModal();
-                clearDraft();
-                document.getElementById('rollTextarea').value = '';
-                updateCount();
-                showToast('Saved ✓', 'success');
-            } catch {
-                // Save to pending
-                addPending(batch);
-                closeModal();
-                clearDraft();
-                document.getElementById('rollTextarea').value = '';
-                updateCount();
-                renderPendingBanner();
-                showToast('Offline — saved locally', 'error');
-            } finally {
-                confirmBtn.disabled = false;
-                confirmBtn.textContent = 'Confirm & Save';
-            }
-        }
-
-        // ── Toast ──
-        function showToast(msg, type) {
-            const t = document.getElementById('toast');
+        function showToast(msg) {
+            var t = document.createElement('div');
+            t.className = 'toast';
             t.textContent = msg;
-            t.className = `toast ${type} show`;
-            setTimeout(() => t.classList.remove('show'), 2800);
+            document.body.appendChild(t);
+            setTimeout(function() { t.classList.add('show'); }, 10);
+            setTimeout(function() { t.classList.remove('show'); setTimeout(function() { t.remove(); }, 300); }, 3000);
         }
 
-        // ── Init ──
-        window.addEventListener('DOMContentLoaded', () => {
-            const session = getSession();
-            if (!session) {
-                window.location.href = '../login.html';
-                return;
-            }
-
-            loadDraft();
-
-            // Auto-select today's date, fallback to 2026-06-08
-            const today = new Date().toISOString().split('T')[0];
-            const dateSelect = document.getElementById('dateSelect');
-            if (!dateSelect.value) {
-                const validDates = ['2026-06-08','2026-06-09','2026-06-10','2026-06-11','2026-06-12'];
-                dateSelect.value = validDates.includes(today) ? today : '2026-06-08';
-            }
-            renderPendingBanner();
-
-            // Save draft on every change
-            document.getElementById('dateSelect').addEventListener('change', saveDraft);
-            document.getElementById('sessionSelect').addEventListener('change', saveDraft);
-            document.getElementById('rollTextarea').addEventListener('input', () => {
-                // Force uppercase while typing
-                const el = document.getElementById('rollTextarea');
-                const pos = el.selectionStart;
-                el.value = el.value.toUpperCase();
-                el.setSelectionRange(pos, pos);
-                updateCount();
-                saveDraft();
-            });
-
-            // Close modal on overlay tap
-            document.getElementById('modalOverlay').addEventListener('click', function(e) {
-                if (e.target === this) closeModal();
-            });
+        window.addEventListener('DOMContentLoaded', function() {
+            if (!getSession()) { window.location.href = '../login.html'; return; }
+            fetchRecords();
         });
     </script>
 </body>
