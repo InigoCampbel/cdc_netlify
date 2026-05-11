@@ -618,6 +618,7 @@
             font-size: 0.7rem;
             font-weight: 600;
             white-space: nowrap;
+            width: fit-content;
         }
 
         .badge-status.pending {
@@ -703,7 +704,6 @@
         .log-entry-remark {
             font-size: 0.82rem;
             color: #4b5563;
-            flex: 1;
         }
 
         .log-entry-meta {
