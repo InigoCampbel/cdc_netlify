@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Record Late Comers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --background-color: #f8fafc;
+            --text-color: #1f2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+
+        /* ── Top Bar ── */
+        .topbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topbar::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(255,255,255,0.12);
+            border-radius: 50%;
+            top: -40px;
+            right: -30px;
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 0.15s;
+        }
+
+        .btn-back:active { background: rgba(255,255,255,0.35); }
+
+        .topbar-title {
+            font-size: 1rem;
+            font-weight: 600;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-logout-top {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 0.15s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-logout-top:active { background: rgba(255,255,255,0.35); }
+
+        /* ── Pending Banner ── */
+        .pending-banner {
+            background: #fffbeb;
+            border-bottom: 1px solid #fde68a;
+            padding: 12px 16px;
+            display: none;
+        }
+
+        .pending-banner.show { display: block; }
+
+        .pending-banner-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pending-item {
+            background: white;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pending-item-info {
+            flex: 1;
+        }
+
+        .pending-item-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .pending-item-sub {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+
+        .pending-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .btn-retry {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 7px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-discard {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            padding: 5px 10px;
+            border-radius: 7px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-retry-all {
+            width: 100%;
+            padding: 9px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            margin-top: 4px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ── Main Content ── */
+        .main-content {
+            padding: 16px;
+        }
+
+        /* ── Card ── */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-header-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 16px 18px;
+        }
+
+        /* ── Form Elements ── */
+        .field-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 6px;
+        }
+
+        .field-group {
+            margin-bottom: 14px;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            background: #f8fafc;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+
+        /* ── Textarea ── */
+        .roll-textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 12px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            background: white;
+            outline: none;
+            resize: vertical;
+            line-height: 1.8;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+        }
+
+        .roll-textarea:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+
+        .roll-textarea::placeholder {
+            text-transform: none;
+            color: #cbd5e1;
+        }
+
+        .roll-count {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            margin-top: 6px;
+            text-align: right;
+        }
+
+        /* ── Error ── */
+        .error-msg {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            font-size: 0.82rem;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .error-msg.show { display: block; }
+
+        /* ── Save Button ── */
+        .btn-save {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-save:active { transform: scale(0.98); }
+        .btn-save:disabled { opacity: 0.6; }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 100;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 24px 20px 36px;
+            width: 100%;
+            max-width: 480px;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.show .modal {
+            transform: translateY(0);
+        }
+
+        .modal-handle {
+            width: 36px;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+
+        .modal-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .modal-sub {
+            font-size: 0.78rem;
+            color: #9ca3af;
+            margin-bottom: 16px;
+        }
+
+        .modal-summary {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            font-size: 0.78rem;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .modal-summary strong {
+            color: var(--primary-color);
+        }
+
+        textarea.remarks-input {
+            width: 100%;
+            min-height: 90px;
+            padding: 12px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            background: #f8fafc;
+            outline: none;
+            resize: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            margin-bottom: 6px;
+        }
+
+        textarea.remarks-input:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+            background: white;
+        }
+
+        .remarks-error {
+            font-size: 0.72rem;
+            color: #dc2626;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .remarks-error.show { display: block; }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 13px;
+            background: #f1f5f9;
+            color: #6b7280;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-confirm {
+            flex: 2;
+            padding: 13px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: opacity 0.2s;
+        }
+
+        .btn-confirm:disabled { opacity: 0.6; }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1e293b;
+            color: white;
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            white-space: nowrap;
+            z-index: 200;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success { background: #166534; }
+        .toast.error   { background: #991b1b; }
+
+        /* ── Spinner ── */
+        .spinner-inline {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .icon-svg {
+            width: 18px;
+            height: 18px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="topbar">
+        <button class="btn-back" onclick="goBack()">&#8249;</button>
+        <div class="topbar-title">Record Late Comers</div>
+        <button class="btn-logout-top" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <!-- Pending Banner -->
+    <div class="pending-banner" id="pendingBanner">
+        <div class="pending-banner-title">⚠️ Unsynced Batches</div>
+        <div id="pendingList"></div>
+        <button class="btn-retry-all" id="retryAllBtn" onclick="retryAll()">↑ Retry All</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- Error -->
+        <div class="error-msg" id="errorMsg"></div>
+
+        <!-- Date & Session Card -->
+        <div class="card" style="animation: fadeInUp 0.3s ease;">
+            <div class="card-header">
+                <div class="card-header-icon">
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                </div>
+                <div class="card-header-title">Date & Session</div>
+            </div>
+            <div class="card-body">
+                <div class="field-group">
+                    <div class="field-label">Date</div>
+                    <select id="dateSelect">
+                        <option value="">— Select Date —</option>
+                        <option value="2026-06-08">08 June 2026</option>
+                        <option value="2026-06-09">09 June 2026</option>
+                        <option value="2026-06-10">10 June 2026</option>
+                        <option value="2026-06-11">11 June 2026</option>
+                        <option value="2026-06-12">12 June 2026</option>
+                    </select>
+                </div>
+                <div class="field-group" style="margin-bottom: 0;">
+                    <div class="field-label">Session</div>
+                    <select id="sessionSelect">
+                        <option value="">— Select Session —</option>
+                        <option value="S1">S1</option>
+                        <option value="S2">S2</option>
+                        <option value="S3">S3</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Roll Numbers Card -->
+        <div class="card" style="animation: fadeInUp 0.35s ease;">
+            <div class="card-header">
+                <div class="card-header-icon">
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <div class="card-header-title">Roll Numbers</div>
+            </div>
+            <div class="card-body">
+                <div class="field-label">One roll number per line</div>
+                <textarea
+                    class="roll-textarea"
+                    id="rollTextarea"
+                    placeholder="25BMA001&#10;25BMA002&#10;25BMA003"
+                    spellcheck="false"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="characters"
+                ></textarea>
+                <div class="roll-count" id="rollCount">0 roll numbers entered</div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <button class="btn-save" id="saveBtn" onclick="handleSave()">Save Late Comers</button>
+
+    </div>
+
+    <!-- Remarks Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-handle"></div>
+            <div class="modal-title">Add Remarks</div>
+            <div class="modal-sub">This will be saved with all roll numbers</div>
+            <div class="modal-summary" id="modalSummary"></div>
+            <textarea class="remarks-input" id="remarksInput" placeholder="e.g. Came after 9:15 AM, traffic issue..."></textarea>
+            <div class="remarks-error" id="remarksError">⚠️ Remarks cannot be empty.</div>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-confirm" id="confirmBtn" onclick="confirmSave()">Confirm & Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ── CONFIG ──
+        const SUPABASE_URL = 'https://wetnbnemedzyzudvuihb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndldG5ibmVtZWR6eXp1ZHZ1aWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjM2ODksImV4cCI6MjA3MDQ5OTY4OX0.53iKjcKaImIz10H8hJv0MkDl08R8Pu8OprDcURqSmRQ';
+        // ────────────
+
+        const SESSION_KEY     = 'faculty_session';
+        const SESSION_DURATION_MS = 2 * 60 * 60 * 1000;
+        const DRAFT_KEY       = 'late_comers_draft';
+        const PENDING_KEY     = 'late_comers_pending';
+
+        // ── Session ──
+        function getSession() {
+            try {
+                const raw = localStorage.getItem(SESSION_KEY);
+                if (!raw) return null;
+                const s = JSON.parse(raw);
+                if (Date.now() - s.login_time > SESSION_DURATION_MS) {
+                    localStorage.removeItem(SESSION_KEY);
+                    return null;
+                }
+                return s;
+            } catch { return null; }
+        }
+
+        function goBack()      { window.location.href = '../dashboard.html'; }
+        function handleLogout() {
+            localStorage.removeItem(SESSION_KEY);
+            window.location.href = '../../../index.html';
+        }
+
+        // ── Draft ──
+        function saveDraft() {
+            const draft = {
+                date:    document.getElementById('dateSelect').value,
+                session: document.getElementById('sessionSelect').value,
+                rolls:   document.getElementById('rollTextarea').value,
+            };
+            localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        }
+
+        function loadDraft() {
+            try {
+                const raw = localStorage.getItem(DRAFT_KEY);
+                if (!raw) return;
+                const draft = JSON.parse(raw);
+                if (draft.date)    document.getElementById('dateSelect').value    = draft.date;
+                if (draft.session) document.getElementById('sessionSelect').value = draft.session;
+                if (draft.rolls)   document.getElementById('rollTextarea').value  = draft.rolls;
+                updateCount();
+            } catch {}
+        }
+
+        function clearDraft() {
+            localStorage.removeItem(DRAFT_KEY);
+        }
+
+        // ── Pending ──
+        function getPending() {
+            try {
+                return JSON.parse(localStorage.getItem(PENDING_KEY)) || [];
+            } catch { return []; }
+        }
+
+        function savePending(list) {
+            localStorage.setItem(PENDING_KEY, JSON.stringify(list));
+        }
+
+        function addPending(batch) {
+            const list = getPending();
+            list.push(batch);
+            savePending(list);
+        }
+
+        function removePending(batchId) {
+            const list = getPending().filter(b => b.id !== batchId);
+            savePending(list);
+        }
+
+        // ── Render Pending Banner ──
+        function renderPendingBanner() {
+            const list = getPending();
+            const banner = document.getElementById('pendingBanner');
+            const pendingList = document.getElementById('pendingList');
+
+            if (list.length === 0) {
+                banner.classList.remove('show');
+                return;
+            }
+
+            banner.classList.add('show');
+            pendingList.innerHTML = '';
+
+            // Oldest first
+            list.forEach(batch => {
+                const dateLabel = formatDateLabel(batch.date);
+                const div = document.createElement('div');
+                div.className = 'pending-item';
+                div.innerHTML = `
+                    <div class="pending-item-info">
+                        <div class="pending-item-title">${dateLabel} · ${batch.session}</div>
+                        <div class="pending-item-sub">${batch.roll_numbers.length} student${batch.roll_numbers.length !== 1 ? 's' : ''} · Saved ${formatSavedAt(batch.saved_at)}</div>
+                    </div>
+                    <div class="pending-actions">
+                        <button class="btn-retry" onclick="retrySingle('${batch.id}')">Retry</button>
+                        <button class="btn-discard" onclick="discardBatch('${batch.id}')">Discard</button>
+                    </div>
+                `;
+                pendingList.appendChild(div);
+            });
+        }
+
+        function formatDateLabel(dateStr) {
+            const d = new Date(dateStr + 'T00:00:00');
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return `${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        function formatSavedAt(iso) {
+            const d = new Date(iso);
+            let h = d.getHours(), m = String(d.getMinutes()).padStart(2,'0');
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return `${h}:${m} ${ampm}`;
+        }
+
+        // ── Supabase RPC ──
+        async function uploadBatch(batch) {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/insert_late_comers`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    p_date:         batch.date,
+                    p_session:      batch.session,
+                    p_remarks:      batch.remarks,
+                    p_faculty_id:   batch.faculty_id,
+                    p_roll_numbers: batch.roll_numbers,
+                }),
+            });
+
+            if (!res.ok) {
+                const err = await res.text();
+                console.error('Supabase error:', err);
+                throw new Error(err || 'Upload failed');
+            }
+
+        }
+
+        // ── Retry Single ──
+        async function retrySingle(batchId) {
+            const list = getPending();
+            const batch = list.find(b => b.id === batchId);
+            if (!batch) return;
+
+            showToast('Retrying...', '');
+            try {
+                await uploadBatch(batch);
+                removePending(batchId);
+                renderPendingBanner();
+                showToast('Saved ✓', 'success');
+            } catch {
+                showToast('Failed. Will try again later.', 'error');
+            }
+        }
+
+        // ── Retry All ──
+        async function retryAll() {
+            const list = getPending();
+            if (list.length === 0) return;
+
+            document.getElementById('retryAllBtn').disabled = true;
+            document.getElementById('retryAllBtn').innerHTML = '<span class="spinner-inline"></span> Retrying...';
+
+            let successCount = 0;
+            for (const batch of list) {
+                try {
+                    await uploadBatch(batch);
+                    removePending(batch.id);
+                    successCount++;
+                } catch {}
+            }
+
+            renderPendingBanner();
+            document.getElementById('retryAllBtn').disabled = false;
+            document.getElementById('retryAllBtn').textContent = '↑ Retry All';
+
+            if (successCount === list.length) {
+                showToast('All batches saved ✓', 'success');
+            } else {
+                showToast(`${successCount}/${list.length} saved`, 'error');
+            }
+        }
+
+        // ── Discard ──
+        function discardBatch(batchId) {
+            removePending(batchId);
+            renderPendingBanner();
+        }
+
+        // ── Roll Count ──
+        function updateCount() {
+            const raw = document.getElementById('rollTextarea').value;
+            const rolls = parseRolls(raw);
+            const el = document.getElementById('rollCount');
+            el.textContent = `${rolls.length} roll number${rolls.length !== 1 ? 's' : ''} entered`;
+        }
+
+        function parseRolls(raw) {
+            return raw
+                .split('\n')
+                .map(r => {
+                    const stripped = r.replace(/\s/g, '').toUpperCase();
+                    if (stripped.length === 0) return null;
+
+                    if (stripped.length === 6) {
+                        if (stripped.substring(0, 3) === 'MSS') return '22' + stripped;
+                        else if (stripped.substring(0, 1) === 'M')  return '25' + stripped;
+                        else                                         return '24' + stripped;
+                    }
+
+                    return stripped;
+                })
+                .filter(r => r !== null);
+        }
+
+        // ── Handle Save ──
+        function handleSave() {
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.classList.remove('show');
+
+            const date    = document.getElementById('dateSelect').value;
+            const session = document.getElementById('sessionSelect').value;
+            const rolls   = parseRolls(document.getElementById('rollTextarea').value);
+
+            if (!date) {
+                errorMsg.textContent = '⚠️ Please select a date.';
+                errorMsg.classList.add('show');
+                return;
+            }
+            if (!session) {
+                errorMsg.textContent = '⚠️ Please select a session.';
+                errorMsg.classList.add('show');
+                return;
+            }
+            if (rolls.length === 0) {
+                errorMsg.textContent = '⚠️ Please enter at least one roll number.';
+                errorMsg.classList.add('show');
+                return;
+            }
+
+            // Build summary for modal
+            const dateLabel = formatDateLabel(date);
+            document.getElementById('modalSummary').innerHTML =
+                `<strong>${dateLabel} · ${session}</strong><br>${rolls.length} student${rolls.length !== 1 ? 's' : ''}: ${rolls.slice(0,5).join(', ')}${rolls.length > 5 ? ` +${rolls.length - 5} more` : ''}`;
+
+            openModal();
+        }
+
+        // ── Modal ──
+        function openModal() {
+            document.getElementById('remarksInput').value = '';
+            document.getElementById('remarksError').classList.remove('show');
+            document.getElementById('modalOverlay').classList.add('show');
+            setTimeout(() => document.getElementById('remarksInput').focus(), 350);
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('show');
+        }
+
+        // ── Confirm Save ──
+        async function confirmSave() {
+            const remarks = document.getElementById('remarksInput').value.trim();
+            if (!remarks) {
+                document.getElementById('remarksError').classList.add('show');
+                return;
+            }
+            document.getElementById('remarksError').classList.remove('show');
+
+            const session_obj = getSession();
+            const date    = document.getElementById('dateSelect').value;
+            const session = document.getElementById('sessionSelect').value;
+            const rolls   = parseRolls(document.getElementById('rollTextarea').value);
+
+            const batch = {
+                id:           'batch_' + Date.now(),
+                date,
+                session,
+                remarks,
+                faculty_id:   session_obj.id,
+                roll_numbers: rolls,
+                saved_at:     new Date().toISOString(),
+            };
+
+            const confirmBtn = document.getElementById('confirmBtn');
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<span class="spinner-inline"></span> Saving...';
+
+            try {
+                await uploadBatch(batch);
+                closeModal();
+                clearDraft();
+                document.getElementById('rollTextarea').value = '';
+                updateCount();
+                showToast('Saved ✓', 'success');
+            } catch {
+                // Save to pending
+                addPending(batch);
+                closeModal();
+                clearDraft();
+                document.getElementById('rollTextarea').value = '';
+                updateCount();
+                renderPendingBanner();
+                showToast('Offline — saved locally', 'error');
+            } finally {
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Confirm & Save';
+            }
+        }
+
+        // ── Toast ──
+        function showToast(msg, type) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = `toast ${type} show`;
+            setTimeout(() => t.classList.remove('show'), 2800);
+        }
+
+        // ── Init ──
+        window.addEventListener('DOMContentLoaded', () => {
+            const session = getSession();
+            if (!session) {
+                window.location.href = '../login.html';
+                return;
+            }
+
+            loadDraft();
+
+            // Auto-select today's date, fallback to 2026-06-08
+            const today = new Date().toISOString().split('T')[0];
+            const dateSelect = document.getElementById('dateSelect');
+            if (!dateSelect.value) {
+                const validDates = ['2026-06-08','2026-06-09','2026-06-10','2026-06-11','2026-06-12'];
+                dateSelect.value = validDates.includes(today) ? today : '2026-06-08';
+            }
+            renderPendingBanner();
+
+            // Save draft on every change
+            document.getElementById('dateSelect').addEventListener('change', saveDraft);
+            document.getElementById('sessionSelect').addEventListener('change', saveDraft);
+            document.getElementById('rollTextarea').addEventListener('input', () => {
+                // Force uppercase while typing
+                const el = document.getElementById('rollTextarea');
+                const pos = el.selectionStart;
+                el.value = el.value.toUpperCase();
+                el.setSelectionRange(pos, pos);
+                updateCount();
+                saveDraft();
+            });
+
+            // Close modal on overlay tap
+            document.getElementById('modalOverlay').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        });
+    </script>
+</body>
+</html>

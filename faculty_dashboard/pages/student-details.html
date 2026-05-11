@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --background-color: #f8fafc;
+            --text-color: #1f2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* ── Top Bar ── */
+        .topbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topbar::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(255,255,255,0.12);
+            border-radius: 50%;
+            top: -40px;
+            right: -30px;
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 0.15s;
+            line-height: 1;
+        }
+
+        .btn-back:active { background: rgba(255,255,255,0.35); }
+
+        .topbar-title {
+            font-size: 1rem;
+            font-weight: 600;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-logout-top {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: background 0.15s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-logout-top:active { background: rgba(255,255,255,0.35); }
+
+        /* ── Search ── */
+        .search-section {
+            padding: 20px 16px 0;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .search-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 13px 16px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            background: white;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+
+        .btn-search {
+            padding: 13px 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: opacity 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+
+        .btn-search:active { transform: scale(0.97); }
+        .btn-search:disabled { opacity: 0.6; }
+
+        /* ── Error ── */
+        .error-msg {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            font-size: 0.82rem;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin: 12px 16px 0;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+            animation: fadeInUp 0.25s ease;
+        }
+
+        /* ── Loading ── */
+        .loading-state {
+            text-align: center;
+            padding: 40px 20px;
+            display: none;
+        }
+
+        .loading-state.show { display: block; }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #e2e8f0;
+            border-top-color: var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        .loading-state p {
+            font-size: 0.85rem;
+            color: #9ca3af;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Results ── */
+        .results-section {
+            padding: 16px 16px 0;
+            display: none;
+        }
+
+        .results-section.show {
+            display: block;
+            animation: fadeInUp 0.35s ease;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .card-header-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .info-rows { padding: 6px 0; }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            padding: 11px 18px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .info-row:last-child { border-bottom: none; }
+
+        .info-key {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            width: 110px;
+            flex-shrink: 0;
+        }
+
+        .info-value {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-color);
+            flex: 1;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background: #eff6ff;
+            color: var(--secondary-color);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            letter-spacing: 0.04em;
+        }
+
+        .role-badge.rep {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .att-pct-bar {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            padding: 12px 18px;
+            margin: 12px 14px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: left;
+            gap: 8px;
+            box-shadow: 0 4px 8px rgba(30, 58, 138, 0.2);
+        }
+
+        .att-pct-label {
+            font-weight: 600;
+            color: white;
+            font-size: 0.82rem;
+        }
+
+        .att-pct-value {
+            font-weight: 700;
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .att-pct-value.low {
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+        .att-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 0 14px 14px;
+        }
+
+        .att-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            min-width: 260px;
+        }
+
+        .att-table th {
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #64748b;
+            white-space: nowrap;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .att-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .att-table td.date-col {
+            text-align: center;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #1f2937;
+            white-space: nowrap;
+        }
+
+        .att-table tbody tr:hover {
+            background-color: rgba(30, 64, 175, 0.04);
+        }
+
+        .badge-present {
+            display: inline-block;
+            background-color: #fef08a;
+            color: #854d0e;
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .badge-absent {
+            display: inline-block;
+            background-color: #1e293b;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .badge-dash {
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        /* SVG icons */
+        .icon-svg {
+            width: 18px;
+            height: 18px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Discrepancy Modal ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            animation: fadeInUp 0.25s ease;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 420px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 20px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .modal-field label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .modal-field select,
+        .modal-field input,
+        .modal-field textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            background: white;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .modal-field select:focus,
+        .modal-field textarea:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+
+        .modal-field input[readonly] {
+            background: #f8fafc;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .modal-field textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .modal-footer {
+            padding: 0 18px 18px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-modal-cancel {
+            flex: 1;
+            padding: 12px;
+            background: #f1f5f9;
+            color: #64748b;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+        }
+
+        .btn-modal-submit {
+            flex: 2;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-modal-submit:disabled { opacity: 0.6; }
+
+        .modal-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            font-size: 0.8rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: none;
+            margin: 0 18px 14px;
+        }
+
+        .modal-error.show { display: block; }
+
+        .btn-discrepancy {
+            display: block;
+            width: calc(100% - 28px);
+            margin: 12px 14px 16px;
+            padding: 12px;
+            background: white;
+            color: #dc2626;
+            border: 1.5px solid #fecaca;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+        }
+
+        .btn-discrepancy:active { background: #fef2f2; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="topbar">
+        <button class="btn-back" onclick="goBack()">&#8249;</button>
+        <div class="topbar-title">Student Details</div>
+        <button class="btn-logout-top" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <!-- Search -->
+    <div class="search-section">
+        <div class="search-label">Search by Roll Number</div>
+        <div class="search-row">
+            <input
+                type="text"
+                class="search-input"
+                id="rollInput"
+                placeholder="e.g. 24BMA001"
+                autocomplete="off"
+                autocapitalize="characters"
+            />
+            <button class="btn-search" id="searchBtn" onclick="handleSearch()">Search</button>
+        </div>
+    </div>
+
+    <!-- Error -->
+    <div class="error-msg" id="errorMsg">⚠️ Please enter a valid roll number.</div>
+
+    <!-- Loading -->
+    <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>Fetching student data...</p>
+    </div>
+
+    <!-- Results -->
+    <div class="results-section" id="resultsSection">
+
+        <!-- Student Info -->
+        <div class="info-card">
+            <div class="card-header">
+                <div class="card-header-icon">
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <div class="card-header-title">Student Information</div>
+            </div>
+            <div class="info-rows">
+                <div class="info-row">
+                    <div class="info-key">Name</div>
+                    <div class="info-value" id="stdName">—</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Roll No.</div>
+                    <div class="info-value" id="stdRoll">—</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Department</div>
+                    <div class="info-value" id="stdDept">—</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Career</div>
+                    <div class="info-value" id="stdCareer">—</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Venue</div>
+                    <div class="info-value" id="stdVenue">—</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-key">Role</div>
+                    <div class="info-value" id="stdRole">—</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance -->
+        <div class="info-card">
+            <div class="card-header">
+                <div class="card-header-icon">
+                    <svg class="icon-svg" viewBox="0 0 24 24">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                </div>
+                <div class="card-header-title">Attendance Record</div>
+            </div>
+            <div class="att-pct-bar">
+                <span class="att-pct-label">Attendance Percentage:</span>
+                <span class="att-pct-value" id="stdAttPct">—</span>
+            </div>
+
+            <div class="att-table-wrap">
+                <table class="att-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Session 1</th>
+                            <th>Session 2</th>
+                            <th>Session 3</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessionGrid"></tbody>
+                </table>
+            </div>
+            <div style="text-align: center; padding: 10px 14px 16px; border-top: 1px solid #f1f5f9; margin-top: 4px;">
+                <span id="lastUpdated" style="font-size: 0.72rem; color: #9ca3af;">Last updated: —</span>
+            </div>  
+        </div>
+
+        <button class="btn-discrepancy" onclick="openDiscrepancyModal()">⚠️ Record Attendance Discrepancy</button>
+    
+    </div>
+
+    <!-- Discrepancy Modal -->
+    <div class="modal-overlay" id="discrepancyModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-header-title">Record Attendance Discrepancy</div>
+                <button class="modal-close" onclick="closeDiscrepancyModal()">&#215;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-field">
+                    <label>Date</label>
+                    <select id="modalDate">
+                        <option value="">— Select Date —</option>
+                        <option value="2026-06-08">08 June 2026</option>
+                        <option value="2026-06-09">09 June 2026</option>
+                        <option value="2026-06-10">10 June 2026</option>
+                        <option value="2026-06-11">11 June 2026</option>
+                        <option value="2026-06-12">12 June 2026</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Session</label>
+                    <select id="modalSession">
+                        <option value="">— Select Session —</option>
+                        <option value="Session 1">Session 1</option>
+                        <option value="Session 2">Session 2</option>
+                        <option value="Session 3">Session 3</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label>Roll Number</label>
+                    <input type="text" id="modalRoll" readonly />
+                </div>
+                <div class="modal-field">
+                    <label>Issue</label>
+                    <textarea id="modalRemark" placeholder="Describe the discrepancy..."></textarea>
+                </div>
+            </div>
+            <div class="modal-error" id="modalError"></div>
+            <div class="modal-footer">
+                <button class="btn-modal-cancel" onclick="closeDiscrepancyModal()">Cancel</button>
+                <button class="btn-modal-submit" id="modalSubmitBtn" onclick="submitDiscrepancy()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── CONFIG ── Replace with your Supabase credentials ──
+        const SUPABASE_URL = 'https://wetnbnemedzyzudvuihb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndldG5ibmVtZWR6eXp1ZHZ1aWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjM2ODksImV4cCI6MjA3MDQ5OTY4OX0.53iKjcKaImIz10H8hJv0MkDl08R8Pu8OprDcURqSmRQ';
+        // ──────────────────────────────────────────────────────
+
+        const SESSION_KEY = 'faculty_session';
+        const SESSION_DURATION_MS = 2 * 60 * 60 * 1000;
+
+        function getSession() {
+            try {
+                const raw = localStorage.getItem(SESSION_KEY);
+                if (!raw) return null;
+                const session = JSON.parse(raw);
+                if (Date.now() - session.login_time > SESSION_DURATION_MS) {
+                    localStorage.removeItem(SESSION_KEY);
+                    return null;
+                }
+                return session;
+            } catch { return null; }
+        }
+
+        function goBack() { window.location.href = '../dashboard.html'; }
+
+        function handleLogout() {
+            localStorage.removeItem(SESSION_KEY);
+            window.location.href = '../../../index.html';
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!getSession()) window.location.href = '../login.html';
+        });
+
+        document.getElementById('rollInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') handleSearch();
+        });
+
+        function setLoading(on) {
+            document.getElementById('loadingState').classList.toggle('show', on);
+            document.getElementById('searchBtn').disabled = on;
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = '⚠️ ' + (msg || 'Please enter a valid roll number.');
+            el.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('errorMsg').classList.remove('show');
+        }
+
+        async function fetchLastUpdated() {
+            try {
+                const res = await fetch(
+                    `${SUPABASE_URL}/rest/v1/lat_updated_june26?select=updated_at&order=id.desc&limit=1`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+                const data = await res.json();
+                if (!data[0]) return;
+
+                const utc = new Date(data[0].updated_at);
+                const ist = new Date(utc.getTime() + 5.5 * 60 * 60 * 1000);
+
+                const day = String(ist.getUTCDate()).padStart(2, '0');
+                const months = ['January','February','March','April','May','June',
+                                'July','August','September','October','November','December'];
+                const month = months[ist.getUTCMonth()];
+                const year  = ist.getUTCFullYear();
+
+                let hours = ist.getUTCHours();
+                const minutes = String(ist.getUTCMinutes()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12;
+
+                document.getElementById('lastUpdated').textContent =
+                    `Last updated: ${day} ${month} ${year}, ${hours}:${minutes} ${ampm}`;
+            } catch {
+                // silently fail, default text stays
+            }
+        }
+
+        async function handleSearch() {
+            const roll = document.getElementById('rollInput').value.trim().toUpperCase();
+
+            hideError();
+            document.getElementById('resultsSection').classList.remove('show');
+
+            if (!roll) {
+                showError('Please enter a valid roll number.');
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                const headers = {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json'
+                };
+
+                const [detailsRes, attendanceRes] = await Promise.all([
+                    fetch(`${SUPABASE_URL}/rest/v1/june26_std_details?roll_number=eq.${encodeURIComponent(roll)}&select=*`, { headers }),
+                    fetch(`${SUPABASE_URL}/rest/v1/june26_std_attendance?roll_number=eq.${encodeURIComponent(roll)}&select=*`, { headers })
+                ]);
+
+                if (!detailsRes.ok || !attendanceRes.ok) throw new Error('Network error');
+
+                const details    = await detailsRes.json();
+                const attendance = await attendanceRes.json();
+
+                if (details.length === 0) {
+                    showError('Please enter a valid roll number.');
+                    return;
+                }
+
+                renderResults(details[0], attendance[0] || null);
+                document.getElementById('resultsSection').classList.add('show');
+
+            } catch (err) {
+                showError('Connection error. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function renderResults(detail, att) {
+            document.getElementById('stdName').textContent   = detail.name || '—';
+            document.getElementById('stdRoll').textContent   = detail.roll_number || '—';
+            document.getElementById('stdDept').textContent   = detail.department || '—';
+            document.getElementById('stdCareer').textContent = detail.career_choice || '—';
+            document.getElementById('stdVenue').textContent  = detail.venue || '—';
+
+            // Role with badge
+            const roleEl = document.getElementById('stdRole');
+            const role = detail.role;
+            if (role === 'Rep') {
+                roleEl.innerHTML = `<span class="role-badge rep">Rep</span>`;
+            } else if (role === 'Student') {
+                roleEl.innerHTML = `<span class="role-badge">Student</span>`;
+            } else {
+                roleEl.textContent = role || '—';
+            }
+
+            // Attendance %
+            const pctEl = document.getElementById('stdAttPct');
+            if (att && att.attendance_percentage) {
+                const num = parseFloat(att.attendance_percentage);
+                pctEl.textContent = (num * 100).toFixed(2) + '%';
+                pctEl.classList.toggle('low', !isNaN(num) && (num * 100) < 80);
+            } else {
+                pctEl.textContent = '-';
+                pctEl.classList.remove('low');
+            }
+
+            // Session tiles
+            const grid = document.getElementById('sessionGrid');
+            grid.innerHTML = '';
+
+            const rows = [
+                { date: '08 Jun 2026', keys: ['s1','s2','s3'] },
+                { date: '09 Jun 2026', keys: ['s4','s5','s6'] },
+                { date: '10 Jun 2026', keys: ['s7','s8','s9'] },
+                { date: '11 Jun 2026', keys: ['s10','s11','s12'] },
+                { date: '12 Jun 2026', keys: ['s13','s14','s15'] },
+            ];
+
+            rows.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td class="date-col">${row.date}</td>` +
+                    row.keys.map(key => {
+                        const val = att ? (att[key] || '-') : '-';
+                        if (val === 'P') return `<td><span class="badge-present">Present</span></td>`;
+                        if (val === 'A') return `<td><span class="badge-absent">Absent</span></td>`;
+                        return `<td><span class="badge-dash">—</span></td>`;
+                    }).join('');
+                grid.appendChild(tr);
+            });
+            fetchLastUpdated();
+        }
+
+        function openDiscrepancyModal() {
+            const roll = document.getElementById('stdRoll').textContent.trim();
+            if (!roll || roll === '—') {
+                showError('No student loaded. Please search first.');
+                return;
+            }
+            document.getElementById('modalRoll').value = roll;
+            document.getElementById('modalDate').value = '';
+            document.getElementById('modalSession').value = '';
+            document.getElementById('modalRemark').value = '';
+            document.getElementById('modalError').classList.remove('show');
+            document.getElementById('discrepancyModal').classList.add('show');
+        }
+
+        function closeDiscrepancyModal() {
+            document.getElementById('discrepancyModal').classList.remove('show');
+        }
+
+        async function submitDiscrepancy() {
+            const date    = document.getElementById('modalDate').value;
+            const session = document.getElementById('modalSession').value;
+            const roll    = document.getElementById('modalRoll').value.trim();
+            const remark  = document.getElementById('modalRemark').value.trim();
+            const errorEl = document.getElementById('modalError');
+            const submitBtn = document.getElementById('modalSubmitBtn');
+
+            errorEl.classList.remove('show');
+
+            if (!date || !session || !remark) {
+                errorEl.textContent = '⚠️ Please fill in all fields.';
+                errorEl.classList.add('show');
+                return;
+            }
+
+            const sessionData = getSession();
+            if (!sessionData) {
+                window.location.href = '../login.html';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                const headers = {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation'
+                };
+
+                // Step 1: Insert into attendance_irregularities
+                const irRes = await fetch(`${SUPABASE_URL}/rest/v1/attendance_irregularities`, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({
+                        roll_number:    roll,
+                        faculty_id:     sessionData.id,
+                        date:           date,
+                        session:        session,
+                        current_status: 'pending'
+                    })
+                });
+
+                if (!irRes.ok) throw new Error('Failed to record irregularity.');
+                const irData = await irRes.json();
+                const irregularityId = irData[0].id;
+
+                // Step 2: Insert into attendance_irregularity_logs
+                const logRes = await fetch(`${SUPABASE_URL}/rest/v1/attendance_irregularity_logs`, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({
+                        irregularity_id: irregularityId,
+                        status:          'pending',
+                        remarks:         remark,
+                        updated_by:      sessionData.id
+                    })
+                });
+
+                if (!logRes.ok) throw new Error('Failed to record log entry.');
+
+                closeDiscrepancyModal();
+                alert('Discrepancy recorded successfully.');
+
+            } catch (err) {
+                errorEl.textContent = '⚠️ ' + err.message;
+                errorEl.classList.add('show');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit';
+            }
+        }
+
+    </script>
+</body>
+</html>

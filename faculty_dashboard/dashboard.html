@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Faculty Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --background-color: #f8fafc;
+            --text-color: #1f2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 0 0 40px 0;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 28px 24px 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 50%;
+            top: -60px;
+            right: -50px;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            bottom: 10px;
+            left: -30px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-block .greeting {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .welcome-block .name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-top: 2px;
+        }
+
+        .welcome-block .user-id {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0 20px;
+            margin-top: 28px;
+            margin-bottom: 12px;
+        }
+
+        /* ── Cards ── */
+        .cards-wrapper {
+            padding: 0 16px;
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .nav-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+            padding: 18px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+            animation: slideIn 0.35s ease both;
+        }
+
+        .nav-card:active {
+            transform: scale(0.97);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+
+        .card-arrow {
+            margin-left: auto;
+            color: #d1d5db;
+            font-size: 1rem;
+        }
+
+        /* ── Logout ── */
+        .logout-section {
+            padding: 8px 16px 0;
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 14px;
+            background: white;
+            color: #ef4444;
+            border: 1.5px solid #fecaca;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-logout:active {
+            transform: scale(0.98);
+            background: #fef2f2;
+        }
+
+        /* Animate cards in */
+        .nav-card {
+            animation: slideIn 0.35s ease both;
+        }
+        .nav-card:nth-child(1) { animation-delay: 0.05s; }
+        .nav-card:nth-child(2) { animation-delay: 0.10s; }
+        .nav-card:nth-child(3) { animation-delay: 0.15s; }
+        .nav-card:nth-child(4) { animation-delay: 0.20s; }
+        .nav-card:nth-child(5) { animation-delay: 0.25s; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <div class="welcome-block">
+                <div class="greeting">Welcome back</div>
+                <div class="name" id="facultyName">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nav Cards -->
+    <div class="section-label">Quick Actions</div>
+
+    <div class="cards-wrapper">
+
+        <a class="nav-card" href="pages/student_details/index.html">
+            <div class="card-title">View Student Details</div>
+        </a>
+
+        <a class="nav-card" href="pages/class-details.html">
+            <div class="card-title">View Class Details</div>
+        </a>
+
+        <a class="nav-card" href="pages/trainer-details.html">
+            <div class="card-title">View Trainer Details</div>
+        </a>
+
+        <a class="nav-card" href="pages/record-late-comers.html">
+            <div class="card-title">Record Late Comers</div>
+        </a>
+
+        <a class="nav-card" href="pages/view-late-comers.html">
+            <div class="card-title">View Late Comers List</div>
+        </a>
+
+        <a class="nav-card" href="pages/view-attendance_discrepancy.html">
+            <div class="card-title">View Attendance Discrepancy List</div>
+        </a>
+
+    </div>
+
+    <!-- Logout -->
+    <div class="logout-section">
+        <button class="btn-logout" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <script>
+        const SESSION_KEY = 'faculty_session';
+        const SESSION_DURATION_MS = 2 * 60 * 60 * 1000;
+
+        function getSession() {
+            try {
+                const raw = localStorage.getItem(SESSION_KEY);
+                if (!raw) return null;
+                const session = JSON.parse(raw);
+                if (Date.now() - session.login_time > SESSION_DURATION_MS) {
+                    localStorage.removeItem(SESSION_KEY);
+                    return null;
+                }
+                return session;
+            } catch {
+                return null;
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem(SESSION_KEY);
+            window.location.href = '../../index.html';
+        }
+
+        // On load: check session
+        window.addEventListener('DOMContentLoaded', () => {
+            const session = getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('facultyName').textContent = session.name;
+
+            // Show session expiry info
+            const elapsed = Date.now() - session.login_time;
+            const remaining = Math.round((SESSION_DURATION_MS - elapsed) / 60000);
+            document.getElementById('sessionInfo').textContent =
+                `Session expires in ${remaining} minute${remaining !== 1 ? 's' : ''}`;
+        });
+    </script>
+</body>
+</html>
