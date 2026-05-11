@@ -320,9 +320,8 @@ async function fetchDiscrepancies(roll, silent = false) {
             tr.innerHTML = `
                 <td>${formatDate(row.date)}</td>
                 <td>${row.session}</td>
-                <td>${row.issue || '—'}</td>
+                <td>${row.issue ? (row.issue.length > 80 ? row.issue.slice(0, 80) + '...' : row.issue) : '—'}</td>
                 <td><span class="badge-status ${row.current_status}">${formatStatus(row.current_status)}</span></td>
-                <td>${row.remarks || '—'}</td>
                 <td><button class="btn-view-details" onclick="openViewDetails(${row.id})">View Details</button></td>
             `;
             return tr;
@@ -362,13 +361,11 @@ async function openViewDetails(id) {
         } else {
             logsHTML = logsData.map(log => `
                 <div class="log-entry">
-                    <div class="log-entry-top">
-                        <span class="badge-status ${log.status}">${formatStatus(log.status)}</span>
-                        <span class="log-entry-remark">${log.remarks || '—'}</span>
-                    </div>
+                    <span class="badge-status ${log.status}">${formatStatus(log.status)}</span>
+                    <div class="log-entry-remark" style="white-space:pre-wrap;">${log.remarks || '—'}</div>
                     <div class="log-entry-meta">${log.faculty_details?.name || '—'} &nbsp;·&nbsp; ${formatDateTime(log.created_at)}</div>
                 </div>
-            `).join('');
+            `).join('');;
         }
 
         body.innerHTML = `
@@ -376,10 +373,8 @@ async function openViewDetails(id) {
                 <span class="detail-meta">${ir.roll_number} &nbsp;·&nbsp; ${formatDate(ir.date)} &nbsp;·&nbsp; ${ir.session}</span>
             </div>
             <div class="detail-issue-box">
-                <div style="display:flex;gap:8px;align-items:baseline;">
-                    <div class="detail-label" style="flex-shrink:0;margin-bottom:0;">Issue</div>
-                    <div class="detail-text">${ir.issue || '—'}</div>
-                </div>
+                    <div class="detail-label">Issue</div>
+                    <div class="detail-text" style="white-space:pre-wrap;">${ir.issue || '—'}</div>
                 <div class="log-entry-meta" style="margin-top:8px;">${ir.created_by || '—'} &nbsp;·&nbsp; ${formatDateTime(ir.created_at)}</div>
             </div>
             <div class="logs-title">Activity</div>
