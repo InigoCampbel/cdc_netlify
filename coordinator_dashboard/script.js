@@ -1381,12 +1381,24 @@ function showSessionDetails(e) {
                 <span class="detail-value">${session.timing}</span>
             </div>
             <div class="detail-item">
+                <span class="detail-label">Batch:</span>
+                <span class="detail-value">${session.batch || 'N/A'}</span>
+            </div>
+            <div class="detail-item">
                 <span class="detail-label">Topic:</span>
                 <span class="detail-value">${session.topic || 'N/A'}</span>
             </div>
             <div class="detail-item">
                 <span class="detail-label">Department:</span>
-                <span class="detail-value">${session.department || 'N/A'}</span>
+                <span class="detail-value department-value" style="cursor: pointer; color: #1e3a8a; text-decoration: underline;">
+                    ${(() => {
+                        if (!session.department) return 'N/A';
+                        const depts = session.department.split('|').map(d => d.trim()).filter(d => d);
+                        const count = depts.length;
+                        return count === 1 ? depts[0] : `${count} departments`;
+                    })()}
+                </span>
+                <div class="department-list" style="display: none; margin-top: 10px; padding: 10px; background: #f0f0f0; border-radius: 5px; font-size: 13px;"></div>
             </div>
             <div class="detail-item">
                 <span class="detail-label">Students Count:</span>
@@ -1410,6 +1422,27 @@ function showSessionDetails(e) {
             </div>
         `;
         
+        // Handle department click
+        const departmentValue = sessionDetailsContent.querySelector('.department-value');
+        const departmentList = sessionDetailsContent.querySelector('.department-list');
+        
+        if (departmentValue && session.department) {
+            const depts = session.department.split('|').map(d => d.trim()).filter(d => d);
+            
+            if (depts.length > 1) {
+                departmentValue.addEventListener('click', function() {
+                    if (departmentList.style.display === 'none') {
+                        departmentList.style.display = 'block';
+                        departmentList.innerHTML = depts.map(dept => `<div style="padding: 5px 0;">• ${dept}</div>`).join('');
+                        departmentValue.textContent = depts.length + ' departments';
+                    } else {
+                        departmentList.style.display = 'none';
+                        departmentValue.textContent = depts.length + ' departments';
+                    }
+                });
+            }
+        }
+
         sessionDetailsModal.classList.remove('hidden');
     }
 }
