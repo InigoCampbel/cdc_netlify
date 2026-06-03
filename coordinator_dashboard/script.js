@@ -3,7 +3,36 @@ const SUPABASE_URL = 'https://wetnbnemedzyzudvuihb.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndldG5ibmVtZWR6eXp1ZHZ1aWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjM2ODksImV4cCI6MjA3MDQ5OTY4OX0.53iKjcKaImIz10H8hJv0MkDl08R8Pu8OprDcURqSmRQ';
 
 // Initialize Supabase client
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+async function supabaseQuery(table, options = {}) {
+    let url = `${SUPABASE_URL}/rest/v1/${table}?`;
+    const headers = {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+    };
+
+    const params = [];
+    if (options.select) params.push(`select=${options.select}`);
+    if (options.eq) Object.entries(options.eq).forEach(([k, v]) => params.push(`${k}=eq.${v}`));
+    if (options.in) Object.entries(options.in).forEach(([k, v]) => params.push(`${k}=in.(${v.join(',')})`));
+    url += params.join('&');
+
+    if (options.update) {
+        const response = await fetch(url, {
+            method: 'PATCH',
+            headers,
+            body: JSON.stringify(options.update)
+        });
+        if (!response.ok) throw new Error(await response.text());
+        return { data: null, error: null };
+    }
+
+    const response = await fetch(url, { headers });
+    if (!response.ok) throw new Error(await response.text());
+    const data = await response.json();
+    return { data, error: null };
+}
 
 // Global state
 let allSessionData = [];
@@ -387,7 +416,7 @@ function logout() {
     
     // Cleanup
     if (realtimeSubscription) {
-        realtimeSubscription.unsubscribe();
+        clearInterval(realtimeSubscription);
         realtimeSubscription = null;
     }
 
@@ -594,16 +623,11 @@ async function loadInitialFilterOptions() {
     try {
         showLoading('Loading filter options...');
         
-        let query = supabaseClient
-            .from('training_sessions')
-            .select('date, block, training_partner');
-        
+        const queryOptions = { select: 'date,block,training_partner' };
         if (userType !== 'LND') {
-            const partnerFilter = getTrainingPartnerForUser(userType);
-            query = query.eq('training_partner', partnerFilter);
+            queryOptions.eq = { training_partner: getTrainingPartnerForUser(userType) };
         }
-        
-        const { data, error } = await query;
+        const { data, error } = await supabaseQuery('training_sessions', queryOptions);
         
         if (error) throw error;
         
@@ -919,21 +943,14 @@ async function applyPrimaryFilters() {
     try {
         showLoading('Loading session data...');
         
-        let query = supabaseClient.from('training_sessions').select('*');
-        
+        const queryOptions = { select: '*', in: { date: selectedDates, session: selectedSessions } };
         if (userType !== 'LND') {
-            query = query.eq('training_partner', getTrainingPartnerForUser(userType));
+            queryOptions.eq = { training_partner: getTrainingPartnerForUser(userType) };
         } else {
-            query = query.in('training_partner', selectedPartners);
+            queryOptions.in.training_partner = selectedPartners;
         }
-        
-        query = query.in('date', selectedDates).in('session', selectedSessions);
-        
-        if (selectedBlocks.length > 0) {
-            query = query.in('block', selectedBlocks);
-        }
-        
-        const { data, error } = await query;
+        if (selectedBlocks.length > 0) queryOptions.in.block = selectedBlocks;
+        const { data, error } = await supabaseQuery('training_sessions', queryOptions);
         
         if (error) throw error;
         
@@ -979,21 +996,14 @@ async function loadDataForRestoredFilters() {
     try {
         showLoading('Restoring session data...');
         
-        let query = supabaseClient.from('training_sessions').select('*');
-        
+        const queryOptions = { select: '*', in: { date: selectedDates, session: selectedSessions } };
         if (userType !== 'LND') {
-            query = query.eq('training_partner', getTrainingPartnerForUser(userType));
+            queryOptions.eq = { training_partner: getTrainingPartnerForUser(userType) };
         } else {
-            query = query.in('training_partner', selectedPartners);
+            queryOptions.in.training_partner = selectedPartners;
         }
-        
-        query = query.in('date', selectedDates).in('session', selectedSessions);
-        
-        if (selectedBlocks.length > 0) {
-            query = query.in('block', selectedBlocks);
-        }
-        
-        const { data, error } = await query;
+        if (selectedBlocks.length > 0) queryOptions.in.block = selectedBlocks;
+        const { data, error } = await supabaseQuery('training_sessions', queryOptions);
         
         if (error) throw error;
         
@@ -1202,13 +1212,10 @@ async function updateEnabledStatus(e) {
         const istTime = new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"});
         const istDate = new Date(istTime).toISOString();
         
-        const { error } = await supabaseClient
-            .from('training_sessions')
-            .update({ 
-                enabled_for_reach: enabled,
-                enabled_for_reach_at: istDate
-            })
-            .eq('id', sessionId);
+        const { error } = await supabaseQuery('training_sessions', {
+            eq: { id: sessionId },
+            update: { enabled_for_reach: enabled, enabled_for_reach_at: istDate }
+        });
         
         if (error) throw error;
         
@@ -1284,13 +1291,10 @@ async function updateReachedStatus(e) {
         }
         
         // Now update the database
-        const { error } = await supabaseClient
-            .from('training_sessions')
-            .update({ 
-                reached: reached,
-                time_of_updation: istDate
-            })
-            .eq('id', sessionId);
+        const { error } = await supabaseQuery('training_sessions', {
+            eq: { id: sessionId },
+            update: { reached: reached, time_of_updation: istDate }
+        });
         
         if (error) throw error;
         
@@ -1482,27 +1486,22 @@ function toggleInstructions() {
 }
 
 function setupRealtimeSubscription() {
-    if (realtimeSubscription) {
-        realtimeSubscription.unsubscribe();
-    }
+    if (realtimeSubscription) clearInterval(realtimeSubscription);
     
-    realtimeSubscription = supabaseClient
-        .channel('training_sessions_changes')
-        .on('postgres_changes', {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'training_sessions'
-        }, (payload) => {
-            const updatedSession = payload.new;
-            
-            const sessionIndex = filteredSessionData.findIndex(s => s.id === updatedSession.id);
-            if (sessionIndex !== -1) {
-                filteredSessionData[sessionIndex] = updatedSession;
-                updateTableRow(updatedSession);
-                updateStats();
-            }
-        })
-        .subscribe();
+    realtimeSubscription = setInterval(async () => {
+        if (allSessionData.length === 0) return;
+        
+        const queryOptions = { select: '*', in: { date: selectedDates, session: selectedSessions } };
+        if (userType !== 'LND') queryOptions.eq = { training_partner: getTrainingPartnerForUser(userType) };
+        else queryOptions.in.training_partner = selectedPartners;
+        if (selectedBlocks.length > 0) queryOptions.in.block = selectedBlocks;
+        
+        const { data } = await supabaseQuery('training_sessions', queryOptions);
+        if (!data) return;
+        
+        allSessionData = data;
+        applySecondaryFilters();
+    }, 12000); // refreshes every 12 seconds
 }
 
 function updateTableRow(session) {
