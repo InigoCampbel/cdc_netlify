@@ -519,9 +519,9 @@ footer.page-footer {
         <div class="top-bar-subtitle">Trainer Schedule Viewer</div>
       </div>
     </div>
-    <a href="../staff.html" class="logout-btn" onclick="sessionStorage.removeItem('seed_portal_auth')">
-      <i class="fas fa-chevron-left"></i> Back
-    </a>
+    <button class="logout-btn" onclick="logoutAndBack()">
+    <i class="fas fa-chevron-left"></i> Back
+    </button>
   </div>
 
   <div class="page-wrap">
@@ -619,9 +619,9 @@ function checkAccess() {
   }
 }
 
-function logout() {
+function logoutAndBack() {
   sessionStorage.removeItem(SESSION_KEY);
-  location.reload();
+  window.location.href = '../staff.html';
 }
 
 document.getElementById('access-input').addEventListener('keydown', e => {
