@@ -1,169 +1,839 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Under Construction</title>
-    <style>
-        :root {
-            --primary-color: #1e3a8a;
-            --secondary-color: #3b82f6;
-            --accent-color: #60a5fa;
-            --background-color: #f8fafc;
-            --text-color: #1f2937;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        body {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .container {
-            background-color: white;
-            border-radius: 22px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            padding: 40px;
-            text-align: center;
-            max-width: 600px;
-            width: 90%;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        h1 {
-            color: var(--primary-color);
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-        
-        h1::after {
-            content: "";
-            position: absolute;
-            bottom: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            border-radius: 10px;
-        }
-        
-        p {
-            color: #4b5563;
-            font-size: 1.2rem;
-            margin: 1.5rem 0;
-            line-height: 1.6;
-        }
-        
-        .countdown {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--secondary-color);
-            margin: 1.5rem 0;
-        }
-        
-        .progress-container {
-            width: 100%;
-            background-color: #e2e8f0;
-            border-radius: 10px;
-            height: 8px;
-            margin: 1.5rem 0;
-            overflow: hidden;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            border-radius: 10px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            width: 0%;
-            transition: width 5s linear;
-        }
-        
-        .construction-icon {
-            font-size: 3rem;
-            margin: 1rem 0;
-            color: var(--primary-color);
-        }
-        
-        .decorative-element {
-            position: absolute;
-            opacity: 0.4;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .circle-element {
-            width: 125px;
-            height: 125px;
-            border: 2px solid var(--secondary-color);
-            border-radius: 50%;
-            top: -60px;
-            right: -60px;
-        }
-        
-        .diagonal-element {
-            width: 100px;
-            height: 2px;
-            background: var(--accent-color);
-            transform: rotate(45deg);
-            bottom: 20px;
-            left: -20px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trainer Schedule - SEED Training Portal</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #1e3a8a;
+  --secondary-color: #3b82f6;
+  --accent-color: #60a5fa;
+  --hover-color: #1e40af;
+  --background-color: #f8fafc;
+  --text-color: #1f2937;
+  --card-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  --card-hover-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== ACCESS GATE ===== */
+#access-gate {
+  position: fixed; inset: 0;
+  background: var(--background-color);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.gate-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: var(--card-shadow);
+  padding: 40px 35px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.gate-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.gate-logo {
+  width: 64px; height: 64px;
+  background: linear-gradient(135deg, #e0e7ff, #dbeafe);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  color: var(--primary-color);
+  font-size: 1.6rem;
+  box-shadow: 0 8px 20px rgba(30,58,138,0.15);
+}
+
+.gate-card h1 {
+  font-size: 1.5rem; font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 6px;
+}
+
+.gate-card p {
+  color: #6b7280; font-size: 0.9rem;
+  margin-bottom: 28px;
+}
+
+.gate-input-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.gate-input-wrap i {
+  position: absolute; left: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af; font-size: 0.95rem;
+}
+
+.gate-input-wrap input {
+  width: 100%;
+  padding: 12px 14px 12px 40px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: 2px;
+  transition: border-color 0.3s;
+  outline: none;
+}
+
+.gate-input-wrap input:focus { border-color: var(--secondary-color); }
+
+.gate-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 12px;
+}
+
+.gate-btn:hover { background: var(--hover-color); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(30,58,138,0.25); }
+
+.gate-error {
+  color: #ef4444; font-size: 0.85rem;
+  min-height: 20px; margin-top: 4px;
+}
+
+/* ===== MAIN APP ===== */
+#main-app { display: none; flex-direction: column; min-height: 100vh; }
+
+.top-bar {
+  background: white;
+  border-bottom: 1px solid rgba(234,234,234,0.8);
+  padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  position: sticky; top: 0; z-index: 100;
+}
+
+.top-bar-left {
+  display: flex; align-items: center; gap: 10px;
+}
+
+.top-bar-logo {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, #e0e7ff, #dbeafe);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--primary-color); font-size: 1rem;
+}
+
+.top-bar-title {
+  font-size: 1rem; font-weight: 600; color: var(--primary-color);
+}
+
+.top-bar-subtitle {
+  font-size: 0.75rem; color: #6b7280;
+}
+
+.logout-btn {
+  background: none; border: 1px solid rgba(30,58,138,0.2);
+  color: var(--primary-color); padding: 7px 14px;
+  border-radius: 10px; font-size: 0.8rem;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
+  transition: all 0.3s;
+}
+
+.logout-btn:hover { background: #eff6ff; transform: translateY(-1px); }
+
+/* ===== FILTER PANEL ===== */
+.filter-panel {
+  background: white;
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  padding: 28px;
+  margin: 24px auto;
+  width: 100%; max-width: 900px;
+  position: relative;
+  overflow: hidden;
+}
+
+.filter-panel::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.filter-title {
+  font-size: 1.1rem; font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 0.8rem; font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 7px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.filter-group select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-color);
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.3s;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
+}
+
+.filter-group select:focus { border-color: var(--secondary-color); }
+.filter-group select:disabled { background-color: #f9fafb; color: #9ca3af; cursor: not-allowed; }
+
+.search-btn {
+  background: var(--primary-color); color: white;
+  border: none; padding: 12px 30px;
+  border-radius: 12px; font-size: 0.95rem;
+  font-weight: 500; font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 12px rgba(30,58,138,0.2);
+}
+
+.search-btn:hover { background: var(--hover-color); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(30,58,138,0.3); }
+.search-btn:disabled { background: #9ca3af; transform: none; cursor: not-allowed; box-shadow: none; }
+
+/* ===== RESULTS AREA ===== */
+.results-area {
+  width: 100%; max-width: 900px;
+  margin: 0 auto 40px;
+  padding: 0 0 20px;
+}
+
+
+
+/* ===== DATE TABS ===== */
+.date-tabs {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.date-tab {
+  background: white; border: 1.5px solid #e5e7eb;
+  border-radius: 12px; padding: 10px 18px;
+  cursor: pointer; transition: all 0.3s;
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+}
+
+.date-tab .day-label { font-size: 0.7rem; color: #9ca3af; font-weight: 500; }
+.date-tab .date-num { font-size: 1.1rem; font-weight: 600; color: var(--primary-color); line-height: 1.2; }
+.date-tab .month-label { font-size: 0.7rem; color: #6b7280; }
+
+.date-tab:hover { border-color: var(--secondary-color); transform: translateY(-2px); box-shadow: var(--card-shadow); }
+.date-tab.active { background: var(--primary-color); border-color: var(--primary-color); }
+.date-tab.active .day-label,
+.date-tab.active .date-num,
+.date-tab.active .month-label { color: white; }
+
+/* ===== SESSION CARDS ===== */
+.sessions-grid {
+  display: grid; gap: 16px;
+}
+
+.session-card {
+  background: white; border-radius: 18px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+
+.session-card:hover { box-shadow: var(--card-hover-shadow); }
+
+.session-header {
+  padding: 14px 20px;
+  background: linear-gradient(135deg, var(--primary-color), var(--hover-color));
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.session-header .session-name {
+  font-weight: 600; color: white; font-size: 0.95rem;
+}
+
+.session-header .session-timing {
+  font-size: 0.8rem; color: rgba(255,255,255,0.85);
+  display: flex; align-items: center; gap: 5px;
+}
+
+.session-body { padding: 18px 20px; }
+
+.no-session {
+  display: flex; align-items: center; gap: 10px;
+  color: #9ca3af; font-size: 0.9rem;
+  padding: 4px 0;
+}
+
+.no-session i { font-size: 1.1rem; color: #d1d5db; }
+
+.session-details { display: grid; gap: 12px; }
+
+.detail-row {
+  display: grid; grid-template-columns: 130px 1fr; gap: 10px;
+  align-items: start;
+}
+
+.detail-label {
+  font-size: 0.78rem; font-weight: 600;
+  color: #9ca3af; text-transform: uppercase; letter-spacing: 0.4px;
+  padding-top: 2px;
+}
+
+.detail-value {
+  font-size: 0.9rem; color: var(--text-color); word-break: break-word;
+}
+
+.dept-toggle {
+  cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+}
+
+.dept-count-badge {
+  background: linear-gradient(135deg, #e0e7ff, #dbeafe);
+  color: var(--primary-color);
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 0.8rem; font-weight: 600;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.dept-count-badge:hover { background: linear-gradient(135deg, #c7d2fe, #bfdbfe); }
+
+/* dept modal */
+.dept-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.dept-modal {
+  background: white; border-radius: 20px;
+  width: 100%; max-width: 460px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  overflow: hidden;
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.dept-modal-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--hover-color));
+  padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dept-modal-header h3 { color: white; font-size: 1rem; font-weight: 600; }
+.dept-modal-close {
+  background: rgba(255,255,255,0.2); border: none; color: white;
+  width: 30px; height: 30px; border-radius: 50%;
+  cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.dept-modal-close:hover { background: rgba(255,255,255,0.35); }
+
+.dept-modal-body { padding: 16px 20px; }
+.dept-modal-body ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin: 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.dept-modal-body ul li {
+  font-size: 0.9rem; color: var(--text-color);
+}
+
+.student-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: linear-gradient(135deg, #dcfce7, #d1fae5);
+  color: #065f46; padding: 3px 10px; border-radius: 20px;
+  font-size: 0.85rem; font-weight: 600;
+}
+
+/* ===== EMPTY / LOADING ===== */
+.empty-state {
+  text-align: center; padding: 60px 20px;
+  color: #9ca3af;
+}
+
+.empty-state i { font-size: 3rem; margin-bottom: 16px; color: #d1d5db; }
+.empty-state p { font-size: 0.95rem; }
+
+.loading-state {
+  text-align: center; padding: 60px 20px; color: #6b7280;
+  display: none;
+}
+
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid #e5e7eb;
+  border-top-color: var(--secondary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== PAGE WRAPPER ===== */
+.page-wrap { padding: 0 16px; }
+
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--primary-color); text-decoration: none;
+  font-size: 0.85rem; margin: 16px 0 0;
+  transition: all 0.2s;
+}
+
+.back-link:hover { color: var(--hover-color); transform: translateX(-2px); }
+
+footer.page-footer {
+  background: white; border-top: 1px solid rgba(234,234,234,0.7);
+  padding: 16px; text-align: center;
+  color: #6b7280; font-size: 0.8rem;
+  margin-top: auto;
+}
+
+
+/* ===== BULLET LIST ===== */
+.session-bullet-list {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+
+.session-bullet-list li {
+  display: flex; align-items: baseline; gap: 10px;
+  font-size: 0.9rem;
+  padding-left: 14px;
+  position: relative;
+}
+
+.session-bullet-list li::before {
+  content: '';
+  position: absolute; left: 0; top: 7px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--secondary-color);
+  flex-shrink: 0;
+}
+
+.bullet-label {
+  font-size: 0.78rem; font-weight: 600;
+  color: #9ca3af; text-transform: uppercase;
+  letter-spacing: 0.4px; white-space: nowrap;
+  min-width: 80px;
+}
+
+.bullet-value {
+  color: var(--text-color); word-break: break-word;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .filter-row { grid-template-columns: 1fr; }
+  .date-tabs { gap: 8px; }
+  .date-tab { padding: 8px 14px; }
+  .detail-row { grid-template-columns: 100px 1fr; }
+  .top-bar-subtitle { display: none; }
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="decorative-element circle-element"></div>
-        <div class="decorative-element diagonal-element"></div>
-        
-        <div class="construction-icon">🚧</div>
-        <h1>Page Under Construction</h1>
-        <p>We're working on making this page better for you. You'll be redirected to the login page in <span id="countdown">5</span> seconds.</p>
-        
-        <div class="progress-container">
-            <div id="progressBar" class="progress-bar"></div>
+
+<!-- ACCESS GATE -->
+<div id="access-gate">
+  <div class="gate-card">
+    <div class="gate-logo"><i class="fas fa-shield-alt"></i></div>
+    <h1>SEED Training Portal</h1>
+    <p>Enter the access code to view trainer schedules</p>
+    <div class="gate-input-wrap">
+      <i class="fas fa-lock"></i>
+      <input type="password" id="access-input" placeholder="Enter access code" autocomplete="off" />
+    </div>
+    <button class="gate-btn" onclick="checkAccess()"><i class="fas fa-arrow-right"></i> Continue</button>
+    <div class="gate-error" id="gate-error"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <div class="top-bar-logo"><i class="fas fa-chalkboard-teacher"></i></div>
+      <div>
+        <div class="top-bar-title">SEED Training Portal</div>
+        <div class="top-bar-subtitle">Trainer Schedule Viewer</div>
+      </div>
+    </div>
+    <a href="../staff.html" class="logout-btn" onclick="sessionStorage.removeItem('seed_portal_auth')">
+      <i class="fas fa-chevron-left"></i> Back
+    </a>
+  </div>
+
+  <div class="page-wrap">
+    <!-- FILTER PANEL -->
+    <div class="filter-panel" style="margin-top: 20px;">
+      <div class="filter-title">
+        <i class="fas fa-search"></i> Find Trainer Schedule
+      </div>
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>Training Partner</label>
+          <select id="vendor-select" onchange="loadTrainers()">
+            <option value="">— Select Partner —</option>
+            <option value="FACE">FACE</option>
+            <option value="Six Phrase">Six Phrase</option>
+          </select>
         </div>
+        <div class="filter-group">
+          <label>Trainer Name</label>
+          <select id="name-select" disabled>
+            <option value="">— Select Trainer —</option>
+          </select>
+        </div>
+      </div>
+      <button class="search-btn" id="search-btn" onclick="doSearch()" disabled>
+        <i class="fas fa-search"></i> View Schedule
+      </button>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set redirect target - change this to your actual login page
-            const loginPage = "../index.html";
-            
-            // Start countdown
-            let secondsLeft = 5;
-            const countdownElement = document.getElementById('countdown');
-            
-            // Start progress bar animation
-            const progressBar = document.getElementById('progressBar');
-            progressBar.style.width = '100%';
-            
-            // Update countdown every second
-            const countdownInterval = setInterval(function() {
-                secondsLeft--;
-                countdownElement.textContent = secondsLeft;
-                
-                if (secondsLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    window.location.href = loginPage;
-                }
-            }, 1000);
-        });
-    </script>
+    <!-- RESULTS -->
+    <div class="results-area" id="results-area" style="display:none;">
+      <div class="date-tabs" id="date-tabs"></div>
+      <div class="sessions-grid" id="sessions-grid"></div>
+    </div>
+
+    <div class="loading-state" id="loading-state">
+      <div class="spinner"></div>
+      <p>Loading schedule…</p>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    For assistance please contact Learning &amp; Development team, PSG College of Arts &amp; Science
+  </footer>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://wetnbnemedzyzudvuihb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndldG5ibmVtZWR6eXp1ZHZ1aWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjM2ODksImV4cCI6MjA3MDQ5OTY4OX0.53iKjcKaImIz10H8hJv0MkDl08R8Pu8OprDcURqSmRQ';
+const ACCESS_CODE = 'cdc26';
+const SESSION_KEY = 'seed_portal_auth';
+const SESSION_DURATION = 2 * 60 * 60 * 1000; // 2 hours
+
+const TRAINING_DATES = [
+  { date: '2026-06-08', label: 'Mon', day: '08', month: 'Jun' },
+  { date: '2026-06-09', label: 'Tue', day: '09', month: 'Jun' },
+  { date: '2026-06-10', label: 'Wed', day: '10', month: 'Jun' },
+  { date: '2026-06-11', label: 'Thu', day: '11', month: 'Jun' },
+  { date: '2026-06-12', label: 'Fri', day: '12', month: 'Jun' },
+];
+
+const SESSION_TIMINGS = {
+  'Session 1': '9:00 AM – 11:00 AM',
+  'Session 2': '10:30 AM – 1:30 PM',
+  'Session 3': '2:30 PM – 4:30 PM',
+};
+
+const SESSIONS = ['Session 1', 'Session 2', 'Session 3'];
+
+let allData = [];
+let activeDate = TRAINING_DATES[0].date;
+
+// ===== AUTH =====
+function checkAuth() {
+  const raw = sessionStorage.getItem(SESSION_KEY);
+  if (!raw) return false;
+  try {
+    const obj = JSON.parse(raw);
+    if (Date.now() - obj.ts > SESSION_DURATION) { sessionStorage.removeItem(SESSION_KEY); return false; }
+    return true;
+  } catch { return false; }
+}
+
+function checkAccess() {
+  const val = document.getElementById('access-input').value.trim();
+  if (val === ACCESS_CODE) {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ts: Date.now() }));
+    document.getElementById('access-gate').style.display = 'none';
+    document.getElementById('main-app').style.display = 'flex';
+    document.getElementById('gate-error').textContent = '';
+  } else {
+    document.getElementById('gate-error').textContent = 'Incorrect access code. Please try again.';
+    document.getElementById('access-input').value = '';
+    document.getElementById('access-input').focus();
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+document.getElementById('access-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkAccess();
+});
+
+// ===== SUPABASE FETCH =====
+async function supabaseQuery(queryString) {
+  const url = `${SUPABASE_URL}/rest/v1/training_sessions?${queryString}`;
+  const res = await fetch(url, {
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+    }
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error('Supabase error:', res.status, errText);
+    throw new Error('Network error: ' + res.status);
+  }
+  return res.json();
+}
+
+function buildQuery(parts) {
+  return parts.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
+}
+
+// ===== LOAD TRAINERS =====
+async function loadTrainers() {
+  const vendor = document.getElementById('vendor-select').value;
+  const nameSelect = document.getElementById('name-select');
+  const searchBtn = document.getElementById('search-btn');
+
+  nameSelect.innerHTML = '<option value="">— Select Trainer —</option>';
+  nameSelect.disabled = true;
+  searchBtn.disabled = true;
+  document.getElementById('results-area').style.display = 'none';
+
+  if (!vendor) return;
+
+  try {
+    const query = buildQuery([
+      ['select', 'name'],
+      ['training_partner', `eq.${vendor}`],
+      ['order', 'name.asc'],
+    ]);
+    const data = await supabaseQuery(query);
+    const names = [...new Set(data.map(r => r.name))].sort();
+
+    if (names.length === 0) {
+      nameSelect.innerHTML = '<option value="">No trainers found</option>';
+      return;
+    }
+
+    names.forEach(n => {
+      const opt = document.createElement('option');
+      opt.value = n; opt.textContent = n;
+      nameSelect.appendChild(opt);
+    });
+
+    nameSelect.disabled = false;
+    nameSelect.onchange = () => {
+      searchBtn.disabled = !nameSelect.value;
+    };
+  } catch (e) {
+    console.error('loadTrainers error:', e);
+    nameSelect.innerHTML = '<option value="">Error loading names</option>';
+    nameSelect.disabled = false;
+  }
+}
+
+// ===== SEARCH =====
+async function doSearch() {
+  const vendor = document.getElementById('vendor-select').value;
+  const name = document.getElementById('name-select').value;
+  if (!vendor || !name) return;
+
+  document.getElementById('results-area').style.display = 'none';
+  document.getElementById('loading-state').style.display = 'block';
+  activeDate = TRAINING_DATES[0].date;
+
+  try {
+    const query = buildQuery([
+      ['select', 'date,session,venue,topic,department,no_of_students,block,batch'],
+      ['training_partner', `eq.${vendor}`],
+      ['name', `eq.${name}`],
+      ['date', 'gte.2026-06-08'],
+      ['order', 'date.asc,session.asc'],
+    ]);
+    allData = await supabaseQuery(query);
+    console.log('Fetched rows:', allData.length, allData);
+
+    document.getElementById('loading-state').style.display = 'none';
+    renderDateTabs();
+    renderSessions(activeDate);
+    document.getElementById('results-area').style.display = 'block';
+  } catch (e) {
+    console.error('doSearch error:', e);
+    document.getElementById('loading-state').style.display = 'none';
+    alert('Failed to load schedule. Please try again.\n\nError: ' + e.message);
+  }
+}
+
+// ===== RENDER =====
+
+function renderDateTabs() {
+  const container = document.getElementById('date-tabs');
+  container.innerHTML = '';
+  TRAINING_DATES.forEach(d => {
+    const tab = document.createElement('div');
+    tab.className = 'date-tab' + (d.date === activeDate ? ' active' : '');
+    tab.innerHTML = `
+      <div class="day-label">${d.label}</div>
+      <div class="date-num">${d.day}</div>
+      <div class="month-label">${d.month}</div>
+    `;
+    tab.onclick = () => {
+      activeDate = d.date;
+      document.querySelectorAll('.date-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderSessions(d.date);
+    };
+    container.appendChild(tab);
+  });
+}
+
+function renderSessions(date) {
+  const grid = document.getElementById('sessions-grid');
+  grid.innerHTML = '';
+
+  SESSIONS.forEach(sessionName => {
+    const row = allData.find(r => r.date === date && r.session === sessionName);
+    const timing = SESSION_TIMINGS[sessionName];
+
+    const card = document.createElement('div');
+    card.className = 'session-card';
+
+    let bodyHtml;
+    if (!row) {
+      bodyHtml = `
+        <div class="session-body">
+          <div class="no-session">
+            <span>No class in this session</span>
+          </div>
+        </div>`;
+    } else {
+      const depts = row.department ? row.department.split('|').map(s => s.trim()) : [];
+      const deptCount = depts.length;
+      const deptsJson = JSON.stringify(depts).replace(/'/g, "\'");
+
+      bodyHtml = `
+        <div class="session-body">
+          <ul class="session-bullet-list">
+            ${row.venue ? `<li><span class="bullet-label">Venue</span><span class="bullet-value">${escHtml(row.venue)}${row.block ? ` <span style="color:#9ca3af;font-size:0.82rem">(${escHtml(row.block)})</span>` : ''}</span></li>` : ''}
+            ${row.batch ? `<li><span class="bullet-label">Batch</span><span class="bullet-value">${escHtml(row.batch)}</span></li>` : ''}
+            ${row.topic ? `<li><span class="bullet-label">Topic</span><span class="bullet-value">${escHtml(row.topic)}</span></li>` : ''}
+            ${deptCount > 0 ? `<li><span class="bullet-label">Department</span><span class="bullet-value"><span class="dept-count-badge" style="cursor:pointer" onclick='openDeptModal(${deptsJson})'>${deptCount} dept${deptCount > 1 ? 's' : ''}</span></span></li>` : ''}
+            ${row.no_of_students != null ? `<li><span class="bullet-label">Students</span><span class="bullet-value"><span class="student-pill">${row.no_of_students}</span></span></li>` : ''}
+          </ul>
+        </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="session-header">
+        <span class="session-name"><i class="fas fa-clock" style="margin-right:6px;opacity:0.8"></i>${sessionName}</span>
+        <span class="session-timing"><i class="fas fa-hourglass-half" style="margin-right:4px;opacity:0.7"></i>${timing}</span>
+      </div>
+      ${bodyHtml}
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function openDeptModal(depts) {
+  const list = document.getElementById('dept-modal-list');
+  list.innerHTML = depts.map(d => `<li>${escHtml(d)}</li>`).join('');
+  document.getElementById('dept-modal-overlay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDeptModal(e) {
+  if (e.target === document.getElementById('dept-modal-overlay')) closeDeptModalBtn();
+}
+
+function closeDeptModalBtn() {
+  document.getElementById('dept-modal-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ===== INIT =====
+if (checkAuth()) {
+  document.getElementById('access-gate').style.display = 'none';
+  document.getElementById('main-app').style.display = 'flex';
+} else {
+  document.getElementById('main-app').style.display = 'none';
+}
+</script>
+<div id="dept-modal-overlay" class="dept-modal-overlay" style="display:none;" onclick="closeDeptModal(event)">
+  <div class="dept-modal" id="dept-modal">
+    <div class="dept-modal-header">
+      <h3>Departments</h3>
+      <button class="dept-modal-close" onclick="closeDeptModalBtn()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="dept-modal-body"><ul id="dept-modal-list"></ul></div>
+  </div>
+</div>
 </body>
 </html>
