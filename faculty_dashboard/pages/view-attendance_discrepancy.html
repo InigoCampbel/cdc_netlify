@@ -316,6 +316,7 @@
                             <th>Roll No.</th>
                             <th>Name</th>
                             <th>Department</th>
+                            <th>Batch</th>
                             <th>Date</th>
                             <th>Session</th>
                             <th>Issue</th>
@@ -508,6 +509,7 @@
                 html += '<td><span class="td-roll">' + escAttr(r.roll_number) + '</span></td>';
                 html += '<td><span class="td-name">' + escAttr(r.name) + '</span></td>';
                 html += '<td><span class="td-dept">' + escAttr(r.department) + '</span></td>';
+                html += '<td><span class="td-batch">' + escAttr(r.batch || '—') + '</span></td>';
                 html += '<td>' + formatDate(r.date) + '</td>';
                 html += '<td>' + escAttr(r.session) + '</td>';
                 html += '<td><span class="td-issue" title="' + escAttr(r.issue) + '">' + escAttr(r.issue) + '</span></td>';
