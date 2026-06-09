@@ -18,6 +18,7 @@ async function supabaseQuery(table, options = {}) {
     if (options.in) Object.entries(options.in).forEach(([k, v]) => params.push(`${k}=in.(${v.join(',')})`));
     url += params.join('&');
 
+    // PATCH/UPDATE requests don't need pagination
     if (options.update) {
         const response = await fetch(url, {
             method: 'PATCH',
@@ -28,10 +29,36 @@ async function supabaseQuery(table, options = {}) {
         return { data: null, error: null };
     }
 
-    const response = await fetch(url, { headers });
-    if (!response.ok) throw new Error(await response.text());
-    const data = await response.json();
-    return { data, error: null };
+    // Paginate through all results in batches of 1000
+    const PAGE_SIZE = 1000;
+    let allData = [];
+    let from = 0;
+
+    while (true) {
+        const paginatedHeaders = {
+            ...headers,
+            'Range': `${from}-${from + PAGE_SIZE - 1}`,
+            'Range-Unit': 'items'
+        };
+
+        const response = await fetch(url, { headers: paginatedHeaders });
+
+        // 416 means the range is out of bounds — we're done
+        if (response.status === 416) break;
+        if (!response.ok) throw new Error(await response.text());
+
+        const data = await response.json();
+        if (!data || data.length === 0) break;
+
+        allData = allData.concat(data);
+
+        // If we got fewer rows than the page size, we've reached the end
+        if (data.length < PAGE_SIZE) break;
+
+        from += PAGE_SIZE;
+    }
+
+    return { data: allData, error: null };
 }
 
 // Global state
