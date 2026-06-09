@@ -584,7 +584,7 @@
 <div class="view" id="viewStudents">
     <div class="header">
         <div class="header-row">
-            <button class="back-btn" onclick="goTo('batch')">←</button>
+            <button class="back-btn" onclick="goBackToVenue()">←</button>
             <div>
                 <div class="header-title" id="studentHeaderTitle">Students</div>
                 <div class="header-sub" id="studentHeaderSub">—</div>
@@ -951,6 +951,16 @@ async function selectVenue(venue, batch) {
         hideLoading();
         showToast('Failed to load batch: ' + e.message, 'error');
     }
+}
+
+function goBackToVenue() {
+    sessionStorage.removeItem('es_venue');
+    sessionStorage.removeItem('es_batch');
+    currentVenue = null;
+    currentBatch = null;
+    allStudents  = [];
+    goTo('venue');
+    loadVenues();
 }
 
 function startRecording() {
