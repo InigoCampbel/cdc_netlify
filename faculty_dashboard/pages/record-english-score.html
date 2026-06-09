@@ -727,6 +727,28 @@ const SYNC_INTERVAL_MS  = 5000;
 /* ══════════════════════════════════════════════════
    SUPABASE REST HELPER (extended)
 ══════════════════════════════════════════════════ */
+
+async function supabaseQueryPaged(options = {}) {
+    let url = `${SUPABASE_URL}/rest/v1/${TABLE}?`;
+    const headers = {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Range-Unit': 'items',
+        'Range': `${options.from}-${options.to}`
+    };
+
+    const params = [];
+    if (options.select) params.push(`select=${options.select}`);
+    if (options.eq) Object.entries(options.eq).forEach(([k,v]) => params.push(`${k}=eq.${encodeURIComponent(v)}`));
+    url += params.join('&');
+
+    const res = await fetch(url, { headers });
+    if (!res.ok) throw new Error(await res.text());
+    return { data: await res.json() };
+}
+
+
 async function supabaseQuery(options = {}) {
     let url = `${SUPABASE_URL}/rest/v1/${TABLE}?`;
     const headers = {
@@ -811,18 +833,36 @@ function goTo(view) {
 async function loadVenues() {
     showLoading('Loading venues…');
     try {
-        const { data } = await supabaseQuery({ select: 'venue,batch,roll_number,grade,overall_score,grammar,reading,vocabulary,listening' });
+        // Fetch ALL rows in pages of 1000 (Supabase default limit)
+        let allData = [];
+        let from = 0;
+        const PAGE = 1000;
+        while (true) {
+            const { data } = await supabaseQueryPaged({
+                select: 'venue,batch,roll_number,grade,overall_score,grammar,reading,vocabulary,listening',
+                from, to: from + PAGE - 1
+            });
+            if (!data || data.length === 0) break;
+            allData = allData.concat(data);
+            if (data.length < PAGE) break;
+            from += PAGE;
+        }
 
         // Build venue summary from live data + queued data
         const queue = getQueue();
+        // Build a lookup of queued records by roll_number for O(1) access
+        const queueMap = {};
+        queue.forEach(q => { queueMap[q.roll_number] = q; });
+
         const venueMap = {};
-        (data || []).forEach(row => {
+        (allData || []).forEach(row => {
             if (!row.venue) return;
             if (!venueMap[row.venue]) venueMap[row.venue] = { batch: row.batch, total: 0, recorded: 0 };
             venueMap[row.venue].total++;
-            // Check recorded: either from DB or from queue
-            const qRow = queue.find(q => q.roll_number === row.roll_number);
-            const effectiveRow = qRow ? { ...row, ...qRow } : row;
+            // Merge queue override (queue wins over DB for unsynced changes)
+            const effectiveRow = queueMap[row.roll_number]
+                ? { ...row, ...queueMap[row.roll_number] }
+                : row;
             if (isRecorded(effectiveRow)) venueMap[row.venue].recorded++;
         });
 
@@ -1101,7 +1141,7 @@ function saveRecord() {
         listening:     fullRecord ? parseInt(listening)  : null,
         remarks:       remarks || null,
         faculty_id:    facultyId,
-        recorded_at:   now,
+        updated_at:   now,
         _synced:       false,
         _savedAt:      now,
     };
@@ -1138,7 +1178,7 @@ function clearRecord() {
         listening:     null,
         remarks:       null,
         faculty_id:    facultyId,
-        recorded_at:   now,
+        updated_at:   now,
         _synced:       false,
         _savedAt:      now,
     };
@@ -1199,7 +1239,7 @@ async function flushQueue() {
     for (const record of unsynced) {
         try {
             // Build clean payload (strip internal keys)
-            const { _synced, _savedAt, ...clean } = record;
+            const { _synced, _savedAt, recorded_at, ...clean } = record;
             await supabaseQuery({
                 eq:    { roll_number: record.roll_number },
                 patch: clean
