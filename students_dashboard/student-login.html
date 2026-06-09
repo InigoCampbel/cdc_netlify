@@ -622,7 +622,7 @@
                 }
                 localStorage.setItem('lastLoginAttempt', now.toString());
 
-                const response = await fetch(`${this.SUPABASE_URL}/rest/v1/june26_std_details?select=roll_number,name,department,career_choice,venue,role,june26_std_attendance(attendance_percentage,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15)&roll_number=eq.${rollNumber}&dob=eq.${dob}`, {
+                const response = await fetch(`${this.SUPABASE_URL}/rest/v1/june26_std_details?select=roll_number,name,department,career_choice,venue,role,batch,june26_std_attendance(attendance_percentage,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15)&roll_number=eq.${rollNumber}&dob=eq.${dob}`, {
                     method: 'GET',
                     headers: {
                         'apikey': this.SUPABASE_ANON_KEY,
@@ -729,6 +729,7 @@
                                     career_choice: apiResult.career_choice,
                                     venue: apiResult.venue,
                                     role: apiResult.role,
+                                    batch: apiResult.batch || "",
                                     attendance_percentage: apiResult.june26_std_attendance?.attendance_percentage ?? '-',
                                     s1:  apiResult.june26_std_attendance?.s1  ?? '-',
                                     s2:  apiResult.june26_std_attendance?.s2  ?? '-',
