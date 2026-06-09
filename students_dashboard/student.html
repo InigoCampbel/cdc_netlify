@@ -833,15 +833,21 @@
         }
 
         // Function to determine and display session timings based on roll number
-        function displaySessionTimings(rollNumber) {
+        function displaySessionTimings(rollNumber, batch) {
             const sessionTimingsDiv = document.getElementById('sessionTimings');
             
-            // Session timings for everyone
-            const session1 = "09:00 AM - 10:30 AM";
-            const session2 = "11:00 AM - 01:30 PM";
-            const session3 = "02:30 PM - 04:30 PM";
+            let session1, session2, session3;
+
+            if (batch && batch.toUpperCase().startsWith("S")) {
+                session1 = "08:30 AM - 10:30 AM";
+                session2 = "11:00 AM - 01:00 PM";
+                session3 = "02:00 PM - 04:00 PM";
+            } else {
+                session1 = "09:00 AM - 10:30 AM";
+                session2 = "11:00 AM - 01:30 PM";
+                session3 = "02:30 PM - 04:30 PM";
+            }
             
-            // Build the HTML for session timings
             sessionTimingsDiv.innerHTML = `
                 <div class="session-title"><i class="fas fa-clock"></i> Session Timings</div>
                 <div class="session-time">
@@ -879,7 +885,7 @@
             document.getElementById('roll').textContent = data.roll_number || sessionData.userId;
 
             // Display session timings based on roll number
-            displaySessionTimings(data.roll_number || sessionData.userId);
+            displaySessionTimings(data.roll_number || sessionData.userId, data.batch || "");
             document.getElementById('department').textContent = data.department || "-";
             document.getElementById('career_choice').textContent = data.career_choice || "-";
             // Check if user is a rep and show/hide buttons accordingly
