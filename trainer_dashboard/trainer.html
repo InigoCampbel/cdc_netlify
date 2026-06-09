@@ -584,9 +584,16 @@ const TRAINING_DATES = [
 ];
 
 const SESSION_TIMINGS = {
-  'Session 1': '9:00 AM – 11:00 AM',
-  'Session 2': '11:30 AM – 1:30 PM',
-  'Session 3': '2:30 PM – 4:30 PM',
+  'FACE': {
+    'Session 1': '09:00 AM - 10:30 AM',
+    'Session 2': '11:00 AM - 01:30 PM',
+    'Session 3': '02:30 PM - 04:30 PM',
+  },
+  'Six Phrase': {
+    'Session 1': '08:30 AM - 10:30 AM',
+    'Session 2': '11:00 AM - 01:00 PM',
+    'Session 3': '02:00 PM - 04:00 PM',
+  },
 };
 
 const SESSIONS = ['Session 1', 'Session 2', 'Session 3'];
@@ -756,7 +763,8 @@ function renderSessions(date) {
 
   SESSIONS.forEach(sessionName => {
     const row = allData.find(r => r.date === date && r.session === sessionName);
-    const timing = SESSION_TIMINGS[sessionName];
+    const vendor = document.getElementById('vendor-select').value;
+    const timing = (SESSION_TIMINGS[vendor] || SESSION_TIMINGS['FACE'])[sessionName];
 
     const card = document.createElement('div');
     card.className = 'session-card';
