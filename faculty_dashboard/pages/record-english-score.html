@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EnglishScore Recording</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary:     #1e3a8a;
+            --secondary:   #3b82f6;
+            --accent:      #60a5fa;
+            --success:     #10b981;
+            --warning:     #f59e0b;
+            --danger:      #ef4444;
+            --bg:          #f8fafc;
+            --surface:     #ffffff;
+            --border:      #e5e7eb;
+            --text:        #1f2937;
+            --muted:       #6b7280;
+            --radius:      16px;
+            --shadow:      0 4px 14px rgba(0,0,0,0.07);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 22px 20px 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content:''; position:absolute;
+            width:140px; height:140px;
+            border:2px solid rgba(255,255,255,0.12);
+            border-radius:50%; top:-55px; right:-40px;
+        }
+        .header-row {
+            display:flex; align-items:center; gap:12px;
+            position:relative; z-index:1;
+        }
+        .back-btn {
+            background:rgba(255,255,255,0.18);
+            border:none; color:white;
+            width:36px; height:36px; border-radius:10px;
+            font-size:1.1rem; cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            flex-shrink:0; -webkit-tap-highlight-color:transparent;
+        }
+        .header-title { font-size:1rem; font-weight:600; line-height:1.3; }
+        .header-sub   { font-size:0.72rem; opacity:0.75; margin-top:2px; }
+
+        /* ── SYNC BAR ── */
+        .sync-bar {
+            display:flex; align-items:center; justify-content:center;
+            gap:6px; padding:7px 16px;
+            font-size:0.72rem; font-weight:500;
+            transition: background 0.3s, color 0.3s;
+        }
+        .sync-bar.synced   { background:#d1fae5; color:#065f46; }
+        .sync-bar.pending  { background:#fef3c7; color:#92400e; }
+        .sync-bar.offline  { background:#fee2e2; color:#991b1b; }
+        .sync-bar.syncing  { background:#dbeafe; color:#1e40af; }
+        .sync-dot {
+            width:7px; height:7px; border-radius:50%;
+            flex-shrink:0;
+        }
+        .sync-bar.synced  .sync-dot { background:#10b981; }
+        .sync-bar.pending .sync-dot { background:#f59e0b; }
+        .sync-bar.offline .sync-dot { background:#ef4444; }
+        .sync-bar.syncing .sync-dot { background:#3b82f6; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* ── VIEWS ── */
+        .view { display:none; }
+        .view.active { display:block; }
+
+        /* ── SECTION LABEL ── */
+        .section-label {
+            font-size:0.72rem; font-weight:600; color:var(--muted);
+            text-transform:uppercase; letter-spacing:0.08em;
+            padding:0 20px; margin:24px 0 12px;
+        }
+
+        /* ── VENUE CARDS ── */
+        .venue-grid {
+            padding:0 16px;
+            display:grid; grid-template-columns:1fr 1fr; gap:12px;
+        }
+        .venue-card {
+            background:var(--surface);
+            border-radius:var(--radius);
+            box-shadow:var(--shadow);
+            padding:18px 14px;
+            cursor:pointer;
+            border:2px solid transparent;
+            transition:border-color 0.15s, transform 0.1s;
+            -webkit-tap-highlight-color:transparent;
+            animation: slideUp 0.3s ease both;
+        }
+        .venue-card:active { transform:scale(0.97); }
+        .venue-card .vc-label {
+            font-size:0.65rem; color:var(--muted);
+            text-transform:uppercase; letter-spacing:0.06em; margin-bottom:4px;
+        }
+        .venue-card .vc-name {
+            font-size:0.95rem; font-weight:600; color:var(--primary);
+            line-height:1.3;
+        }
+        .venue-card .vc-count {
+            margin-top:8px; font-size:0.72rem; color:var(--muted);
+        }
+        .venue-card .vc-count span { color:var(--success); font-weight:600; }
+
+        /* ── BATCH CONFIRM ── */
+        .batch-confirm-wrap {
+            padding:0 16px; margin-top:8px;
+        }
+        .batch-card {
+            background:var(--surface);
+            border-radius:var(--radius);
+            box-shadow:var(--shadow);
+            padding:24px 20px;
+            text-align:center;
+        }
+        .batch-badge {
+            display:inline-block;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            color:var(--primary);
+            border:1.5px solid #bfdbfe;
+            border-radius:12px;
+            padding:10px 22px;
+            font-size:1.1rem; font-weight:700;
+            margin:12px 0 6px;
+        }
+        .batch-venue-tag {
+            font-size:0.78rem; color:var(--muted);
+            margin-bottom:20px;
+        }
+        .batch-stats {
+            display:grid; grid-template-columns:1fr 1fr;
+            gap:10px; margin:16px 0 24px;
+        }
+        .batch-stat {
+            background:#f8fafc; border-radius:12px; padding:12px;
+        }
+        .batch-stat .bs-val {
+            font-size:1.4rem; font-weight:700; color:var(--primary);
+        }
+        .batch-stat .bs-label {
+            font-size:0.68rem; color:var(--muted); margin-top:2px;
+        }
+        .btn-start {
+            width:100%; padding:15px;
+            background:linear-gradient(135deg, var(--primary), var(--secondary));
+            color:white; border:none; border-radius:14px;
+            font-size:1rem; font-weight:600;
+            font-family:'Poppins',sans-serif;
+            cursor:pointer;
+            -webkit-tap-highlight-color:transparent;
+            transition:opacity 0.15s;
+        }
+        .btn-start:active { opacity:0.85; }
+
+        /* ── STUDENT LIST ── */
+        .search-wrap {
+            padding:12px 16px 4px;
+            position:sticky; top:0; z-index:10;
+            background:var(--bg);
+        }
+        .search-box {
+            display:flex; align-items:center; gap:10px;
+            background:var(--surface);
+            border:1.5px solid var(--border);
+            border-radius:14px; padding:10px 14px;
+        }
+        .search-box input {
+            flex:1; border:none; outline:none;
+            font-family:'Poppins',sans-serif;
+            font-size:0.9rem; color:var(--text);
+            background:transparent;
+        }
+        .search-icon { color:var(--muted); font-size:1rem; flex-shrink:0; }
+
+        /* Filter tabs */
+        .filter-tabs {
+            display:flex; gap:8px;
+            padding:10px 16px;
+            overflow-x:auto;
+        }
+        .filter-tabs::-webkit-scrollbar { display:none; }
+        .ftab {
+            padding:6px 16px;
+            border-radius:20px; border:1.5px solid var(--border);
+            background:var(--surface);
+            font-size:0.78rem; font-weight:500;
+            color:var(--muted); cursor:pointer;
+            white-space:nowrap;
+            -webkit-tap-highlight-color:transparent;
+            transition:all 0.15s;
+        }
+        .ftab.active {
+            background:var(--primary); color:white; border-color:var(--primary);
+        }
+        .ftab .badge {
+            display:inline-block;
+            background:rgba(255,255,255,0.25);
+            border-radius:10px; padding:1px 7px;
+            font-size:0.68rem; margin-left:4px;
+        }
+        .ftab:not(.active) .badge {
+            background:#e5e7eb; color:var(--muted);
+        }
+
+        /* Student list */
+        .student-list {
+            padding:0 16px;
+            display:flex; flex-direction:column; gap:8px;
+        }
+        .student-row {
+            background:var(--surface);
+            border-radius:14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding:14px 16px;
+            display:flex; align-items:center; gap:12px;
+            cursor:pointer;
+            -webkit-tap-highlight-color:transparent;
+            transition:transform 0.1s;
+            animation: slideUp 0.25s ease both;
+        }
+        .student-row:active { transform:scale(0.985); }
+        .student-row.recorded {
+            border-left:3.5px solid var(--success);
+        }
+        .student-row.remarked {
+            border-left:3.5px solid var(--warning);
+        }
+        .sr-roll {
+            font-size:0.8rem; font-weight:700;
+            color:var(--primary); font-variant-numeric:tabular-nums;
+            min-width:80px;
+        }
+        .sr-info { flex:1; min-width:0; }
+        .sr-name {
+            font-size:0.88rem; font-weight:600;
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+        }
+        .sr-dept {
+            font-size:0.7rem; color:var(--muted); margin-top:2px;
+        }
+        .sr-status {
+            flex-shrink:0;
+            width:28px; height:28px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            font-size:0.85rem;
+        }
+        .sr-status.done { background:#d1fae5; color:#065f46; }
+        .sr-status.noted { background:#fef3c7; color:#92400e; }
+        .sr-status.empty { background:#f3f4f6; color:#d1d5db; }
+
+        .empty-state {
+            text-align:center; padding:48px 20px;
+            color:var(--muted);
+        }
+        .empty-state .es-icon { font-size:2.5rem; margin-bottom:12px; }
+        .empty-state p { font-size:0.9rem; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display:none;
+            position:fixed; inset:0;
+            background:rgba(0,0,0,0.5);
+            z-index:100;
+            align-items:flex-end;
+        }
+        .modal-overlay.open { display:flex; }
+        .modal-sheet {
+            background:var(--surface);
+            border-radius:24px 24px 0 0;
+            width:100%; max-height:92vh;
+            overflow-y:auto;
+            padding:0 0 40px;
+            animation: sheetUp 0.28s cubic-bezier(0.32,0.72,0,1);
+        }
+        @keyframes sheetUp {
+            from { transform:translateY(100%); }
+            to   { transform:translateY(0); }
+        }
+        .modal-handle {
+            width:40px; height:4px; background:#e5e7eb;
+            border-radius:2px; margin:12px auto 0;
+        }
+        .modal-header {
+            padding:16px 20px 12px;
+            border-bottom:1px solid var(--border);
+            display:flex; align-items:flex-start; justify-content:space-between;
+        }
+        .modal-student-name {
+            font-size:1rem; font-weight:700; color:var(--text);
+        }
+        .modal-student-meta {
+            font-size:0.75rem; color:var(--muted); margin-top:3px;
+        }
+        .modal-close {
+            background:#f3f4f6; border:none; border-radius:8px;
+            width:32px; height:32px; font-size:1rem;
+            cursor:pointer; color:var(--muted);
+            display:flex; align-items:center; justify-content:center;
+            flex-shrink:0;
+            -webkit-tap-highlight-color:transparent;
+        }
+
+        /* Form inside modal */
+        .modal-body { padding:16px 20px; }
+
+        .form-group { margin-bottom:18px; }
+        .form-label {
+            font-size:0.75rem; font-weight:600; color:var(--muted);
+            text-transform:uppercase; letter-spacing:0.06em;
+            display:block; margin-bottom:8px;
+        }
+        .form-label .req { color:var(--danger); }
+
+        /* Grade pills */
+        .grade-grid {
+            display:grid; grid-template-columns:repeat(3,1fr); gap:8px;
+        }
+        .grade-pill {
+            border:1.5px solid var(--border);
+            border-radius:10px; padding:10px 6px;
+            text-align:center; cursor:pointer;
+            transition:all 0.15s;
+            -webkit-tap-highlight-color:transparent;
+        }
+        .grade-pill.selected {
+            border-color:var(--primary);
+            background:#eff6ff;
+        }
+        .grade-pill .gp-code {
+            font-size:1rem; font-weight:700; color:var(--primary);
+        }
+        .grade-pill .gp-name {
+            font-size:0.62rem; color:var(--muted); margin-top:2px;
+            line-height:1.2;
+        }
+
+        /* Score inputs */
+        .score-grid {
+            display:grid; grid-template-columns:1fr 1fr; gap:10px;
+        }
+        .score-input-wrap { }
+        .score-input-label {
+            font-size:0.7rem; font-weight:500; color:var(--muted);
+            margin-bottom:4px; display:block;
+        }
+        .score-input {
+            width:100%; padding:11px 12px;
+            border:1.5px solid var(--border); border-radius:10px;
+            font-family:'Poppins',sans-serif;
+            font-size:0.9rem; color:var(--text);
+            outline:none;
+            transition:border-color 0.15s;
+        }
+        .score-input:focus { border-color:var(--secondary); }
+        .score-input.err   { border-color:var(--danger); }
+
+        /* Overall score - full width */
+        .score-overall .score-input {
+            font-size:1.1rem; font-weight:600; text-align:center;
+        }
+
+        /* Remarks */
+        .remarks-input {
+            width:100%; padding:11px 12px;
+            border:1.5px solid var(--border); border-radius:10px;
+            font-family:'Poppins',sans-serif;
+            font-size:0.88rem; color:var(--text);
+            outline:none; resize:none; min-height:80px;
+            transition:border-color 0.15s;
+        }
+        .remarks-input:focus { border-color:var(--secondary); }
+
+        /* Validation hint */
+        .val-hint {
+            font-size:0.72rem; color:var(--danger);
+            margin-top:6px; display:none;
+        }
+
+        /* Save button */
+        .btn-save {
+            width:100%; padding:15px;
+            background:linear-gradient(135deg, var(--primary), var(--secondary));
+            color:white; border:none; border-radius:14px;
+            font-size:1rem; font-weight:600;
+            font-family:'Poppins',sans-serif;
+            cursor:pointer;
+            -webkit-tap-highlight-color:transparent;
+            transition:opacity 0.15s;
+            margin-top:8px;
+        }
+        .btn-save:active  { opacity:0.85; }
+        .btn-save:disabled { opacity:0.45; cursor:not-allowed; }
+
+        /* Clear button inside modal */
+        .btn-clear-record {
+            width:100%; padding:12px;
+            background:transparent; color:var(--danger);
+            border:1.5px solid #fecaca; border-radius:14px;
+            font-size:0.88rem; font-weight:600;
+            font-family:'Poppins',sans-serif;
+            cursor:pointer; margin-top:8px;
+            -webkit-tap-highlight-color:transparent;
+        }
+
+        /* ── LOADING OVERLAY ── */
+        .loading-overlay {
+            display:none; position:fixed; inset:0;
+            background:rgba(255,255,255,0.85);
+            z-index:200;
+            align-items:center; justify-content:center;
+            flex-direction:column; gap:12px;
+        }
+        .loading-overlay.show { display:flex; }
+        .spinner {
+            width:36px; height:36px;
+            border:3px solid var(--border);
+            border-top-color:var(--primary);
+            border-radius:50%;
+            animation:spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .loading-text { font-size:0.85rem; color:var(--muted); font-weight:500; }
+
+        /* ── TOAST ── */
+        .toast {
+            position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+            background:#1f2937; color:white;
+            padding:10px 20px; border-radius:10px;
+            font-size:0.82rem; font-weight:500;
+            opacity:0; pointer-events:none;
+            transition:opacity 0.25s, transform 0.25s;
+            white-space:nowrap; z-index:300;
+        }
+        .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+        .toast.success { background:var(--success); }
+        .toast.error   { background:var(--danger); }
+        .toast.warning { background:var(--warning); color:#1f2937; }
+
+        /* ── ANIMATIONS ── */
+        @keyframes slideUp {
+            from { opacity:0; transform:translateY(12px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        /* ── LOGOUT CONFIRM ── */
+        .confirm-overlay {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,0.5); z-index:150;
+            align-items:center; justify-content:center;
+            padding:24px;
+        }
+        .confirm-overlay.open { display:flex; }
+        .confirm-card {
+            background:var(--surface); border-radius:20px;
+            padding:24px; width:100%; max-width:340px;
+            text-align:center;
+        }
+        .confirm-icon { font-size:2rem; margin-bottom:12px; }
+        .confirm-title { font-size:1rem; font-weight:700; margin-bottom:8px; }
+        .confirm-msg { font-size:0.85rem; color:var(--muted); margin-bottom:20px; line-height:1.5; }
+        .confirm-btns { display:flex; gap:10px; }
+        .confirm-btns button {
+            flex:1; padding:12px;
+            border-radius:12px; font-family:'Poppins',sans-serif;
+            font-size:0.9rem; font-weight:600; cursor:pointer;
+            -webkit-tap-highlight-color:transparent;
+        }
+        .btn-cancel-confirm {
+            background:#f3f4f6; color:var(--text); border:none;
+        }
+        .btn-logout-confirm {
+            background:var(--danger); color:white; border:none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Loading...</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- LOGOUT CONFIRM -->
+<div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-card">
+        <div class="confirm-icon">⚠️</div>
+        <div class="confirm-title">Unsynced Records</div>
+        <div class="confirm-msg" id="confirmMsg">You have unsaved records. Logging out now may cause data loss.</div>
+        <div class="confirm-btns">
+            <button class="btn-cancel-confirm" onclick="closeConfirm()">Stay</button>
+            <button class="btn-logout-confirm" onclick="forceLogout()">Logout</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  VIEW 1 — VENUE SELECTION             -->
+<!-- ══════════════════════════════════════ -->
+<div class="view active" id="viewVenue">
+    <div class="header">
+        <div class="header-row">
+            <button class="back-btn" onclick="handleBackToHome()">←</button>
+            <div>
+                <div class="header-title">EnglishScore Recording</div>
+                <div class="header-sub" id="facultyLabel">British Council · Core Skill Test</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-label">Select Venue</div>
+    <div class="search-wrap" style="padding:0 16px 4px;">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="venueSearch" placeholder="Search venue…" oninput="filterVenues()">
+        </div>
+    </div>
+    <div class="venue-grid" id="venueGrid"></div>
+        <!-- populated dynamically -->
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  VIEW 2 — BATCH CONFIRM               -->
+<!-- ══════════════════════════════════════ -->
+<div class="view" id="viewBatch">
+    <div class="header">
+        <div class="header-row">
+            <button class="back-btn" onclick="goTo('venue')">←</button>
+            <div>
+                <div class="header-title" id="batchHeaderTitle">Venue</div>
+                <div class="header-sub">Confirm before starting</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="batch-confirm-wrap">
+        <div style="margin-top:20px;"></div>
+        <div class="batch-card">
+            <div style="font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.07em;">Batch</div>
+            <div class="batch-badge" id="batchName">—</div>
+            <div class="batch-venue-tag" id="batchVenueTag">—</div>
+            <div class="batch-stats">
+                <div class="batch-stat">
+                    <div class="bs-val" id="bsTotal">—</div>
+                    <div class="bs-label">Total Students</div>
+                </div>
+                <div class="batch-stat">
+                    <div class="bs-val" id="bsRecorded">—</div>
+                    <div class="bs-label">Recorded</div>
+                </div>
+            </div>
+            <button class="btn-start" onclick="startRecording()">Start Recording →</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  VIEW 3 — STUDENT LIST                -->
+<!-- ══════════════════════════════════════ -->
+<div class="view" id="viewStudents">
+    <div class="header">
+        <div class="header-row">
+            <button class="back-btn" onclick="goTo('batch')">←</button>
+            <div>
+                <div class="header-title" id="studentHeaderTitle">Students</div>
+                <div class="header-sub" id="studentHeaderSub">—</div>
+            </div>
+            <button class="back-btn" style="margin-left:auto;" onclick="handleLogout()">⏻</button>
+        </div>
+    </div>
+
+    <!-- Sync bar -->
+    <div class="sync-bar synced" id="syncBar">
+        <div class="sync-dot"></div>
+        <span id="syncText">All synced</span>
+    </div>
+
+    <!-- Search -->
+    <div class="search-wrap">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search by roll number…" oninput="renderList()">
+        </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs">
+        <div class="ftab active" id="tab-all"     onclick="setTab('all')">All <span class="badge" id="badge-all">0</span></div>
+        <div class="ftab"        id="tab-pending" onclick="setTab('pending')">Pending <span class="badge" id="badge-pending">0</span></div>
+        <div class="ftab"        id="tab-recorded" onclick="setTab('recorded')">Recorded <span class="badge" id="badge-recorded">0</span></div>
+    </div>
+
+    <!-- List -->
+    <div class="student-list" id="studentList"></div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  SCORE MODAL (bottom sheet)           -->
+<!-- ══════════════════════════════════════ -->
+<div class="modal-overlay" id="scoreModal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <div>
+                <div class="modal-student-name" id="modalName">—</div>
+                <div class="modal-student-meta" id="modalMeta">—</div>
+            </div>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+
+            <!-- Grade -->
+            <div class="form-group">
+                <label class="form-label">Grade <span class="req">*</span></label>
+                <div class="grade-grid" id="gradeGrid">
+                    <div class="grade-pill" data-grade="A1" onclick="selectGrade('A1')">
+                        <div class="gp-code">A1</div><div class="gp-name">Beginner</div>
+                    </div>
+                    <div class="grade-pill" data-grade="A2" onclick="selectGrade('A2')">
+                        <div class="gp-code">A2</div><div class="gp-name">Elementary</div>
+                    </div>
+                    <div class="grade-pill" data-grade="B1" onclick="selectGrade('B1')">
+                        <div class="gp-code">B1</div><div class="gp-name">Intermediate</div>
+                    </div>
+                    <div class="grade-pill" data-grade="B2" onclick="selectGrade('B2')">
+                        <div class="gp-code">B2</div><div class="gp-name">Upper Inter.</div>
+                    </div>
+                    <div class="grade-pill" data-grade="C1" onclick="selectGrade('C1')">
+                        <div class="gp-code">C1</div><div class="gp-name">Advanced</div>
+                    </div>
+                    <div class="grade-pill" data-grade="C2" onclick="selectGrade('C2')">
+                        <div class="gp-code">C2</div><div class="gp-name">Mastery</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overall score -->
+            <div class="form-group score-overall">
+                <label class="form-label">Overall Score (0–600) <span class="req">*</span></label>
+                <input class="score-input" type="number" id="inputOverall"
+                       min="0" max="600" placeholder="e.g. 420"
+                       oninput="validateScore(this)">
+            </div>
+
+            <!-- Sub-scores -->
+            <div class="form-group">
+                <label class="form-label">Sub-scores (0–600) <span class="req">*</span></label>
+                <div class="score-grid">
+                    <div class="score-input-wrap">
+                        <span class="score-input-label">Grammar</span>
+                        <input class="score-input" type="number" id="inputGrammar"
+                               min="0" max="600" placeholder="0–600"
+                               oninput="validateScore(this)">
+                    </div>
+                    <div class="score-input-wrap">
+                        <span class="score-input-label">Reading</span>
+                        <input class="score-input" type="number" id="inputReading"
+                               min="0" max="600" placeholder="0–600"
+                               oninput="validateScore(this)">
+                    </div>
+                    <div class="score-input-wrap">
+                        <span class="score-input-label">Vocabulary</span>
+                        <input class="score-input" type="number" id="inputVocabulary"
+                               min="0" max="600" placeholder="0–600"
+                               oninput="validateScore(this)">
+                    </div>
+                    <div class="score-input-wrap">
+                        <span class="score-input-label">Listening</span>
+                        <input class="score-input" type="number" id="inputListening"
+                               min="0" max="600" placeholder="0–600"
+                               oninput="validateScore(this)">
+                    </div>
+                </div>
+                <div class="val-hint" id="scoreHint">All 4 sub-scores are required alongside grade & overall.</div>
+            </div>
+
+            <!-- Remarks -->
+            <div class="form-group">
+                <label class="form-label">Remarks <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+                <textarea class="remarks-input" id="inputRemarks"
+                          placeholder="e.g. Absent, Incomplete test, Medical reason…"></textarea>
+            </div>
+
+            <button class="btn-save" id="btnSave" onclick="saveRecord()">Save</button>
+            <button class="btn-clear-record" id="btnClearRecord" onclick="clearRecord()" style="display:none;">
+                Clear Recorded Data
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════════ */
+const SUPABASE_URL      = 'https://wetnbnemedzyzudvuihb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndldG5ibmVtZWR6eXp1ZHZ1aWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjM2ODksImV4cCI6MjA3MDQ5OTY4OX0.53iKjcKaImIz10H8hJv0MkDl08R8Pu8OprDcURqSmRQ';
+const TABLE             = 'english_score_results';
+const QUEUE_KEY         = 'englishscore_queue';
+const SESSION_KEY       = 'faculty_session';
+const SYNC_INTERVAL_MS  = 5000;
+
+/* ══════════════════════════════════════════════════
+   SUPABASE REST HELPER (extended)
+══════════════════════════════════════════════════ */
+async function supabaseQuery(options = {}) {
+    let url = `${SUPABASE_URL}/rest/v1/${TABLE}?`;
+    const headers = {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+    };
+
+    const params = [];
+    if (options.select) params.push(`select=${options.select}`);
+    if (options.eq)     Object.entries(options.eq).forEach(([k,v]) => params.push(`${k}=eq.${encodeURIComponent(v)}`));
+    if (options.in)     Object.entries(options.in).forEach(([k,v]) => params.push(`${k}=in.(${v.map(x=>encodeURIComponent(x)).join(',')})`));
+    url += params.join('&');
+
+    // PATCH (update existing row by roll_number)
+    if (options.patch) {
+        const res = await fetch(url, {
+            method: 'PATCH', headers,
+            body: JSON.stringify(options.patch)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        return { data: null, error: null };
+    }
+
+    // GET
+    const res = await fetch(url, { headers });
+    if (!res.ok) throw new Error(await res.text());
+    return { data: await res.json(), error: null };
+}
+
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
+let facultyId     = null;
+let facultyName   = null;
+let allStudents   = [];   // rows for current venue
+let currentVenue  = null;
+let currentBatch  = null;
+let activeTab     = 'all';
+let modalRoll     = null; // roll_number currently open in modal
+let selectedGrade = null;
+let syncTimer     = null;
+
+/* ══════════════════════════════════════════════════
+   SESSION CHECK
+══════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) { window.location.href = '../login.html'; return; }
+    try {
+        const session = JSON.parse(raw);
+        const TWO_HOURS = 2 * 60 * 60 * 1000;
+        if (Date.now() - session.login_time > TWO_HOURS) {
+            localStorage.removeItem(SESSION_KEY);
+            window.location.href = '../login.html';
+            return;
+        }
+        facultyId   = session.id || session.faculty_id || 'unknown';
+        facultyName = session.name || facultyId;
+        document.getElementById('facultyLabel').textContent = `${facultyName} · British Council Core Skill Test`;
+        loadVenues();
+        startSyncLoop();
+    } catch {
+        window.location.href = '../login.html';
+    }
+});
+
+/* ══════════════════════════════════════════════════
+   VIEW NAVIGATION
+══════════════════════════════════════════════════ */
+function goTo(view) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view' + view.charAt(0).toUpperCase() + view.slice(1))
+            .classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+/* ══════════════════════════════════════════════════
+   VIEW 1 — VENUE SELECTION
+══════════════════════════════════════════════════ */
+async function loadVenues() {
+    showLoading('Loading venues…');
+    try {
+        const { data } = await supabaseQuery({ select: 'venue,batch,roll_number,grade,overall_score,grammar,reading,vocabulary,listening' });
+
+        // Build venue summary from live data + queued data
+        const queue = getQueue();
+        const venueMap = {};
+        (data || []).forEach(row => {
+            if (!row.venue) return;
+            if (!venueMap[row.venue]) venueMap[row.venue] = { batch: row.batch, total: 0, recorded: 0 };
+            venueMap[row.venue].total++;
+            // Check recorded: either from DB or from queue
+            const qRow = queue.find(q => q.roll_number === row.roll_number);
+            const effectiveRow = qRow ? { ...row, ...qRow } : row;
+            if (isRecorded(effectiveRow)) venueMap[row.venue].recorded++;
+        });
+
+        const grid = document.getElementById('venueGrid');
+        grid.innerHTML = '';
+        const venues = Object.keys(venueMap).sort();
+        if (!venues.length) {
+            grid.innerHTML = '<div style="grid-column:1/-1;padding:32px;text-align:center;color:var(--muted);">No venue data found. Please upload the student CSV first.</div>';
+            hideLoading(); return;
+        }
+        venues.forEach((venue, i) => {
+            const info = venueMap[venue];
+            const card = document.createElement('div');
+            card.className = 'venue-card';
+            card.style.animationDelay = `${i * 0.06}s`;
+            card.innerHTML = `
+                <div class="vc-label">Venue</div>
+                <div class="vc-name">${venue}</div>
+                <div class="vc-count"><span>${info.recorded}</span> / ${info.total} recorded</div>
+            `;
+            card.onclick = () => selectVenue(venue, info.batch);
+            grid.appendChild(card);
+        });
+        hideLoading();
+    } catch (e) {
+        hideLoading();
+        showToast('Failed to load venues: ' + e.message, 'error');
+    }
+}
+
+/* ══════════════════════════════════════════════════
+   VIEW 2 — BATCH CONFIRM
+══════════════════════════════════════════════════ */
+async function selectVenue(venue, batch) {
+    currentVenue = venue;
+    currentBatch = batch || '—';
+
+    document.getElementById('batchHeaderTitle').textContent = venue;
+    document.getElementById('batchName').textContent        = currentBatch;
+    document.getElementById('batchVenueTag').textContent    = venue;
+
+    // Load students for this venue to show counts
+    showLoading('Loading batch info…');
+    try {
+        const { data } = await supabaseQuery({ select: '*', eq: { venue } });
+        allStudents = data || [];
+        mergeQueue();
+        const recorded = allStudents.filter(isRecorded).length;
+        document.getElementById('bsTotal').textContent    = allStudents.length;
+        document.getElementById('bsRecorded').textContent = recorded;
+        hideLoading();
+        goTo('batch');
+    } catch (e) {
+        hideLoading();
+        showToast('Failed to load batch: ' + e.message, 'error');
+    }
+}
+
+function startRecording() {
+    document.getElementById('studentHeaderTitle').textContent = currentVenue;
+    document.getElementById('studentHeaderSub').textContent   = `Batch: ${currentBatch}`;
+    document.getElementById('searchInput').value = '';
+    activeTab = 'all';
+    setTab('all');
+    goTo('students');
+    updateBadges();
+    renderList();
+}
+
+/* ══════════════════════════════════════════════════
+   VIEW 3 — STUDENT LIST
+══════════════════════════════════════════════════ */
+function setTab(tab) {
+    activeTab = tab;
+    ['all','pending','recorded'].forEach(t => {
+        document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+    });
+    renderList();
+}
+
+function updateBadges() {
+    const q = getQueue();
+    const students = allStudents.map(s => {
+        const qRow = q.find(r => r.roll_number === s.roll_number);
+        return qRow ? { ...s, ...qRow } : s;
+    });
+    document.getElementById('badge-all').textContent      = students.length;
+    document.getElementById('badge-recorded').textContent = students.filter(isRecorded).length;
+    document.getElementById('badge-pending').textContent  = students.filter(s => !isRecorded(s)).length;
+}
+
+function renderList() {
+    const query  = document.getElementById('searchInput').value.trim().toLowerCase();
+    const queue  = getQueue();
+
+    let list = allStudents.map(s => {
+        const qRow = queue.find(r => r.roll_number === s.roll_number);
+        return qRow ? { ...s, ...qRow } : s;
+    });
+
+    // Filter by tab
+    if (activeTab === 'recorded') list = list.filter(isRecorded);
+    if (activeTab === 'pending')  list = list.filter(s => !isRecorded(s));
+
+    // Filter by search
+    if (query) list = list.filter(s => s.roll_number.toLowerCase().includes(query));
+
+    updateBadges();
+
+    const container = document.getElementById('studentList');
+    container.innerHTML = '';
+
+    if (!list.length) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="es-icon">🔍</div>
+                <p>${query ? 'No match for "' + query + '"' : 'No students in this view.'}</p>
+            </div>`;
+        return;
+    }
+
+    list.forEach((s, i) => {
+        const rec = isRecorded(s);
+        const hasRemark = !rec && s.remarks && s.remarks.trim();
+
+        const row = document.createElement('div');
+        row.className = 'student-row' + (rec ? ' recorded' : hasRemark ? ' remarked' : '');
+        row.style.animationDelay = `${Math.min(i,10) * 0.03}s`;
+        row.innerHTML = `
+            <div class="sr-roll">${s.roll_number}</div>
+            <div class="sr-info">
+                <div class="sr-name">${s.name || '—'}</div>
+                <div class="sr-dept">${s.department || '—'}</div>
+            </div>
+            <div class="sr-status ${rec ? 'done' : hasRemark ? 'noted' : 'empty'}">
+                ${rec ? '✓' : hasRemark ? '📝' : '○'}
+            </div>
+        `;
+        row.onclick = () => openModal(s.roll_number);
+        container.appendChild(row);
+    });
+}
+
+/* ══════════════════════════════════════════════════
+   RECORDED CHECK
+══════════════════════════════════════════════════ */
+function isRecorded(s) {
+    return s.grade != null && s.grade !== '' &&
+           s.overall_score != null && s.overall_score !== '' &&
+           s.grammar != null && s.grammar !== '' &&
+           s.reading != null && s.reading !== '' &&
+           s.vocabulary != null && s.vocabulary !== '' &&
+           s.listening != null && s.listening !== '';
+}
+
+/* ══════════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════════ */
+function openModal(rollNumber) {
+    const queue   = getQueue();
+    const base    = allStudents.find(s => s.roll_number === rollNumber);
+    const queued  = queue.find(r => r.roll_number === rollNumber);
+    const student = queued ? { ...base, ...queued } : { ...base };
+
+    modalRoll     = rollNumber;
+    selectedGrade = student.grade || null;
+
+    document.getElementById('modalName').textContent = student.name || rollNumber;
+    document.getElementById('modalMeta').textContent =
+        `${student.roll_number} · ${student.department || '—'} · ${currentBatch}`;
+
+    // Reset grade pills
+    document.querySelectorAll('.grade-pill').forEach(p => {
+        p.classList.toggle('selected', p.dataset.grade === selectedGrade);
+    });
+
+    // Score fields
+    document.getElementById('inputOverall').value   = student.overall_score  ?? '';
+    document.getElementById('inputGrammar').value   = student.grammar        ?? '';
+    document.getElementById('inputReading').value   = student.reading        ?? '';
+    document.getElementById('inputVocabulary').value= student.vocabulary     ?? '';
+    document.getElementById('inputListening').value = student.listening      ?? '';
+    document.getElementById('inputRemarks').value   = student.remarks        ?? '';
+
+    // Clear error states
+    document.querySelectorAll('.score-input').forEach(i => i.classList.remove('err'));
+    document.getElementById('scoreHint').style.display = 'none';
+
+    // Show/hide clear button
+    document.getElementById('btnClearRecord').style.display = isRecorded(student) ? 'block' : 'none';
+
+    document.getElementById('scoreModal').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('scoreModal').classList.remove('open');
+    modalRoll     = null;
+    selectedGrade = null;
+}
+
+// Close modal on overlay tap
+document.getElementById('scoreModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+function selectGrade(g) {
+    selectedGrade = g;
+    document.querySelectorAll('.grade-pill').forEach(p => {
+        p.classList.toggle('selected', p.dataset.grade === g);
+    });
+}
+
+function validateScore(input) {
+    const v = parseInt(input.value, 10);
+    if (input.value === '') { input.classList.remove('err'); return; }
+    if (isNaN(v) || v < 0 || v > 600) {
+        input.classList.add('err');
+    } else {
+        input.classList.remove('err');
+    }
+}
+
+/* ══════════════════════════════════════════════════
+   SAVE RECORD
+══════════════════════════════════════════════════ */
+function saveRecord() {
+    const overall    = document.getElementById('inputOverall').value.trim();
+    const grammar    = document.getElementById('inputGrammar').value.trim();
+    const reading    = document.getElementById('inputReading').value.trim();
+    const vocabulary = document.getElementById('inputVocabulary').value.trim();
+    const listening  = document.getElementById('inputListening').value.trim();
+    const remarks    = document.getElementById('inputRemarks').value.trim();
+
+    const hasScores = overall !== '' || grammar !== '' || reading !== '' ||
+                      vocabulary !== '' || listening !== '' || selectedGrade;
+
+    // Case 1: remarks only — allow
+    const remarksOnly = !hasScores && remarks !== '';
+
+    // Case 2: full record
+    const fullRecord = selectedGrade && overall !== '' && grammar !== '' &&
+                       reading !== '' && vocabulary !== '' && listening !== '';
+
+    if (!remarksOnly && !fullRecord) {
+        document.getElementById('scoreHint').style.display = 'block';
+        showToast('Fill all score fields or just remarks.', 'warning');
+        return;
+    }
+
+    // Validate ranges
+    const scoreFields = [
+        { id:'inputOverall',   val:overall },
+        { id:'inputGrammar',   val:grammar },
+        { id:'inputReading',   val:reading },
+        { id:'inputVocabulary',val:vocabulary },
+        { id:'inputListening', val:listening },
+    ];
+    let rangeErr = false;
+    scoreFields.forEach(f => {
+        if (f.val === '') return;
+        const n = parseInt(f.val, 10);
+        const el = document.getElementById(f.id);
+        if (isNaN(n) || n < 0 || n > 600) { el.classList.add('err'); rangeErr = true; }
+    });
+    if (rangeErr) { showToast('Scores must be 0–600.', 'error'); return; }
+
+    const now = new Date().toISOString();
+
+    const payload = {
+        roll_number:   modalRoll,
+        grade:         fullRecord ? selectedGrade : null,
+        overall_score: fullRecord ? parseInt(overall)    : null,
+        grammar:       fullRecord ? parseInt(grammar)    : null,
+        reading:       fullRecord ? parseInt(reading)    : null,
+        vocabulary:    fullRecord ? parseInt(vocabulary) : null,
+        listening:     fullRecord ? parseInt(listening)  : null,
+        remarks:       remarks || null,
+        faculty_id:    facultyId,
+        recorded_at:   now,
+        _synced:       false,
+        _savedAt:      now,
+    };
+
+    // Write to queue immediately
+    const queue = getQueue();
+    const idx   = queue.findIndex(r => r.roll_number === modalRoll);
+    if (idx >= 0) queue[idx] = payload; else queue.push(payload);
+    saveQueue(queue);
+
+    // Optimistically update allStudents
+    const si = allStudents.findIndex(s => s.roll_number === modalRoll);
+    if (si >= 0) allStudents[si] = { ...allStudents[si], ...payload };
+
+    updateBadges();
+    renderList();
+    closeModal();
+    showToast(fullRecord ? 'Saved ✓' : 'Remark saved', 'success');
+    updateSyncBar();
+}
+
+/* ══════════════════════════════════════════════════
+   CLEAR RECORD
+══════════════════════════════════════════════════ */
+function clearRecord() {
+    const now = new Date().toISOString();
+    const payload = {
+        roll_number:   modalRoll,
+        grade:         null,
+        overall_score: null,
+        grammar:       null,
+        reading:       null,
+        vocabulary:    null,
+        listening:     null,
+        remarks:       null,
+        faculty_id:    facultyId,
+        recorded_at:   now,
+        _synced:       false,
+        _savedAt:      now,
+    };
+
+    const queue = getQueue();
+    const idx   = queue.findIndex(r => r.roll_number === modalRoll);
+    if (idx >= 0) queue[idx] = payload; else queue.push(payload);
+    saveQueue(queue);
+
+    const si = allStudents.findIndex(s => s.roll_number === modalRoll);
+    if (si >= 0) allStudents[si] = { ...allStudents[si], ...payload };
+
+    updateBadges();
+    renderList();
+    closeModal();
+    showToast('Record cleared', 'warning');
+    updateSyncBar();
+}
+
+/* ══════════════════════════════════════════════════
+   OFFLINE QUEUE — localStorage
+══════════════════════════════════════════════════ */
+function getQueue() {
+    try { return JSON.parse(localStorage.getItem(QUEUE_KEY)) || []; }
+    catch { return []; }
+}
+
+function saveQueue(q) {
+    localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
+}
+
+// Merge queued changes into allStudents
+function mergeQueue() {
+    const queue = getQueue();
+    queue.forEach(qRow => {
+        const idx = allStudents.findIndex(s => s.roll_number === qRow.roll_number);
+        if (idx >= 0) allStudents[idx] = { ...allStudents[idx], ...qRow };
+    });
+}
+
+/* ══════════════════════════════════════════════════
+   SYNC LOOP
+══════════════════════════════════════════════════ */
+function startSyncLoop() {
+    if (syncTimer) clearInterval(syncTimer);
+    syncTimer = setInterval(flushQueue, SYNC_INTERVAL_MS);
+}
+
+async function flushQueue() {
+    const queue = getQueue();
+    const unsynced = queue.filter(r => !r._synced);
+    if (!unsynced.length) { updateSyncBar(); return; }
+
+    updateSyncBar('syncing');
+
+    let anyFail = false;
+
+    for (const record of unsynced) {
+        try {
+            // Build clean payload (strip internal keys)
+            const { _synced, _savedAt, ...clean } = record;
+            await supabaseQuery({
+                eq:    { roll_number: record.roll_number },
+                patch: clean
+            });
+            // Mark synced
+            const idx = queue.findIndex(r => r.roll_number === record.roll_number);
+            if (idx >= 0) queue[idx]._synced = true;
+        } catch {
+            anyFail = true;
+        }
+    }
+
+    saveQueue(queue);
+    updateSyncBar(anyFail ? 'offline' : 'synced');
+
+    // Clean up fully-synced records from queue after a while
+    const allSynced = queue.every(r => r._synced);
+    if (allSynced) saveQueue([]);
+}
+
+function updateSyncBar(state) {
+    const queue    = getQueue();
+    const unsynced = queue.filter(r => !r._synced).length;
+
+    const bar  = document.getElementById('syncBar');
+    const text = document.getElementById('syncText');
+
+    if (state === 'syncing') {
+        bar.className = 'sync-bar syncing';
+        text.textContent = 'Syncing…';
+        return;
+    }
+    if (state === 'offline' || (!navigator.onLine && unsynced > 0)) {
+        bar.className = 'sync-bar offline';
+        text.textContent = `Offline · ${unsynced} pending`;
+        return;
+    }
+    if (unsynced > 0) {
+        bar.className = 'sync-bar pending';
+        text.textContent = `${unsynced} record${unsynced>1?'s':''} pending sync`;
+        return;
+    }
+    bar.className = 'sync-bar synced';
+    text.textContent = 'All synced';
+}
+
+/* ══════════════════════════════════════════════════
+   LOGOUT
+══════════════════════════════════════════════════ */
+function handleLogout() {
+    const queue    = getQueue();
+    const unsynced = queue.filter(r => !r._synced).length;
+    if (unsynced > 0) {
+        document.getElementById('confirmMsg').textContent =
+            `You have ${unsynced} unsynced record${unsynced>1?'s':''}.` +
+            ` Logging out now may cause data loss.`;
+        document.getElementById('confirmOverlay').classList.add('open');
+    } else {
+        doLogout();
+    }
+}
+
+function handleBackToHome() {
+    const queue    = getQueue();
+    const unsynced = queue.filter(r => !r._synced).length;
+    if (unsynced > 0) {
+        document.getElementById('confirmMsg').textContent =
+            `You have ${unsynced} unsynced record${unsynced>1?'s':''}.` +
+            ` Going back now may cause data loss.`;
+        document.getElementById('confirmOverlay').classList.add('open');
+    } else {
+        window.location.href = '../dashboard.html';
+    }
+}
+
+function closeConfirm() {
+    document.getElementById('confirmOverlay').classList.remove('open');
+}
+
+function forceLogout() {
+    closeConfirm();
+    doLogout();
+}
+
+function doLogout() {
+    if (syncTimer) clearInterval(syncTimer);
+    localStorage.removeItem(SESSION_KEY);
+    window.location.href = '../../index.html';
+}
+
+/* ══════════════════════════════════════════════════
+   UI HELPERS
+══════════════════════════════════════════════════ */
+function showLoading(msg = 'Loading…') {
+    document.getElementById('loadingText').textContent = msg;
+    document.getElementById('loadingOverlay').classList.add('show');
+}
+
+function hideLoading() {
+    document.getElementById('loadingOverlay').classList.remove('show');
+}
+
+let toastTimer;
+function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className   = 'toast' + (type ? ' ' + type : '') + ' show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// Network events
+window.addEventListener('online',  () => { updateSyncBar(); flushQueue(); });
+window.addEventListener('offline', () => updateSyncBar('offline'));
+
+function filterVenues() {
+    const q = document.getElementById('venueSearch').value.trim().toLowerCase();
+    document.querySelectorAll('.venue-card').forEach(card => {
+        const name = card.querySelector('.vc-name').textContent.toLowerCase();
+        card.style.display = name.includes(q) ? '' : 'none';
+    });
+}
+
+</script>
+</body>
+</html>
