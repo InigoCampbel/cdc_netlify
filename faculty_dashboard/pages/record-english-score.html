@@ -810,8 +810,14 @@ window.addEventListener('DOMContentLoaded', () => {
         facultyId   = session.id || session.faculty_id || 'unknown';
         facultyName = session.name || facultyId;
         document.getElementById('facultyLabel').textContent = `${facultyName} · British Council Core Skill Test`;
-        loadVenues();
         startSyncLoop();
+        const savedVenue = sessionStorage.getItem('es_venue');
+        const savedBatch = sessionStorage.getItem('es_batch');
+        if (savedVenue) {
+            restoreStudentView(savedVenue, savedBatch);
+        } else {
+            loadVenues();
+        }
     } catch {
         window.location.href = '../login.html';
     }
@@ -830,6 +836,32 @@ function goTo(view) {
 /* ══════════════════════════════════════════════════
    VIEW 1 — VENUE SELECTION
 ══════════════════════════════════════════════════ */
+
+async function restoreStudentView(venue, batch) {
+    showLoading('Restoring session…');
+    try {
+        currentVenue = venue;
+        currentBatch = batch || '—';
+        const { data } = await supabaseQuery({ select: '*', eq: { venue } });
+        allStudents = data || [];
+        mergeQueue();
+        document.getElementById('studentHeaderTitle').textContent = currentVenue;
+        document.getElementById('studentHeaderSub').textContent   = `Batch: ${currentBatch}`;
+        document.getElementById('searchInput').value = '';
+        activeTab = 'all';
+        hideLoading();
+        goTo('students');
+        updateBadges();
+        renderList();
+    } catch (e) {
+        hideLoading();
+        sessionStorage.removeItem('es_venue');
+        sessionStorage.removeItem('es_batch');
+        loadVenues();
+    }
+}
+
+
 async function loadVenues() {
     showLoading('Loading venues…');
     try {
@@ -924,6 +956,8 @@ async function selectVenue(venue, batch) {
 function startRecording() {
     document.getElementById('studentHeaderTitle').textContent = currentVenue;
     document.getElementById('studentHeaderSub').textContent   = `Batch: ${currentBatch}`;
+    sessionStorage.setItem('es_venue', currentVenue);
+    sessionStorage.setItem('es_batch', currentBatch);
     document.getElementById('searchInput').value = '';
     activeTab = 'all';
     setTab('all');
@@ -969,6 +1003,9 @@ function renderList() {
 
     // Filter by search
     if (query) list = list.filter(s => s.roll_number.toLowerCase().includes(query));
+
+    // Sort by roll_number
+    list.sort((a, b) => a.roll_number.localeCompare(b.roll_number, undefined, { numeric: true, sensitivity: 'base' }));
 
     updateBadges();
 
@@ -1311,6 +1348,8 @@ function handleBackToHome() {
             ` Going back now may cause data loss.`;
         document.getElementById('confirmOverlay').classList.add('open');
     } else {
+        sessionStorage.removeItem('es_venue');
+        sessionStorage.removeItem('es_batch');
         window.location.href = '../dashboard.html';
     }
 }
@@ -1326,6 +1365,8 @@ function forceLogout() {
 
 function doLogout() {
     if (syncTimer) clearInterval(syncTimer);
+    sessionStorage.removeItem('es_venue');
+    sessionStorage.removeItem('es_batch');
     localStorage.removeItem(SESSION_KEY);
     window.location.href = '../../index.html';
 }
