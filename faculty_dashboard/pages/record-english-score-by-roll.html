@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EnglishScore · By Roll Number</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary:   #1e3a8a;
+            --secondary: #3b82f6;
+            --accent:    #60a5fa;
+            --success:   #10b981;
+            --warning:   #f59e0b;
+            --danger:    #ef4444;
+            --bg:        #f8fafc;
+            --surface:   #ffffff;
+            --border:    #e5e7eb;
+            --text:      #1f2937;
+            --muted:     #6b7280;
+            --radius:    16px;
+            --shadow:    0 4px 14px rgba(0,0,0,0.07);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 48px;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 22px 20px 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content:''; position:absolute;
+            width:140px; height:140px;
+            border:2px solid rgba(255,255,255,0.12);
+            border-radius:50%; top:-55px; right:-40px;
+        }
+        .header-row {
+            display:flex; align-items:center; gap:12px;
+            position:relative; z-index:1;
+        }
+        .back-btn {
+            background:rgba(255,255,255,0.18);
+            border:none; color:white;
+            width:36px; height:36px; border-radius:10px;
+            font-size:1.1rem; cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            flex-shrink:0; -webkit-tap-highlight-color:transparent;
+        }
+        .header-title { font-size:1rem; font-weight:600; line-height:1.3; }
+        .header-sub   { font-size:0.72rem; opacity:0.75; margin-top:2px; }
+
+        /* ── SYNC BAR ── */
+        .sync-bar {
+            display:flex; align-items:center; justify-content:center;
+            gap:6px; padding:7px 16px;
+            font-size:0.72rem; font-weight:500;
+            transition: background 0.3s, color 0.3s;
+        }
+        .sync-bar.synced  { background:#d1fae5; color:#065f46; }
+        .sync-bar.pending { background:#fef3c7; color:#92400e; }
+        .sync-bar.offline { background:#fee2e2; color:#991b1b; }
+        .sync-bar.syncing { background:#dbeafe; color:#1e40af; }
+        .sync-dot {
+            width:7px; height:7px; border-radius:50%; flex-shrink:0;
+        }
+        .sync-bar.synced  .sync-dot { background:#10b981; }
+        .sync-bar.pending .sync-dot { background:#f59e0b; }
+        .sync-bar.offline .sync-dot { background:#ef4444; }
+        .sync-bar.syncing .sync-dot { background:#3b82f6; animation:pulse 1s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* ── SEARCH AREA ── */
+        .search-wrap {
+            padding: 20px 16px 8px;
+            position: sticky; top: 0; z-index: 10;
+            background: var(--bg);
+        }
+        .search-box {
+            display:flex; align-items:center; gap:10px;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 16px;
+            box-shadow: var(--shadow);
+            transition: border-color 0.15s;
+        }
+        .search-box:focus-within {
+            border-color: var(--secondary);
+        }
+        .search-icon { color: var(--muted); font-size: 1.1rem; flex-shrink:0; }
+        .search-box input {
+            flex:1; border:none; outline:none;
+            font-family:'Poppins',sans-serif;
+            font-size: 1rem; color: var(--text);
+            background: transparent;
+        }
+        .search-box input::placeholder { color: var(--muted); }
+        .clear-btn {
+            background: #f3f4f6; border: none;
+            width: 26px; height: 26px; border-radius: 50%;
+            color: var(--muted); font-size: 0.8rem;
+            cursor: pointer; display: none;
+            align-items: center; justify-content: center;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .clear-btn.visible { display: flex; }
+
+        .search-hint {
+            text-align: center;
+            padding: 8px 0 0;
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        /* ── STATS ROW ── */
+        .stats-row {
+            display: flex; gap: 10px;
+            padding: 4px 16px 12px;
+        }
+        .stat-chip {
+            flex: 1;
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 10px 12px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .stat-chip .sc-val {
+            font-size: 1.3rem; font-weight: 700; color: var(--primary);
+        }
+        .stat-chip .sc-label {
+            font-size: 0.65rem; color: var(--muted); margin-top: 1px;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+
+        /* ── STUDENT LIST ── */
+        .section-label {
+            font-size: 0.72rem; font-weight: 600; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.08em;
+            padding: 0 20px; margin-bottom: 10px;
+        }
+        .student-list {
+            padding: 0 16px;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .student-row {
+            background: var(--surface);
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 14px 16px;
+            display: flex; align-items: center; gap: 12px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 0.1s;
+            animation: slideUp 0.22s ease both;
+        }
+        .student-row:active { transform: scale(0.985); }
+        .student-row.recorded { border-left: 3.5px solid var(--success); }
+        .student-row.remarked { border-left: 3.5px solid var(--warning); }
+
+        .sr-roll {
+            font-size: 0.8rem; font-weight: 700;
+            color: var(--primary); font-variant-numeric: tabular-nums;
+            min-width: 90px;
+        }
+        /* Highlight matched portion */
+        .sr-roll mark {
+            background: #bfdbfe; color: var(--primary);
+            border-radius: 3px; padding: 0 1px;
+        }
+        .sr-info { flex: 1; min-width: 0; }
+        .sr-name {
+            font-size: 0.88rem; font-weight: 600;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .sr-dept-venue {
+            font-size: 0.7rem; color: var(--muted); margin-top: 2px;
+        }
+        .sr-status {
+            flex-shrink: 0;
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.85rem;
+        }
+        .sr-status.done  { background: #d1fae5; color: #065f46; }
+        .sr-status.noted { background: #fef3c7; color: #92400e; }
+        .sr-status.empty { background: #f3f4f6; color: #d1d5db; }
+
+        /* ── EMPTY / IDLE STATES ── */
+        .idle-state, .empty-state {
+            text-align: center;
+            padding: 56px 24px;
+            color: var(--muted);
+        }
+        .idle-state .es-icon,
+        .empty-state .es-icon { font-size: 2.8rem; margin-bottom: 14px; }
+        .idle-state p, .empty-state p { font-size: 0.88rem; line-height: 1.6; }
+        .idle-state strong { color: var(--text); }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 100;
+            align-items: flex-end;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-sheet {
+            background: var(--surface);
+            border-radius: 24px 24px 0 0;
+            width: 100%; max-height: 92vh;
+            overflow-y: auto;
+            padding: 0 0 40px;
+            animation: sheetUp 0.28s cubic-bezier(0.32,0.72,0,1);
+        }
+        @keyframes sheetUp {
+            from { transform: translateY(100%); }
+            to   { transform: translateY(0); }
+        }
+        .modal-handle {
+            width: 40px; height: 4px; background: #e5e7eb;
+            border-radius: 2px; margin: 12px auto 0;
+        }
+        .modal-header {
+            padding: 16px 20px 12px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: flex-start; justify-content: space-between;
+        }
+        .modal-student-name { font-size: 1rem; font-weight: 700; }
+        .modal-student-meta { font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
+        .modal-close {
+            background: #f3f4f6; border: none; border-radius: 8px;
+            width: 32px; height: 32px; font-size: 1rem;
+            cursor: pointer; color: var(--muted);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; -webkit-tap-highlight-color: transparent;
+        }
+
+        .modal-body { padding: 16px 20px; }
+        .form-group { margin-bottom: 18px; }
+        .form-label {
+            font-size: 0.75rem; font-weight: 600; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.06em;
+            display: block; margin-bottom: 8px;
+        }
+        .form-label .req { color: var(--danger); }
+
+        /* Grade pills */
+        .grade-grid {
+            display: grid; grid-template-columns: repeat(3,1fr); gap: 8px;
+        }
+        .grade-pill {
+            border: 1.5px solid var(--border);
+            border-radius: 10px; padding: 10px 6px;
+            text-align: center; cursor: pointer;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .grade-pill.selected {
+            border-color: var(--primary); background: #eff6ff;
+        }
+        .grade-pill .gp-code { font-size: 1rem; font-weight: 700; color: var(--primary); }
+        .grade-pill .gp-name { font-size: 0.62rem; color: var(--muted); margin-top: 2px; line-height: 1.2; }
+
+        /* Score inputs */
+        .score-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        }
+        .score-input-label {
+            font-size: 0.7rem; font-weight: 500; color: var(--muted);
+            margin-bottom: 4px; display: block;
+        }
+        .score-input {
+            width: 100%; padding: 11px 12px;
+            border: 1.5px solid var(--border); border-radius: 10px;
+            font-family: 'Poppins',sans-serif;
+            font-size: 0.9rem; color: var(--text);
+            outline: none; transition: border-color 0.15s;
+        }
+        .score-input:focus { border-color: var(--secondary); }
+        .score-input.err   { border-color: var(--danger); }
+        .score-overall .score-input {
+            font-size: 1.1rem; font-weight: 600; text-align: center;
+        }
+
+        .remarks-input {
+            width: 100%; padding: 11px 12px;
+            border: 1.5px solid var(--border); border-radius: 10px;
+            font-family: 'Poppins',sans-serif;
+            font-size: 0.88rem; color: var(--text);
+            outline: none; resize: none; min-height: 80px;
+            transition: border-color 0.15s;
+        }
+        .remarks-input:focus { border-color: var(--secondary); }
+
+        .val-hint {
+            font-size: 0.72rem; color: var(--danger);
+            margin-top: 6px; display: none;
+        }
+
+        .btn-save {
+            width: 100%; padding: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; border: none; border-radius: 14px;
+            font-size: 1rem; font-weight: 600;
+            font-family: 'Poppins',sans-serif;
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+            transition: opacity 0.15s; margin-top: 8px;
+        }
+        .btn-save:active   { opacity: 0.85; }
+        .btn-save:disabled { opacity: 0.45; cursor: not-allowed; }
+
+        .btn-clear-record {
+            width: 100%; padding: 12px;
+            background: transparent; color: var(--danger);
+            border: 1.5px solid #fecaca; border-radius: 14px;
+            font-size: 0.88rem; font-weight: 600;
+            font-family: 'Poppins',sans-serif;
+            cursor: pointer; margin-top: 8px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ── LOADING OVERLAY ── */
+        .loading-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(255,255,255,0.85); z-index: 200;
+            align-items: center; justify-content: center;
+            flex-direction: column; gap: 12px;
+        }
+        .loading-overlay.show { display: flex; }
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+
+        /* ── TOAST ── */
+        .toast {
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1f2937; color: white;
+            padding: 10px 20px; border-radius: 10px;
+            font-size: 0.82rem; font-weight: 500;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s, transform 0.25s;
+            white-space: nowrap; z-index: 300;
+        }
+        .toast.show    { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.success { background: var(--success); }
+        .toast.error   { background: var(--danger); }
+        .toast.warning { background: var(--warning); color: #1f2937; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text" id="loadingText">Loading…</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="header-row">
+        <button class="back-btn" onclick="window.location.href='../dashboard.html'">←</button>
+        <div>
+            <div class="header-title">EnglishScore · By Roll Number</div>
+            <div class="header-sub" id="facultyLabel">British Council · Core Skill Test</div>
+        </div>
+    </div>
+</div>
+
+<!-- SYNC BAR -->
+<div class="sync-bar synced" id="syncBar">
+    <div class="sync-dot"></div>
+    <span id="syncText">All synced</span>
+</div>
+
+<!-- SEARCH -->
+<div class="search-wrap">
+    <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput"
+               placeholder="Type a roll number…"
+               oninput="handleSearch()"
+               autocomplete="off" autocorrect="off"
+               spellcheck="false" inputmode="text">
+        <button class="clear-btn" id="clearBtn" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="search-hint" id="searchHint">Enter at least 2 characters to search</div>
+</div>
+
+<!-- STATS ROW (visible once data loaded) -->
+<div class="stats-row" id="statsRow" style="display:none;">
+    <div class="stat-chip">
+        <div class="sc-val" id="statTotal">—</div>
+        <div class="sc-label">Total</div>
+    </div>
+    <div class="stat-chip">
+        <div class="sc-val" id="statRecorded">—</div>
+        <div class="sc-label">Recorded</div>
+    </div>
+    <div class="stat-chip">
+        <div class="sc-val" id="statPending">—</div>
+        <div class="sc-label">Pending</div>
+    </div>
+</div>
+
+<!-- STUDENT LIST / IDLE STATE -->
+<div id="listContainer">
+    <div class="idle-state" id="idleState">
+        <div class="es-icon">🔎</div>
+        <p>Search by roll number to find a student.<br>
+           <strong>Partial matches are supported</strong> — type a few digits to get started.</p>
+    </div>
+    <div class="student-list" id="studentList" style="display:none;"></div>
+</div>
+
+<!-- ══════════════════════════════════════ -->
+<!--  SCORE MODAL (bottom sheet)           -->
+<!-- ══════════════════════════════════════ -->
+<div class="modal-overlay" id="scoreModal">
+    <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+            <div>
+                <div class="modal-student-name" id="modalName">—</div>
+                <div class="modal-student-meta" id="modalMeta">—</div>
+            </div>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+
+            <!-- Grade -->
+            <div class="form-group">
+                <label class="form-label">Grade <span class="req">*</span></label>
+                <div class="grade-grid" id="gradeGrid">
+                    <div class="grade-pill" data-grade="A1" onclick="selectGrade('A1')">
+                        <div class="gp-code">A1</div><div class="gp-name">Beginner</div>
+                    </div>
+                    <div class="grade-pill" data-grade="A2" onclick="selectGrade('A2')">
+                        <div class="gp-code">A2</div><div class="gp-name">Elementary</div>
+                    </div>
+                    <div class="grade-pill" data-grade="B1" onclick="selectGrade('B1')">
+                        <div class="gp-code">B1</div><div class="gp-name">Intermediate</div>
+                    </div>
+                    <div class="grade-pill" data-grade="B2" onclick="selectGrade('B2')">
+                        <div class="gp-code">B2</div><div class="gp-name">Upper Inter.</div>
+                    </div>
+                    <div class="grade-pill" data-grade="C1" onclick="selectGrade('C1')">
+                        <div class="gp-code">C1</div><div class="gp-name">Advanced</div>
+                    </div>
+                    <div class="grade-pill" data-grade="C2" onclick="selectGrade('C2')">
+                        <div class="gp-code">C2</div><div class="gp-name">Mastery</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overall score -->
+            <div class="form-group score-overall">
+                <label class="form-label">Overall Score (0–600) <span class="req">*</span></label>
+                <input class="score-input" type="number" id="inputOverall"
+                       min="0" max="600" placeholder="e.g. 420"
+                       oninput="validateScore(this)">
+            </div>
+
+            <!-- Sub-scores -->
+            <div class="form-group">
+                <label class="form-label">Sub-scores (0–600) <span class="req">*</span></label>
+                <div class="score-grid">
+                    <div>
+                        <span class="score-input-label">Grammar</span>
+                        <input class="score-input" type="number" id="inputGrammar"
+                               min="0" max="600" placeholder="0–600"
+                               oninput="validateScore(this)">
+                    </div>
+                    <div>
+                        <span class="score-input-label">Reading</span>
+                        <input class="score-input" type="number" id="inputReading"
+                               min="0" max="600" placeholder="0–600"
+                               oninput="validateScore(this)">
+                    </div>
+                    <div>
+                        <span class="score-input-label">Vocabulary</span>
+                        <input class="score-input" type="number" id="inputVocabulary"
+                               min="0" max="600" placeholder="0–600"
+                               oninput="validateScore(this)">
+                    </div>
+                    <div>
+                        <span class="score-input-label">Listening</span>
+                        <input class="score-input" type="number" id="inputListening"
+                               min="0" max="600" placeholder="0–600"
+                               oninput="validateScore(this)">
+                    </div>
+                </div>
+                <div class="val-hint" id="scoreHint">All 4 sub-scores are required alongside grade &amp; overall.</div>
+            </div>
+
+            <!-- Remarks -->
+            <div class="form-group">
+                <label class="form-label">Remarks <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+                <textarea class="remarks-input" id="inputRemarks"
+                          placeholder="e.g. Absent, Incomplete test, Medical reason…"></textarea>
+            </div>
+
+            <button class="btn-save" id="btnSave" onclick="saveRecord()">Save</button>
+            <button class="btn-clear-record" id="btnClearRecord" onclick="clearRecord()" style="display:none;">
+                Clear Recorded Data
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════ */
+const SUPABASE_URL      = 'https://wetnbnemedzyzudvuihb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndldG5ibmVtZWR6eXp1ZHZ1aWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MjM2ODksImV4cCI6MjA3MDQ5OTY4OX0.53iKjcKaImIz10H8hJv0MkDl08R8Pu8OprDcURqSmRQ';
+const TABLE             = 'english_score_results';
+const QUEUE_KEY         = 'englishscore_queue';      // shared with the venue-based page
+const SESSION_KEY       = 'faculty_session';
+const SYNC_INTERVAL_MS  = 5000;
+const MIN_QUERY_LEN     = 2;
+
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+let facultyId     = null;
+let facultyName   = null;
+let allStudents   = [];   // full dataset — fetched once on load
+let dataLoaded    = false;
+let selectedGrade = null;
+let modalRoll     = null;
+let syncTimer     = null;
+let searchDebounce = null;
+
+/* ══════════════════════════════════════════
+   SUPABASE REST HELPERS
+══════════════════════════════════════════ */
+async function supabaseQueryPaged(options = {}) {
+    let url = `${SUPABASE_URL}/rest/v1/${TABLE}?`;
+    const headers = {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Range-Unit': 'items',
+        'Range': `${options.from}-${options.to}`
+    };
+    const params = [];
+    if (options.select) params.push(`select=${options.select}`);
+    if (options.eq) Object.entries(options.eq).forEach(([k,v]) => params.push(`${k}=eq.${encodeURIComponent(v)}`));
+    url += params.join('&');
+    const res = await fetch(url, { headers });
+    if (!res.ok) throw new Error(await res.text());
+    return { data: await res.json() };
+}
+
+async function supabasePatch(rollNumber, payload) {
+    const url = `${SUPABASE_URL}/rest/v1/${TABLE}?roll_number=eq.${encodeURIComponent(rollNumber)}`;
+    const headers = {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+    };
+    const res = await fetch(url, { method: 'PATCH', headers, body: JSON.stringify(payload) });
+    if (!res.ok) throw new Error(await res.text());
+}
+
+/* ══════════════════════════════════════════
+   SESSION + INIT
+══════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) { window.location.href = '../login.html'; return; }
+    try {
+        const session = JSON.parse(raw);
+        const TWO_HOURS = 2 * 60 * 60 * 1000;
+        if (Date.now() - session.login_time > TWO_HOURS) {
+            localStorage.removeItem(SESSION_KEY);
+            window.location.href = '../login.html';
+            return;
+        }
+        facultyId   = session.id || session.faculty_id || 'unknown';
+        facultyName = session.name || facultyId;
+        document.getElementById('facultyLabel').textContent =
+            `${facultyName} · British Council Core Skill Test`;
+        startSyncLoop();
+        prefetchAll();
+    } catch {
+        window.location.href = '../login.html';
+    }
+});
+
+/* ══════════════════════════════════════════
+   PREFETCH ALL STUDENTS (once, chunked)
+══════════════════════════════════════════ */
+async function prefetchAll() {
+    showLoading('Loading student data…');
+    try {
+        let from = 0;
+        const PAGE = 1000;
+        while (true) {
+            const { data } = await supabaseQueryPaged({
+                select: 'roll_number,name,department,venue,batch,grade,overall_score,grammar,reading,vocabulary,listening,remarks',
+                from, to: from + PAGE - 1
+            });
+            if (!data || data.length === 0) break;
+            allStudents = allStudents.concat(data);
+            if (data.length < PAGE) break;
+            from += PAGE;
+        }
+        mergeQueue();
+        dataLoaded = true;
+
+        // Update global stats
+        const recorded = allStudents.filter(isRecorded).length;
+        document.getElementById('statTotal').textContent    = allStudents.length;
+        document.getElementById('statRecorded').textContent = recorded;
+        document.getElementById('statPending').textContent  = allStudents.length - recorded;
+        document.getElementById('statsRow').style.display   = 'flex';
+
+        hideLoading();
+        updateSyncBar();
+
+        // If there's already text in search box (e.g. back-navigation), re-run search
+        const q = document.getElementById('searchInput').value.trim();
+        if (q.length >= MIN_QUERY_LEN) renderResults(q);
+
+    } catch (e) {
+        hideLoading();
+        showToast('Failed to load data: ' + e.message, 'error');
+    }
+}
+
+/* ══════════════════════════════════════════
+   SEARCH
+══════════════════════════════════════════ */
+function handleSearch() {
+    const q = document.getElementById('searchInput').value.trim();
+    document.getElementById('clearBtn').classList.toggle('visible', q.length > 0);
+
+    clearTimeout(searchDebounce);
+    if (q.length < MIN_QUERY_LEN) {
+        document.getElementById('searchHint').textContent = 'Enter at least 2 characters to search';
+        showIdle();
+        return;
+    }
+    document.getElementById('searchHint').textContent = '';
+    searchDebounce = setTimeout(() => renderResults(q), 150);
+}
+
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('clearBtn').classList.remove('visible');
+    document.getElementById('searchHint').textContent = 'Enter at least 2 characters to search';
+    showIdle();
+}
+
+function showIdle() {
+    document.getElementById('idleState').style.display    = 'block';
+    document.getElementById('studentList').style.display  = 'none';
+}
+
+function renderResults(query) {
+    if (!dataLoaded) return;
+
+    const q = query.toLowerCase();
+    const queue = getQueue();
+
+    // Merge queue into live data snapshot
+    const merged = allStudents.map(s => {
+        const qRow = queue.find(r => r.roll_number === s.roll_number);
+        return qRow ? { ...s, ...qRow } : s;
+    });
+
+    // Filter: partial roll_number match
+    const results = merged
+        .filter(s => s.roll_number.toLowerCase().includes(q))
+        .sort((a, b) => a.roll_number.localeCompare(b.roll_number, undefined, { numeric: true, sensitivity: 'base' }));
+
+    document.getElementById('idleState').style.display   = 'none';
+    const container = document.getElementById('studentList');
+    container.style.display = 'flex';
+    container.innerHTML = '';
+
+    if (!results.length) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="es-icon">🔍</div>
+                <p>No student found matching <strong>"${escapeHtml(query)}"</strong>.</p>
+            </div>`;
+        return;
+    }
+
+    results.forEach((s, i) => {
+        const rec       = isRecorded(s);
+        const hasRemark = !rec && s.remarks && s.remarks.trim();
+
+        const row = document.createElement('div');
+        row.className = 'student-row' + (rec ? ' recorded' : hasRemark ? ' remarked' : '');
+        row.style.animationDelay = `${Math.min(i, 12) * 0.025}s`;
+
+        row.innerHTML = `
+            <div class="sr-roll">${highlightMatch(s.roll_number, q)}</div>
+            <div class="sr-info">
+                <div class="sr-name">${escapeHtml(s.name || '—')}</div>
+                <div class="sr-dept-venue">${escapeHtml(s.department || '—')} · ${escapeHtml(s.venue || '—')}</div>
+            </div>
+            <div class="sr-status ${rec ? 'done' : hasRemark ? 'noted' : 'empty'}">
+                ${rec ? '✓' : hasRemark ? '📝' : '○'}
+            </div>
+        `;
+        row.onclick = () => openModal(s.roll_number);
+        container.appendChild(row);
+    });
+}
+
+/* Highlight the matching substring inside roll_number */
+function highlightMatch(rollNumber, query) {
+    const idx = rollNumber.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return escapeHtml(rollNumber);
+    return escapeHtml(rollNumber.slice(0, idx))
+         + `<mark>${escapeHtml(rollNumber.slice(idx, idx + query.length))}</mark>`
+         + escapeHtml(rollNumber.slice(idx + query.length));
+}
+
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* ══════════════════════════════════════════
+   RECORDED CHECK
+══════════════════════════════════════════ */
+function isRecorded(s) {
+    return s.grade != null && s.grade !== '' &&
+           s.overall_score != null && s.overall_score !== '' &&
+           s.grammar != null && s.grammar !== '' &&
+           s.reading != null && s.reading !== '' &&
+           s.vocabulary != null && s.vocabulary !== '' &&
+           s.listening != null && s.listening !== '';
+}
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+function openModal(rollNumber) {
+    const queue   = getQueue();
+    const base    = allStudents.find(s => s.roll_number === rollNumber);
+    const queued  = queue.find(r => r.roll_number === rollNumber);
+    const student = queued ? { ...base, ...queued } : { ...base };
+
+    modalRoll     = rollNumber;
+    selectedGrade = student.grade || null;
+
+    document.getElementById('modalName').textContent = student.name || rollNumber;
+    document.getElementById('modalMeta').textContent =
+        `${student.roll_number} · ${student.department || '—'} · ${student.venue || '—'} · Batch: ${student.batch || '—'}`;
+
+    // Grade pills
+    document.querySelectorAll('.grade-pill').forEach(p => {
+        p.classList.toggle('selected', p.dataset.grade === selectedGrade);
+    });
+
+    // Score fields
+    document.getElementById('inputOverall').value    = student.overall_score ?? '';
+    document.getElementById('inputGrammar').value    = student.grammar       ?? '';
+    document.getElementById('inputReading').value    = student.reading       ?? '';
+    document.getElementById('inputVocabulary').value = student.vocabulary    ?? '';
+    document.getElementById('inputListening').value  = student.listening     ?? '';
+    document.getElementById('inputRemarks').value    = student.remarks       ?? '';
+
+    // Clear error states
+    document.querySelectorAll('.score-input').forEach(i => i.classList.remove('err'));
+    document.getElementById('scoreHint').style.display = 'none';
+
+    // Clear button visibility
+    document.getElementById('btnClearRecord').style.display = isRecorded(student) ? 'block' : 'none';
+
+    document.getElementById('scoreModal').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('scoreModal').classList.remove('open');
+    modalRoll     = null;
+    selectedGrade = null;
+}
+
+document.getElementById('scoreModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+function selectGrade(g) {
+    selectedGrade = g;
+    document.querySelectorAll('.grade-pill').forEach(p => {
+        p.classList.toggle('selected', p.dataset.grade === g);
+    });
+}
+
+function validateScore(input) {
+    const v = parseInt(input.value, 10);
+    if (input.value === '') { input.classList.remove('err'); return; }
+    input.classList.toggle('err', isNaN(v) || v < 0 || v > 600);
+}
+
+/* ══════════════════════════════════════════
+   SAVE
+══════════════════════════════════════════ */
+function saveRecord() {
+    const overall    = document.getElementById('inputOverall').value.trim();
+    const grammar    = document.getElementById('inputGrammar').value.trim();
+    const reading    = document.getElementById('inputReading').value.trim();
+    const vocabulary = document.getElementById('inputVocabulary').value.trim();
+    const listening  = document.getElementById('inputListening').value.trim();
+    const remarks    = document.getElementById('inputRemarks').value.trim();
+
+    const hasScores  = overall || grammar || reading || vocabulary || listening || selectedGrade;
+    const remarksOnly = !hasScores && remarks !== '';
+    const fullRecord  = selectedGrade && overall && grammar && reading && vocabulary && listening;
+
+    if (!remarksOnly && !fullRecord) {
+        document.getElementById('scoreHint').style.display = 'block';
+        showToast('Fill all score fields or just add remarks.', 'warning');
+        return;
+    }
+
+    // Range validation
+    let rangeErr = false;
+    [['inputOverall',overall],['inputGrammar',grammar],['inputReading',reading],
+     ['inputVocabulary',vocabulary],['inputListening',listening]].forEach(([id, val]) => {
+        if (!val) return;
+        const n = parseInt(val, 10);
+        const el = document.getElementById(id);
+        if (isNaN(n) || n < 0 || n > 600) { el.classList.add('err'); rangeErr = true; }
+    });
+    if (rangeErr) { showToast('Scores must be 0–600.', 'error'); return; }
+
+    const now = new Date().toISOString();
+    const payload = {
+        roll_number:   modalRoll,
+        grade:         fullRecord ? selectedGrade         : null,
+        overall_score: fullRecord ? parseInt(overall)     : null,
+        grammar:       fullRecord ? parseInt(grammar)     : null,
+        reading:       fullRecord ? parseInt(reading)     : null,
+        vocabulary:    fullRecord ? parseInt(vocabulary)  : null,
+        listening:     fullRecord ? parseInt(listening)   : null,
+        remarks:       remarks || null,
+        faculty_id:    facultyId,
+        updated_at:    now,
+        _synced:       false,
+        _savedAt:      now,
+    };
+
+    // Write to queue
+    const queue = getQueue();
+    const idx   = queue.findIndex(r => r.roll_number === modalRoll);
+    if (idx >= 0) queue[idx] = payload; else queue.push(payload);
+    saveQueue(queue);
+
+    // Update in-memory dataset
+    const si = allStudents.findIndex(s => s.roll_number === modalRoll);
+    if (si >= 0) allStudents[si] = { ...allStudents[si], ...payload };
+
+    // Refresh stats
+    const recorded = allStudents.map(s => {
+        const q = getQueue().find(r => r.roll_number === s.roll_number);
+        return q ? { ...s, ...q } : s;
+    }).filter(isRecorded).length;
+    document.getElementById('statRecorded').textContent = recorded;
+    document.getElementById('statPending').textContent  = allStudents.length - recorded;
+
+    // Refresh search results in place
+    const q = document.getElementById('searchInput').value.trim();
+    if (q.length >= MIN_QUERY_LEN) renderResults(q);
+
+    closeModal();
+    showToast(fullRecord ? 'Saved ✓' : 'Remark saved', 'success');
+    updateSyncBar();
+}
+
+/* ══════════════════════════════════════════
+   CLEAR RECORD
+══════════════════════════════════════════ */
+function clearRecord() {
+    const now = new Date().toISOString();
+    const payload = {
+        roll_number: modalRoll,
+        grade: null, overall_score: null,
+        grammar: null, reading: null,
+        vocabulary: null, listening: null,
+        remarks: null, faculty_id: facultyId,
+        updated_at: now, _synced: false, _savedAt: now,
+    };
+    const queue = getQueue();
+    const idx   = queue.findIndex(r => r.roll_number === modalRoll);
+    if (idx >= 0) queue[idx] = payload; else queue.push(payload);
+    saveQueue(queue);
+
+    const si = allStudents.findIndex(s => s.roll_number === modalRoll);
+    if (si >= 0) allStudents[si] = { ...allStudents[si], ...payload };
+
+    const recorded = allStudents.map(s => {
+        const q = getQueue().find(r => r.roll_number === s.roll_number);
+        return q ? { ...s, ...q } : s;
+    }).filter(isRecorded).length;
+    document.getElementById('statRecorded').textContent = recorded;
+    document.getElementById('statPending').textContent  = allStudents.length - recorded;
+
+    const q = document.getElementById('searchInput').value.trim();
+    if (q.length >= MIN_QUERY_LEN) renderResults(q);
+
+    closeModal();
+    showToast('Record cleared', 'warning');
+    updateSyncBar();
+}
+
+/* ══════════════════════════════════════════
+   OFFLINE QUEUE
+══════════════════════════════════════════ */
+function getQueue() {
+    try { return JSON.parse(localStorage.getItem(QUEUE_KEY)) || []; } catch { return []; }
+}
+function saveQueue(q) {
+    localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
+}
+function mergeQueue() {
+    const queue = getQueue();
+    queue.forEach(qRow => {
+        const idx = allStudents.findIndex(s => s.roll_number === qRow.roll_number);
+        if (idx >= 0) allStudents[idx] = { ...allStudents[idx], ...qRow };
+    });
+}
+
+/* ══════════════════════════════════════════
+   SYNC LOOP
+══════════════════════════════════════════ */
+function startSyncLoop() {
+    if (syncTimer) clearInterval(syncTimer);
+    syncTimer = setInterval(flushQueue, SYNC_INTERVAL_MS);
+}
+
+async function flushQueue() {
+    const queue    = getQueue();
+    const unsynced = queue.filter(r => !r._synced);
+    if (!unsynced.length) { updateSyncBar(); return; }
+
+    updateSyncBar('syncing');
+    let anyFail = false;
+
+    for (const record of unsynced) {
+        try {
+            const { _synced, _savedAt, recorded_at, ...clean } = record;
+            await supabasePatch(record.roll_number, clean);
+            const idx = queue.findIndex(r => r.roll_number === record.roll_number);
+            if (idx >= 0) queue[idx]._synced = true;
+        } catch {
+            anyFail = true;
+        }
+    }
+
+    saveQueue(queue);
+    updateSyncBar(anyFail ? 'offline' : 'synced');
+    if (queue.every(r => r._synced)) saveQueue([]);
+}
+
+function updateSyncBar(state) {
+    const queue    = getQueue();
+    const unsynced = queue.filter(r => !r._synced).length;
+    const bar  = document.getElementById('syncBar');
+    const text = document.getElementById('syncText');
+
+    if (state === 'syncing') {
+        bar.className = 'sync-bar syncing'; text.textContent = 'Syncing…'; return;
+    }
+    if (state === 'offline' || (!navigator.onLine && unsynced > 0)) {
+        bar.className = 'sync-bar offline';
+        text.textContent = `Offline · ${unsynced} pending`; return;
+    }
+    if (unsynced > 0) {
+        bar.className = 'sync-bar pending';
+        text.textContent = `${unsynced} record${unsynced>1?'s':''} pending sync`; return;
+    }
+    bar.className = 'sync-bar synced'; text.textContent = 'All synced';
+}
+
+/* ══════════════════════════════════════════
+   UI HELPERS
+══════════════════════════════════════════ */
+function showLoading(msg = 'Loading…') {
+    document.getElementById('loadingText').textContent = msg;
+    document.getElementById('loadingOverlay').classList.add('show');
+}
+function hideLoading() {
+    document.getElementById('loadingOverlay').classList.remove('show');
+}
+
+let toastTimer;
+function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className   = 'toast' + (type ? ' ' + type : '') + ' show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+window.addEventListener('online',  () => { updateSyncBar(); flushQueue(); });
+window.addEventListener('offline', () => updateSyncBar('offline'));
+</script>
+</body>
+</html>
